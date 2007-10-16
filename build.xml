@@ -1,0 +1,422 @@
+<?xml version="1.0"?>
+
+<!-- =================================================== -->
+<!-- VideoServer build file                              -->
+<!-- =================================================== -->
+<project name="video" default="client" basedir=".">
+	<property file="project.properties"/>
+	<property file="${user.home}/.ant.properties"/>
+	<property name="src.dir" value="src" />
+	<property name="etc.dir" value="etc" />
+	<property name="web.dir" value="web" />
+	<property name="lib.dir" value="lib" />
+	<property name="images.dir" value="web/images" />
+	<property name="build.dir" value="build" />
+	<property name="build.repeater.dir" value="${build.dir}/repeater" />
+	<property name="build.backend.dir" value="${build.dir}/backend" />
+	<property name="build.nvr.dir" value="${build.dir}/nvr" />
+	<property name="build.src.dir" value="${build.dir}/src" />
+	<property name="build.etc.dir" value="${build.dir}/etc" />
+	<property name="build.web.dir" value="${build.dir}/web" />
+	<property name="build.lib.dir" value="${build.dir}/lib" />
+	<property name="build.classes.dir" value="${build.dir}/classes" />
+	<property name="build.javadocs.dir" value="${build.dir}/javadocs" />
+
+	<property name="repeater.webxml" value="${web.dir}/web-inf/repeater_web.xml"/>
+	<property name="backend.webxml" value="${web.dir}/web-inf/backend_web.xml"/>
+	<property name="test.webxml" value="${web.dir}/web-inf/test_web.xml"/>
+	<property name="nvr.webxml" value="${web.dir}/web-inf/nvr_web.xml"/>
+	<property name="userdocs.dir" value="${name}" />
+	<property name="manifest" value="etc/manifest.mf" />
+	<property name="build.compiler.pedantic" value="true"/>
+	<path id="classpath">
+		<fileset dir = "${lib.dir}" includes="**/*.jar"/>
+	</path>
+
+	<!-- Check for one jar dependancy -->
+	<target name="check-jar">
+		<available property="jar.exists"
+			   file="${lib.dir}/${file.jar}"/>
+		<echo message="Checking for ${lib.dir}/${file.jar}"/>
+		<fail unless="jar.exists"
+		      message="Missing dependency: ${lib.dir}/${file.jar}"/>
+	</target>
+
+	<!-- Check for dependancies -->
+	<target name="check">
+		<antcall target="check-jar">
+			<param name="file.jar"
+				value="tms-log-${tms-log.version}.jar"/>
+		</antcall>
+	</target>
+
+	<!-- Check for server dependancies -->
+	<target name="check-server">
+		<antcall target="check-jar">
+			<param name="file.jar" value="jdbc7.0-1.2.jar"/>
+		</antcall>
+		<antcall target="check-jar">
+			<param name="file.jar" value="servlet-api.jar"/>
+		</antcall>
+		<antcall target="check-jar">
+			<param name="file.jar" value="velocity-dep-1.3.1.jar"/>
+		</antcall>
+	</target>
+
+	<!-- =================================================== -->
+	<!-- Prepares the directory structure-->
+	<!-- =================================================== -->
+	<target name="prepare"
+	        description="Prepare the build directory">
+
+		<mkdir dir="${build.src.dir}" />
+		<mkdir dir="${build.classes.dir}" />
+		<mkdir dir="${build.lib.dir}" />
+
+		<copy todir="${build.src.dir}" filtering="true">
+			<fileset dir="${src.dir}"/>
+			<filterset begintoken="@@" endtoken="@@">
+				<filter token="VERSION" value="${version}"/>
+				<filter token="NAME" value="${name}"/>
+			</filterset>
+		</copy>
+
+		<copy todir="${build.web.dir}" filtering="true">
+			<fileset dir="${web.dir}" />
+			<filterset begintoken="@@" endtoken="@@">
+				<filter token="TMSLOG.VERSION"
+					value="${tms-log.version}"/>
+				<filter token="BUILD.ID"
+					value="${DSTAMP}:${TSTAMP}"/>
+				<filter token="REPEATER.HOST"
+					value="${video.repeater.HOST}"/>
+				<filter token="REPEATER.PORT"
+					value="${video.repeater.port}"/>
+				<filter token="NAME"
+					value="${name}"/>
+				<filter token="VERSION"
+					value="${version}"/>
+			</filterset>
+		</copy>
+
+		<copy todir="${build.etc.dir}" filtering="true">
+			<fileset dir="${etc.dir}" />
+			<filterset begintoken="@@" endtoken="@@">
+				<filter token="TMSLOG.VERSION"
+					value="${tms-log.version}"/>
+				<filter token="BUILD.ID"
+					value="${DSTAMP}:${TSTAMP}"/>
+				<filter token="REPEATER.HOST"
+					value="${video.repeater.HOST}"/>
+				<filter token="REPEATER.PORT"
+					value="${video.repeater.port}"/>
+				<filter token="BACKEND.HOST"
+					value="${video.backend.HOST}"/>
+				<filter token="BACKEND.PORT"
+					value="${video.backend.port}"/>
+				<filter token="VIDEO.WEBSTART.HOST"
+					value="${video.webstart.host}"/>
+				<filter token="CONNECTION.NAME"
+					value="${video.db.connection.name}"/>
+				<filter token="CONNECTION.PASSWORD"
+					value="${video.db.connection.password}"/>
+				<filter token="CONNECTION.URL"
+					value="${video.db.connection.url}"/>
+				<filter token="ROLE.NAME.COL"
+					value="${video.db.role.name.col}"/>
+				<filter token="USER.CRED.COL"
+					value="${video.db.user.cred.col}"/>
+				<filter token="USER.NAME.COL"
+					value="${video.db.user.name.col}"/>
+				<filter token="USER.ROLE.TABLE"
+					value="${video.db.user.role.table}"/>
+				<filter token="USER.TABLE"
+					value="${video.db.user.table}"/>
+				<filter token="PROXY.HOST"
+					value="${proxy.host}"/>
+				<filter token="PROXY.PORT"
+					value="${proxy.port}"/>
+				<filter token="NO.PROXY.HOSTS"
+					value="${no.proxy.hosts}"/>
+				<filter token="NAME"
+					value="${name}"/>
+				<filter token="VERSION"
+					value="${version}"/>
+			</filterset>
+		</copy>
+	</target>
+
+	<!-- =================================================== -->
+	<!-- Compile the client source code                      -->
+	<!-- =================================================== -->
+	<target name="compile-client"
+		depends="check, prepare"
+		description="Compile the client source files for the project">
+		<javac srcdir="${build.src.dir}"
+			excludes="us/mn/state/dot/video/server/**"
+			destdir="${build.classes.dir}"
+			debug="on"
+			deprecation="on"
+			optimize="on"
+			target="1.5">
+			<classpath refid="classpath" />
+		</javac>
+	</target>
+
+	<!-- =================================================== -->
+	<!-- Compile the source code                             -->
+	<!-- =================================================== -->
+	<target name="compile"
+		depends="check, prepare"
+		description="Compiles all of the source files for the project.">
+		<javac destdir="${build.classes.dir}"
+			debug="on"
+			deprecation="on"
+			optimize="on"
+			target="1.5">
+			<src path="${build.src.dir}"/>
+			<classpath refid="classpath" />
+		</javac>
+	</target>
+
+	<!-- ================================================== -->
+	<!-- Create the client jar                              -->
+	<!-- ================================================== -->
+	<target name="client"
+		depends="compile-client"
+		description="Creates the client jar file.">
+		<jar jarfile="${build.lib.dir}/${name}-client-${version}.jar"
+		     manifest="${build.etc.dir}/manifest.mf">
+			<fileset dir="${build.classes.dir}">
+				<include name="us/mn/state/dot/video/player/*.*"/>
+				<include name="us/mn/state/dot/video/*.*"/>
+			</fileset>
+			<fileset dir="${build.etc.dir}">
+				<include name="client.properties"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<!-- Jar target for iris buildall target -->
+	<target name="jar" depends="client" />
+
+	<!-- ================================================== -->
+	<!-- Create the NVR client jar                          -->
+	<!-- ================================================== -->
+	<target name="nvr-client"
+		depends="compile-client"
+		description="Creates the NVR client jar file.">
+		<jar jarfile="${build.lib.dir}/nvrclient-${version}.jar"
+		     manifest="${build.etc.dir}/manifest.mf">
+			<fileset dir="${build.classes.dir}">
+				<include name="us/mn/state/dot/video/client/nvr/*.*"/>
+				<include name="us/mn/state/dot/video/player/*.*"/>
+				<include name="us/mn/state/dot/video/*.*"/>
+			</fileset>
+			<fileset dir="${build.etc.dir}">
+				<include name="nvr-client.properties"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<!-- ================================================== -->
+	<!-- Create the nvr server war                      -->
+	<!-- ================================================== -->
+	<target name="nvr"
+		depends="check-server, compile"
+		description="Creates the war file to be run on the NVR servers.">
+		<copy todir="${build.nvr.dir}/WEB-INF/lib">
+			<fileset dir="${lib.dir}" >
+				<include name="tms-log-${tms-log.version}.jar" />
+				<include name="jdbc7.0-1.2.jar" />
+			</fileset>
+		</copy>
+		<copy todir="${build.nvr.dir}/WEB-INF/classes">
+			<fileset dir="${build.classes.dir}">
+				<include name="us/mn/state/dot/video/server/**/*"/>
+				<include name="us/mn/state/dot/video/*"/>
+			</fileset>
+		</copy>
+		<war
+			destfile="${build.lib.dir}/${name}-nvr.war-${version}"
+			webxml="${nvr.webxml}"
+			basedir="${build.nvr.dir}">
+		</war>
+	</target>
+
+	<!-- ================================================== -->
+	<!-- Create a test war file                             -->
+	<!-- ================================================== -->
+	<target name="test"
+		depends="check-server, compile"
+		description="Creates the test war file.">
+		<copy todir="${build.dir}/test/WEB-INF/lib">
+			<fileset dir="${lib.dir}" >
+				<include name="tms-log-${tms-log.version}.jar" />
+				<include name="jdbc7.0-1.2.jar" />
+			</fileset>
+		</copy>
+		<copy todir="${build.dir}/test/WEB-INF/classes">
+			<fileset dir="${build.classes.dir}">
+				<include name="us/mn/state/dot/video/server/TestConnection.*"/>
+			</fileset>
+		</copy>
+		<war
+			destfile="${build.lib.dir}/${name}-test.war-${version}"
+			webxml="${test.webxml}"
+			basedir="${build.dir}/test">
+		</war>
+	</target>
+
+	<!-- ================================================== -->
+	<!-- Create the backend server war                      -->
+	<!-- ================================================== -->
+	<target name="backend"
+		depends="check-server, compile, nvr-client"
+		description="Creates the backend war file.">
+		<copy todir="${build.backend.dir}/WEB-INF/lib">
+			<fileset dir="${lib.dir}" >
+				<include name="tms-log-${tms-log.version}.jar" />
+				<include name="jdbc7.0-1.2.jar" />
+			</fileset>
+		</copy>
+		<copy file="${web.dir}/html/nvr-client.html"
+			tofile="${build.backend.dir}/nvr/index.html"/>
+		<copy file="${build.etc.dir}/nvr.jnlp"
+			tofile="${build.backend.dir}/nvr/nvr.jnlp"/>
+		<copy todir="${build.backend.dir}/nvr/lib">
+			<fileset dir="${build.lib.dir}" >
+				<include name="nvrclient*" />
+			</fileset>
+			<fileset dir="${lib.dir}" >
+				<include name="tms-log*" />
+			</fileset>
+		</copy>
+		<signjar keystore="${sign.store}" storepass="${sign.store.pass}"
+		         alias="${sign.alias}" keypass="${sign.alias.pass}"
+			 lazy="true">
+			<fileset dir="${build.backend.dir}/nvr/lib">
+				<include name="*.jar"/>
+			</fileset>
+		</signjar>
+		<copy todir="${build.backend.dir}/images">
+			<fileset dir="${images.dir}" >
+				<include name="novideo.jpg" />
+			</fileset>
+		</copy>
+		<copy todir="${build.backend.dir}/WEB-INF/classes">
+			<fileset dir="${build.classes.dir}">
+				<include name="us/mn/state/dot/video/**/*"/>
+			</fileset>
+		</copy>
+		<war
+			destfile="${build.lib.dir}/${name}-backend.war-${version}"
+			webxml="${backend.webxml}"
+			basedir="${build.backend.dir}">
+		</war>
+	</target>
+
+	<!-- ================================================== -->
+	<!-- Create the repeater server war                     -->
+	<!-- ================================================== -->
+	<target name="repeater"
+		depends="check-server, compile, client"
+		description="Creates the repeater war file.">
+		<copy todir="${build.repeater.dir}">
+	       		<fileset dir="${build.web.dir}/html" >
+				<include name="*.html" />
+        	   	</fileset>
+	       		<fileset dir="${build.web.dir}/ssi" >
+				<include name="*.html" />
+           		</fileset>
+			<fileset dir="${lib.dir}" >
+				<include name="tms-log-${log.version}.jar" />
+			</fileset>
+		</copy>
+
+		<copy todir="${build.repeater.dir}/client">
+	       		<fileset dir="${build.web.dir}/html" >
+				<include name="*.jnlp" />
+	           	</fileset>
+	       		<fileset dir="${build.etc.dir}" >
+				<include name="client.properties" />
+	           	</fileset>
+	       		<fileset dir="${build.lib.dir}" >
+				<include name="${name}-client-${version}.jar" />
+	           	</fileset>
+			<fileset dir="${lib.dir}" >
+				<include name="tms-log-${tms-log.version}.jar" />
+			</fileset>
+			<fileset dir="${build.web.dir}/template" >
+				<include name="*.vm" />
+			</fileset>
+		</copy>
+
+		<signjar keystore="${sign.store}" storepass="${sign.store.pass}"
+		         alias="${sign.alias}" keypass="${sign.alias.pass}"
+		         lazy="true">
+			<fileset dir="${build.repeater.dir}/client">
+				<include name="*.jar" />
+			</fileset>
+		</signjar>
+
+		<copy todir="${build.repeater.dir}/css">
+			<fileset dir="${build.web.dir}/css">
+				<include name="*.css"/>
+			</fileset>
+		</copy>
+
+		<copy todir="${build.repeater.dir}/images">
+			<fileset dir="${images.dir}" >
+				<include name="*.jpg" />
+				<include name="*.gif" />
+			</fileset>
+		</copy>
+			
+		<copy todir="${build.repeater.dir}/META-INF">
+			<fileset dir="${build.etc.dir}" >
+				<include name="context.xml" />
+			</fileset>
+		</copy>
+
+		<copy todir="${build.repeater.dir}/WEB-INF/lib">
+			<fileset dir="${lib.dir}" >
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+		<copy todir="${build.repeater.dir}/WEB-INF/classes">
+			<fileset dir="${build.classes.dir}" />
+		</copy>
+
+		<war destfile="${build.lib.dir}/${name}-repeater.war-${version}"
+			webxml="${repeater.webxml}"
+			basedir="${build.repeater.dir}">
+		</war>
+	</target>
+
+	<!-- =================================================== -->
+	<!-- Create the API documentation                        -->
+	<!-- =================================================== -->
+	<target name="javadocs"
+		depends="prepare"
+		description="Creates the javadocs for the project.">
+		<javadoc packagenames="${packages}"
+			classpathref="classpath"
+			sourcepath="${basedir}/${src.dir}"
+			destdir="${build.javadocs}"
+			author="true"
+			version="true"
+			windowtitle="${name} API"
+			doctitle="${name}-${version}"
+			bottom="Copyright &#169; Minnesota Department of
+			Transportation. All Rights Reserved."/>
+	</target>
+
+	<!-- ================================================== -->
+	<!-- Clean up generated stuff                           -->
+	<!-- ================================================== -->
+	<target name="clean"
+		description="deletes build directory.">
+		<delete dir="${build.dir}"/>
+	</target>
+</project>
