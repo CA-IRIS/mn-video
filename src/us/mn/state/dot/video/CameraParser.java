@@ -1,5 +1,7 @@
 package us.mn.state.dot.video;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.net.ProxySelector;
 import java.net.URL;
 import java.util.Enumeration;
@@ -79,12 +81,11 @@ public class CameraParser extends XmlParser {
 
 	public static void main(String[] args){
 		try{
+			File f = new File("/etc/tms/video.properties");
 			Properties p = new Properties();
-			p.setProperty("proxyHost", "proxy.dot.state.mn.us");
-			p.setProperty("proxyPort", "3128");
-			p.setProperty("noProxyHosts", "");
+			p.load(new FileInputStream(f));
 			ProxySelector.setDefault(new HTTPProxySelector(p)); 
-			URL url = new URL("http://data.dot.state.mn.us/dds/cameras.xml.bak");
+			URL url = new URL(p.getProperty("cameras.xml"));
 			new CameraParser(url);
 		}catch(Exception e){
 			e.printStackTrace();
