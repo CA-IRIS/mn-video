@@ -30,4 +30,10 @@ public interface Encoder {
 	 * @return port The port on which to connect.
 	 */
 	public int getPort();
+
+	/**
+	 * Set the IP port for video requests.
+	 * @param port
+	 */
+	public void setPort(int port);
 }
