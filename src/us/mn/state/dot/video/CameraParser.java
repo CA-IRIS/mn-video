@@ -35,6 +35,10 @@ public class CameraParser extends XmlParser {
 		loadCameras();
 	}
 	
+	/**
+	 * Get a hash of cameras.
+	 * @return A hashtable of cameras indexed by camera id.
+	 */
 	public Hashtable getCameras(){
 		return cameras;
 	}
@@ -43,14 +47,14 @@ public class CameraParser extends XmlParser {
 		if(document == null) return;
 		Element root = document.getDocumentElement();
 		loadCameras( root.getChildNodes() );
-//		printCameras();
+		printCameras();
 	}
 
 	protected void printCameras(){
 		Enumeration camList = cameras.elements();
 		while(camList.hasMoreElements()){
 			Camera c = (Camera)camList.nextElement();
-			System.out.println("Camera " + c.getNumber() +
+			System.out.println(c.getId() +
 				"\t" + c.getFreeway() + " @ " + c.getCrossStreet());
 		}
 	}
@@ -65,7 +69,7 @@ public class CameraParser extends XmlParser {
 			c.setId(id);
 			c.setFreeway(e.getAttribute("freeway"));
 			c.setCrossStreet(e.getAttribute("cross_street"));
-			cameras.put(Integer.toString(c.getNumber()), c);
+			cameras.put(c.getId(), c);
 		}
 	}
 	
