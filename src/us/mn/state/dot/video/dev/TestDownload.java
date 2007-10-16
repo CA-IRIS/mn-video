@@ -85,6 +85,6 @@ public class TestDownload {
 	}
 	
 	public static void main(String[] args) {
-		TestDownload td = new TestDownload();
+		new TestDownload();
 	}
 }

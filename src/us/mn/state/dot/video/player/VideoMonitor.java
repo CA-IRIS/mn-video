@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.text.DecimalFormat;
 import java.util.LinkedList;
 
 import javax.swing.BorderFactory;
@@ -60,7 +59,6 @@ public class VideoMonitor extends JPanel
 	private Camera camera = null;
 	private AbstractImageFactory factory = null;
 	private int imagesRendered = 0;
-	private final DecimalFormat formatter = new DecimalFormat("000");
 	Image image = null;
 	String imageName = null;
 	private final JLabel screen = new JLabel();

@@ -19,12 +19,7 @@
 package us.mn.state.dot.video.server.nvr;
 
 import java.io.BufferedInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Calendar;
-
-import us.mn.state.dot.video.Constants;
 
 /**
  * StreamRecorder handles a single video stream and continually 

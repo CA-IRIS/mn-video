@@ -19,14 +19,9 @@
 package us.mn.state.dot.video.server;
 
 import java.io.OutputStreamWriter;
-import java.util.Properties;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
-import us.mn.state.dot.util.db.TmsConnection;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.VideoException;
 

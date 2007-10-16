@@ -20,7 +20,6 @@ package us.mn.state.dot.video.server;
 
 import java.text.ParseException;
 import java.util.Calendar;
-import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletConfig;
@@ -65,7 +64,6 @@ public abstract class VideoServlet extends HttpServlet {
 		super.init( config );
 		servletName = this.getClass().getSimpleName();
 		ServletContext ctx = config.getServletContext();
-		Properties p =(Properties)ctx.getAttribute("properties");
 		if(logger==null){
 			logger = (Logger)ctx.getAttribute(PropertiesContext.PROP_LOGGER);
 		}

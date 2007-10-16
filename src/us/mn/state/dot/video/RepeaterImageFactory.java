@@ -26,13 +26,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.logging.Logger;
 
-import us.mn.state.dot.video.AbstractImageFactory;
-import us.mn.state.dot.video.AxisServer;
-import us.mn.state.dot.video.Client;
-import us.mn.state.dot.video.MJPEGStream;
-import us.mn.state.dot.video.ThreadMonitor;
-import us.mn.state.dot.video.VideoException;
-
 /**
  * The ImageFactory connects to a video stream from the stream server.
  * It notifies each of it's listeners whenever there is a new image.

@@ -34,7 +34,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
 import us.mn.state.dot.video.AbstractImageFactory;
-import us.mn.state.dot.video.AxisServer;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.ConnectionFactory;
 import us.mn.state.dot.video.VideoException;
