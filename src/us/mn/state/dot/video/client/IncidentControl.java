@@ -55,7 +55,7 @@ public class IncidentControl extends AbstractStreamControl{
 		super(props, monitor, logger);
 		this.setLayout(new GridBagLayout());
 		setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-		incidentsLocation = props.getProperty("incidentsLocation");
+		incidentsLocation = props.getProperty("incidents.url");
 		updateIncidents(incidentsLocation);
 		JScrollPane scrollPane = new JScrollPane(incidentList);
 		scrollPane.setPreferredSize(new Dimension(300, 100));

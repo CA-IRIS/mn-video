@@ -60,7 +60,7 @@ public final class StillRepeater extends VideoServlet{
 		ServletContext ctx = config.getServletContext();
 		Properties p = (Properties)ctx.getAttribute("properties");
 		backendUrls = AbstractImageFactory.createBackendUrls(p, 2);
-		cacheAge = Integer.parseInt(p.getProperty("cacheAge"));
+		cacheAge = Integer.parseInt(p.getProperty("cache.age"));
     }
 
     /** Process a request for a video image

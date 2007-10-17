@@ -53,12 +53,12 @@ public class AbstractStreamControl extends JPanel{
 		String server = null;
 		String port = null;
 		String servlet = null;
-		server = p.getProperty("serverIp");
-		port = p.getProperty("serverPort");
-		servlet = p.getProperty("streamServlet") + "repeater";
+		server = p.getProperty("server.host");
+		port = p.getProperty("server.port");
+		servlet = p.getProperty("stream.servlet") + "repeater";
 		baseUrl = "http://" +
 			server + ":" + port + "/" +
-			p.getProperty("appName") + "/" +
+			p.getProperty("app.name") + "/" +
 			servlet;
 		threadMonitor = new ThreadMonitor("IncidentControl", 10000, logger);
 	}

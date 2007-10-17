@@ -55,18 +55,16 @@ public class PropertiesContext extends HttpServlet{
 
 	public static final String PROP_DNS_TTL = "networkaddress.cache.ttl";
 
-	public static final String PROP_APP_HOME = "appHome";
+	public static final String PROP_APP_HOME = "app.home";
 
-	public static final String PROP_APP_NAME = "appName";
+	public static final String PROP_APP_NAME = "app.name";
 
-	public static final String PROP_LOG_LEVEL = "logLevel";
+	public static final String PROP_LOG_LEVEL = "log.level";
 
-	public static final String PROP_MAX_FRAME_RATE = "maxFrameRate";
+	public static final String PROP_MAX_FRAME_RATE = "max.framerate";
 
 	public static final String PROP_LOGGER = "logger";
 
-	public static final String PROP_SERVER_FACTORY = "serverFactory";
-	
 	/** Properties */
 	static protected final Properties props = new Properties();
 
@@ -102,7 +100,7 @@ public class PropertiesContext extends HttpServlet{
 		ctx.setAttribute("properties", props);
 		ctx.setAttribute(PROP_LOGGER, logger);
 		ctx.setAttribute("minPwdLength",
-				new Integer(props.getProperty("minPwdLength", "6")));
+				new Integer(props.getProperty("min.pwd.length", "6")));
 		ctx.setAttribute(PROP_MAX_FRAME_RATE,
 				new Integer(props.getProperty(PROP_MAX_FRAME_RATE, "1")));
 		Calendar c = Calendar.getInstance();

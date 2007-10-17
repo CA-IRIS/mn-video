@@ -76,7 +76,7 @@ public class AccountManager extends HttpServlet{
 		appHome = props.getProperty(PropertiesContext.PROP_APP_HOME);
 		appName = props.getProperty(PropertiesContext.PROP_APP_NAME);
 		props.setProperty("file.resource.loader.path", appHome);
-		minPwdLength = Integer.parseInt(props.getProperty("minPwdLength"));
+		minPwdLength = Integer.parseInt(props.getProperty("min.pwd.length"));
 		try{
 			MessageDigest.getInstance("SHA");
 		}catch(Exception e){}

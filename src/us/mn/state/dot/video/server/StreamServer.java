@@ -59,7 +59,7 @@ public class StreamServer extends VideoServlet {
 		Properties props =(Properties)ctx.getAttribute("properties");
 		dispatcher = new ImageFactoryDispatcher(props, logger, monitor);
 		try{
-			maxFrameRate = Integer.parseInt(props.getProperty("maxFrameRate"));
+			maxFrameRate = Integer.parseInt(props.getProperty("max.framerate"));
 		}catch(Exception e){
 			logger.info("Max frame rate not defined, using default...");
 		}
