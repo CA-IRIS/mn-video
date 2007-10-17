@@ -188,36 +188,18 @@
 		<jar jarfile="${build.lib.dir}/${name}-client-${version}.jar"
 		     manifest="${build.etc.dir}/manifest.mf">
 			<fileset dir="${build.classes.dir}">
-				<include name="us/mn/state/dot/video/player/*.*"/>
+				<include name="us/mn/state/dot/video/client/*.*"/>
 				<include name="us/mn/state/dot/video/*.*"/>
 			</fileset>
 			<fileset dir="${build.etc.dir}">
 				<include name="client.properties"/>
+				<include name="nvr-client.properties"/>
 			</fileset>
 		</jar>
 	</target>
 
 	<!-- Jar target for iris buildall target -->
 	<target name="jar" depends="client" />
-
-	<!-- ================================================== -->
-	<!-- Create the NVR client jar                          -->
-	<!-- ================================================== -->
-	<target name="nvr-client"
-		depends="compile-client"
-		description="Creates the NVR client jar file.">
-		<jar jarfile="${build.lib.dir}/nvrclient-${version}.jar"
-		     manifest="${build.etc.dir}/manifest.mf">
-			<fileset dir="${build.classes.dir}">
-				<include name="us/mn/state/dot/video/client/nvr/*.*"/>
-				<include name="us/mn/state/dot/video/player/*.*"/>
-				<include name="us/mn/state/dot/video/*.*"/>
-			</fileset>
-			<fileset dir="${build.etc.dir}">
-				<include name="nvr-client.properties"/>
-			</fileset>
-		</jar>
-	</target>
 
 	<!-- ================================================== -->
 	<!-- Create the nvr server war                      -->
@@ -272,7 +254,7 @@
 	<!-- Create the backend server war                      -->
 	<!-- ================================================== -->
 	<target name="backend"
-		depends="check-server, compile, nvr-client"
+		depends="check-server, compile, client"
 		description="Creates the backend war file.">
 		<copy todir="${build.backend.dir}/WEB-INF/lib">
 			<fileset dir="${lib.dir}" >
@@ -286,10 +268,10 @@
 			tofile="${build.backend.dir}/nvr/nvr.jnlp"/>
 		<copy todir="${build.backend.dir}/nvr/lib">
 			<fileset dir="${build.lib.dir}" >
-				<include name="nvrclient*" />
+				<include name="${name}-client-${version}.jar" />
 			</fileset>
 			<fileset dir="${lib.dir}" >
-				<include name="tms-log*" />
+				<include name="tms-log-${tms-log.version}.jar" />
 			</fileset>
 		</copy>
 		<signjar keystore="${sign.store}" storepass="${sign.store.pass}"
@@ -306,7 +288,8 @@
 		</copy>
 		<copy todir="${build.backend.dir}/WEB-INF/classes">
 			<fileset dir="${build.classes.dir}">
-				<include name="us/mn/state/dot/video/**/*"/>
+				<include name="us/mn/state/dot/video/*.*"/>
+				<include name="us/mn/state/dot/video/server/*.*"/>
 			</fileset>
 		</copy>
 		<war
