@@ -170,13 +170,6 @@ public final class StillRepeater extends VideoServlet{
 		}
 	}
 
-	public synchronized void logRequest(Client c, byte[] imageData){
-		String s = "[CACHE]";
-		if(imageData == null) s = "[FETCH]";
-		logger.info(s + " [EXP:" + cacheAge + "]" + c.getHost() + 
-			" CAM: " + c.getCameraId());
-	}
-	
 	/** Add an entry into the cache */
 	private static void addEntry(Client c, byte[] image){
 		if(image != null) cache.put(createHashKey(c), new CacheEntry(image));
