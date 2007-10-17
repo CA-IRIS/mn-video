@@ -26,7 +26,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ImageServer</servlet-name>
-		<url-pattern>/imageserver</url-pattern>
+		<url-pattern>/image</url-pattern>
 	</servlet-mapping>
 
 	<servlet>

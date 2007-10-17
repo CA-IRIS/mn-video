@@ -17,7 +17,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>StreamServer</servlet-name>
-		<url-pattern>/streamrepeater</url-pattern>
+		<url-pattern>/stream</url-pattern>
 	</servlet-mapping>
 
 	<servlet>

@@ -13,7 +13,7 @@
 
 	<servlet>
 		<servlet-name>clip</servlet-name>
-		<servlet-class>us.mn.state.dot.video.server.nvr.ClipServer</servlet-class>
+		<servlet-class>us.mn.state.dot.video.server.ClipServer</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>clip</servlet-name>
@@ -22,7 +22,7 @@
 
 	<servlet>
 		<servlet-name>range</servlet-name>
-		<servlet-class>us.mn.state.dot.video.server.nvr.RangeServer</servlet-class>
+		<servlet-class>us.mn.state.dot.video.server.RangeServer</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>range</servlet-name>
