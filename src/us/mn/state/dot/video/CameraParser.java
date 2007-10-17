@@ -18,7 +18,7 @@ import us.mn.state.dot.util.xml.XmlParser;
 
 /** 
  * This class creates <code>Camera</code> objects from an xml file. 
- * @author <a href="mailto:timothy.a.johnson@dot.state.mn.us">Timothy Johnson</a>
+ * @author Timothy Johnson
  *
  */
 public class CameraParser extends XmlParser {

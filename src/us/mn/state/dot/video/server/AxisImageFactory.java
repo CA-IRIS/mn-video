@@ -32,8 +32,7 @@ import us.mn.state.dot.video.VideoException;
  * The ImageFactory interacts with an axis server to continually produce images
  * until there are no more requests for images.
  *
- * @author <a href="mailto:timothy.a.johnson@dot.state.mn.us">Timothy A. Johnson</a>
- * @version $Revision: 1.13 $ $Date: 2006/04/12 16:07:42 $
+ * @author Timothy Johnson
  */
 public class AxisImageFactory extends AbstractImageFactory{
 

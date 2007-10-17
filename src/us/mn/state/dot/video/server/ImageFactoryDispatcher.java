@@ -35,8 +35,7 @@ import us.mn.state.dot.video.VideoException;
 /**
  * The StreamDispatcher creates and distributes ClientStreams.
  *
- * @author <a href="mailto:timothy.a.johnson@dot.state.mn.us">Timothy A. Johnson</a>
- * @version $Revision: 1.8 $ $Date: 2006/02/17 18:54:19 $
+ * @author Timothy Johnson
  */
 public class ImageFactoryDispatcher {
 

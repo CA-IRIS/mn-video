@@ -26,7 +26,7 @@ import java.util.logging.Logger;
  * ThreadMonitor is a thread used to monitor other threads when debugging 
  * multi-threaded apps.  It will periodically report on the status 
  * of each registered thread.
- * @author <a href="mailto:timothy.a.johnson@dot.state.mn.us">Timothy Johnson</a>
+ * @author Timothy Johnson
  *
  */
 public class ThreadMonitor extends Thread {

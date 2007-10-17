@@ -28,8 +28,7 @@ import java.util.logging.Logger;
 /**
  * The ClientStream is a stream that sends images to the client
  *
- * @author <a href="mailto:timothy.a.johnson@dot.state.mn.us">Timothy A. Johnson</a>
- * @version $Revision: 1.13 $ $Date: 2006/04/12 17:38:53 $
+ * @author Timothy Johnson
  */
 public class ClientStream implements ImageFactoryListener {
 

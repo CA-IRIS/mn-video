@@ -32,8 +32,7 @@ import us.mn.state.dot.log.TmsLogFactory;
  * The ImageFactory connects to a video stream from the stream server.
  * It notifies each of it's listeners whenever there is a new image.
  *
- * @author <a href="mailto:timothy.a.johnson@dot.state.mn.us">Timothy A. Johnson</a>
- * @version $Revision: 1.10 $ $Date: 2006/02/17 18:54:19 $
+ * @author Timothy Johnson
  */
 public abstract class AbstractImageFactory extends VideoThread {
 

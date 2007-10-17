@@ -24,8 +24,7 @@ package us.mn.state.dot.video;
  * The VideoStream interacts with an axis server to produce a sequence
  * of images.
  *
- * @author <a href="mailto:timothy.a.johnson@dot.state.mn.us">Timothy A. Johnson</a>
- * @version $Revision: 1.2 $ $Date: 2006/01/17 22:21:47 $
+ * @author Timothy A. Johnson
  */
 public interface ImageFactoryListener {
 

@@ -30,8 +30,7 @@ import java.util.logging.Logger;
  * The ImageFactory connects to a video stream from the stream server.
  * It notifies each of it's listeners whenever there is a new image.
  *
- * @author <a href="mailto:timothy.a.johnson@dot.state.mn.us">Timothy A. Johnson</a>
- * @version $Revision: 1.12 $ $Date: 2006/04/12 17:38:53 $
+ * @author Timothy Johnson
  */
 public class RepeaterImageFactory extends AbstractImageFactory {
 

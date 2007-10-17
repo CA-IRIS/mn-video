@@ -38,8 +38,7 @@ import com.sun.org.apache.xalan.internal.xsltc.runtime.Hashtable;
  * a MN/Dot video stream.  The response stream consists of repeatedly sending an
  * int (image size in bytes) followed by the image data.
  *
- * @author <a href="mailto:timothy.a.johnson@dot.state.mn.us">Timothy A. Johnson</a>
- * @version $Revision: 1.19 $ $Date: 2006/04/11 19:17:40 $
+ * @author Timothy Johnson
  */
 public class StreamServer extends VideoServlet {
 
