@@ -38,12 +38,10 @@ import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.ConnectionFactory;
 import us.mn.state.dot.video.VideoException;
 
-
-
 /**
  * Java implementation of stills cache python script
  *
- * @author    john3tim
+ * @author    Timothy Johnson
  * @created   December 20, 2005
  */
 public final class StillRepeater extends VideoServlet{
@@ -145,7 +143,6 @@ public final class StillRepeater extends VideoServlet{
 	 * the image cannot be obtained.
 	 */
 	private byte[] fetchImage(URL url) throws VideoException{
-//    	fetchQueue.add(Calendar.getInstance());
     	URLConnection con = null;
     	try {
 			con = ConnectionFactory.createConnection(url);
