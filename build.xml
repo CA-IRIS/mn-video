@@ -89,7 +89,7 @@
 				<filter token="BUILD.ID"
 					value="${DSTAMP}:${TSTAMP}"/>
 				<filter token="REPEATER.HOST"
-					value="${video.repeater.HOST}"/>
+					value="${video.repeater.host}"/>
 				<filter token="REPEATER.PORT"
 					value="${video.repeater.port}"/>
 				<filter token="NAME"
