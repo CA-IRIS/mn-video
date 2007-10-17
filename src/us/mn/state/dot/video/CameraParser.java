@@ -47,7 +47,7 @@ public class CameraParser extends XmlParser {
 		if(document == null) return;
 		Element root = document.getDocumentElement();
 		loadCameras( root.getChildNodes() );
-		printCameras();
+//		printCameras();
 	}
 
 	protected void printCameras(){

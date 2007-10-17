@@ -283,7 +283,7 @@
 		</signjar>
 		<copy todir="${build.backend.dir}/images">
 			<fileset dir="${images.dir}" >
-				<include name="novideo.jpg" />
+				<include name="*" />
 			</fileset>
 		</copy>
 		<copy todir="${build.backend.dir}/WEB-INF/classes">
