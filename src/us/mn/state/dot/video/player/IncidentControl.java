@@ -89,7 +89,7 @@ public class IncidentControl extends AbstractStreamControl{
 				if(i == null){
 					return;
 				}
-				setCamera(i.getCamera());
+				setCameraId(i.getCameraId());
 				start();
 			}
 		});
@@ -113,18 +113,18 @@ public class IncidentControl extends AbstractStreamControl{
 				if(i == null){
 					return;
 				}
-				setCamera(i.getCamera());
+				setCameraId(i.getCameraId());
 				start();
 			}
 		}
 	}
 	
 	public class Incident{
-		private int camera;
+		private String cameraId;
 		private String description;
 		
-		public Incident(String desc, int cam){
-			camera = cam;
+		public Incident(String desc, String camId){
+			cameraId = camId;
 			description = desc;
 		}
 		
@@ -132,8 +132,8 @@ public class IncidentControl extends AbstractStreamControl{
 			return description;
 		}
 		
-		public int getCamera(){
-			return camera;
+		public String getCameraId(){
+			return cameraId;
 		}
 		
 		public String toString(){

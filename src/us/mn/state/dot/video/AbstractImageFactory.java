@@ -66,7 +66,7 @@ public abstract class AbstractImageFactory extends VideoThread {
 		}
 		return "ImageFactory: " +
 			Constants.DATE_FORMAT.format(getStartTime().getTime()) + 
-			" Camera " + client.getCameraNumber() + " " +
+			" " + client.getCameraId() + " " +
 			"size " + client.getSize();
 	}
 

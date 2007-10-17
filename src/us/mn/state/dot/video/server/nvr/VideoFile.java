@@ -37,29 +37,29 @@ public class VideoFile extends File {
 	protected long lastOffset = -1;
 	protected Calendar wrapTime = null;
 	protected String fileName = null;
-	protected int camera = -1;
+	protected String cameraId = null;
 	protected NvrConnection nvrDb = null;
 	protected OutputStream out = null;
 	
 	public VideoFile(NvrConnection nvrDb, String camId, String location){
 		super(location, camId + "." + CONTAINER_TYPE);
+		cameraId = camId;
 		this.nvrDb = nvrDb;
-		camera = Integer.parseInt(camId.substring(1));
-		System.out.println("Camera = " + camera);
-		lastIndexTime = nvrDb.getEnd(camera);
+		System.out.println("Camera = " + cameraId);
+		lastIndexTime = nvrDb.getEnd(cameraId);
 		if(lastIndexTime != null){
-			lastOffset = nvrDb.getOffset(lastIndexTime, camera);
+			lastOffset = nvrDb.getOffset(lastIndexTime, cameraId);
 		}
 	}
 
 	public long getStart(){
-		Calendar c = nvrDb.getEnd(camera);
+		Calendar c = nvrDb.getEnd(cameraId);
 		if(c != null) return getOffset(c);
 		return -1;
 	}
 
 	public long getOffset(Calendar c){
-		return nvrDb.getOffset(c, camera);
+		return nvrDb.getOffset(c, cameraId);
 	}
 
 	protected void setOffset(Calendar c, long offset){

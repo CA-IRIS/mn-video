@@ -75,8 +75,8 @@ public class StreamServer extends VideoServlet {
 	public void processRequest(HttpServletResponse response,
 			Client c) throws Exception{
 		AbstractImageFactory f = dispatcher.getFactory(c);
-		if(f==null || c.getCameraNumber() == -1){
-			byte[] data = ("No image for camera " + c.getCameraNumber()).getBytes();
+		if(f==null || c.getCameraId() == null){
+			byte[] data = ("No image for camera " + c.getCameraId()).getBytes();
 			try{
 				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 				response.setContentType("text/html");
@@ -84,7 +84,7 @@ public class StreamServer extends VideoServlet {
 				response.getOutputStream().write(data);
 				response.flushBuffer();
 			}catch(Exception e){
-				logger.info("Error streaming camera " + c.getCameraNumber() +
+				logger.info("Error streaming camera " + c.getCameraId() +
 						" to " + c.getUser());
 			}
 		}else{

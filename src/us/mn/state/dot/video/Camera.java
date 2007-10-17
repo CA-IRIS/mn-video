@@ -37,10 +37,6 @@ public class Camera {
 		this.id = id;
 	}
 
-	public int getNumber(){
-		return Integer.parseInt(id.substring(1));
-	}
-	
 	public void setEasting(int e){
 		location.x = e;
 	}

@@ -168,7 +168,7 @@ public class NvrClient extends JFrame implements ListSelectionListener {
 		clip.setStart(startCal);
 		clip.setDuration(durations.getDuration());
 		Camera c = (Camera)cameras.getSelectedValue();
-		clip.setCamera(c.getNumber());
+		clip.setCameraId(c.getId());
     	URLConnection con = null;
     	FileOutputStream out = null;
     	try{
@@ -178,7 +178,7 @@ public class NvrClient extends JFrame implements ListSelectionListener {
 			String start = Constants.DATE_FORMAT.format(startCal.getTime());
 			start = start.replaceAll(" ", "");
 			String s = createClipURL() +
-					"?id=" + clip.getCamera() +
+					"?id=" + clip.getCameraId() +
 					"&start=" + start +
 					"&duration=" + clip.getDuration();
 			System.out.println("Clip URL: " + s);

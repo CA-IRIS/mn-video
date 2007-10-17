@@ -86,7 +86,7 @@ public abstract class VideoServlet extends HttpServlet {
 		if(req.getParameter("area") != null)
 			c.setArea(getIntRequest(req, "area"));
 		if(req.getParameter("id") != null)
-			c.setCameraNumber(getIntRequest(req, "id"));
+			c.setCameraId(req.getParameter("id"));
 		if(req.getParameter("size") != null)
 			c.setSize(getIntRequest(req, "size"));
 		if(req.getParameter("rate") != null)
@@ -123,7 +123,7 @@ public abstract class VideoServlet extends HttpServlet {
 			configureClip(clip, request);
 			t.setName("VIDEO " + servletName + " " +
 				Constants.DATE_FORMAT.format(cal.getTime()) +
-				" Camera " + c.getCameraNumber());
+				" Camera " + c.getCameraId());
 			processRequest(response, c);
 		}
 		catch(Throwable th) {
@@ -149,7 +149,7 @@ public abstract class VideoServlet extends HttpServlet {
 			clip.setStart(c);
 		}
 		if(req.getParameter("id") != null)
-			clip.setCamera(getIntRequest(req, "id"));
+			clip.setCameraId(req.getParameter("id"));
 		if(req.getParameter("duration") != null)
 			clip.setDuration(getIntRequest(req, "duration"));
 	}

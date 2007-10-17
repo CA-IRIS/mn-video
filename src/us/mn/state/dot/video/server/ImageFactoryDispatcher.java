@@ -76,7 +76,7 @@ public class ImageFactoryDispatcher {
 						if(!f.isAlive()){
 							Client c = f.getClient();
 							logger.info("Purging " + f);
-							factoryTable.remove(c.getCameraNumber() + ":" + c.getSize());
+							factoryTable.remove(c.getCameraId() + ":" + c.getSize());
 						}
 					}
 					try{
@@ -102,9 +102,9 @@ public class ImageFactoryDispatcher {
 
 	public synchronized AbstractImageFactory getFactory(Client c)
 			throws VideoException {
-		if(c.getCameraNumber()==-1) throw new VideoException(
-				"Invalid camera: " + c.getCameraNumber());
-		String name = c.getCameraNumber() + ":" + c.getSize();
+		if(c.getCameraId()==null) throw new VideoException(
+				"Invalid camera: " + c.getCameraId());
+		String name = c.getCameraId() + ":" + c.getSize();
 		logger.info("Factory count: " + factoryTable.size());
 		AbstractImageFactory f = (AbstractImageFactory)factoryTable.get(name);
 		if(f != null){

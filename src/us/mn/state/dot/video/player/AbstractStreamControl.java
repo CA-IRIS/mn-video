@@ -40,7 +40,7 @@ public class AbstractStreamControl extends JPanel{
 	protected Logger logger = null;
 	private ThreadMonitor threadMonitor = null;
 	private AbstractImageFactory factory = null;
-	private int camera = -1;
+	private String cameraId = null;
 	private int rate = 30;
 	private int duration = 60;
 	private int size = 2;
@@ -71,9 +71,9 @@ public class AbstractStreamControl extends JPanel{
 		logger.info("Starting stream...");
 		stop();
 		//FIXME make the size selectable
-		logger.info("Creating imagefactory for " + camera);
+		logger.info("Creating imagefactory for " + cameraId);
 		Client c = new Client();
-		c.setCameraNumber(camera);
+		c.setCameraId(cameraId);
 		c.setSize(size);
 		c.setDuration(duration);
 		c.setRate(rate);
@@ -86,11 +86,11 @@ public class AbstractStreamControl extends JPanel{
 		monitor.setImageFactory(factory, duration * rate);
 	}
 
-	public int getCamera() {
-		return camera;
+	public String getCameraId() {
+		return cameraId;
 	}
-	public void setCamera(int camera) {
-		this.camera = camera;
+	public void setCameraId(String id) {
+		this.cameraId = id;
 	}
 	public int getDuration() {
 		return duration;

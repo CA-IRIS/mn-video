@@ -44,7 +44,7 @@ public class VideoPlayerApplet extends JApplet {
 	private final VideoMonitor monitor = new VideoMonitor("");
 	Container contentPane = null;
 	private Logger logger = null;
-	int camera = -1;
+	String cameraId = null;
 	CameraIdControl control = null;
 	JButton restart = new JButton("Restart");
 	
@@ -83,8 +83,8 @@ public class VideoPlayerApplet extends JApplet {
 		logger = TmsLogFactory.createLogger("hyperstream", null, null);
 		initGui();
 		try{
-			camera = Integer.parseInt(getParameter("camera"));
-			if(camera>0) restart.setEnabled(true);
+			cameraId = getParameter("camera");
+			restart.setEnabled(true);
 			startStream();
 		}catch(Exception e){
 			
@@ -93,7 +93,7 @@ public class VideoPlayerApplet extends JApplet {
 
 	public void startStream(){
 		try{
-			control.setCamera(camera);
+			control.setCameraId(cameraId);
 			control.start();
 		}catch(Exception e){
 			logger.warning("There was a problem with the URL...");

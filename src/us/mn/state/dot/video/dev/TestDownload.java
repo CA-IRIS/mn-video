@@ -40,11 +40,11 @@ public class TestDownload {
 		ProxySelector.setDefault(new HTTPProxySelector(p));
 		String cal = "2007-09-27_15:00:00";
 		int dur = 20;
-		int cam = 630;
-		saveClip(cal, cam, dur);
+		String camId = "C630";
+		saveClip(cal, camId, dur);
 	}
 	
-	protected void saveClip(String cal, int cam, int dur){
+	protected void saveClip(String cal, String camId, int dur){
 		VideoClip clip = new VideoClip();
     	URLConnection con = null;
     	FileOutputStream out = null;
@@ -53,12 +53,12 @@ public class TestDownload {
     		start.setTime(Constants.DATE_FORMAT.parse(cal));
     		clip.setStart(start);
     		clip.setDuration(dur);
-    		clip.setCamera(cam);
+    		clip.setCameraId(camId);
 			String home = System.getProperty("user.home");
 			File f = new File(home, clip.getName());
 			out = new FileOutputStream(f);
 			String loc = "http://tms-nms:8080/video/clip" +
-					"?id=" + cam +
+					"?id=" + camId +
 					"&start=" + cal +
 					"&duration=" + dur;
 			System.out.println("Clip URL: " + loc);

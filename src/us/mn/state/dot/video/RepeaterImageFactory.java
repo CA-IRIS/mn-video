@@ -49,7 +49,7 @@ public class RepeaterImageFactory extends AbstractImageFactory {
 		String s = "";
 		try{
 			s = baseUrl +
-				"?id=" + c.getCameraNumber() +
+				"?id=" + c.getCameraId() +
 				"&size=" + c.getSize() +
 				"&rate=" + c.getRate() +
 				"&duration=" + c.getDuration() +

@@ -38,8 +38,6 @@ public class Client {
 	
 	private int duration = 60;
 	
-	private int cameraNumber = -1;
-
 	private Camera camera = null;
 
 	int size = 2;
@@ -65,9 +63,6 @@ public class Client {
 	public int getFramesRequested() {
 		return duration * rate;
 	}
-	public int getCameraNumber() {
-		return cameraNumber;
-	}
 	public int getSize() {
 		return size;
 	}
@@ -91,12 +86,8 @@ public class Client {
 	public void setArea(int area) {
 		this.area = area;
 	}
-	public void setCameraNumber(int camNumber){
-		this.cameraNumber = camNumber;
-	}
 	public void setCamera(Camera c) {
 		this.camera = c;
-		setCameraNumber(c.getNumber());
 	}
 	public void setDuration(int duration) {
 		this.duration = duration;
@@ -117,8 +108,13 @@ public class Client {
 		this.clip = clip;
 	}
 	public String getCameraId(){
-		String id = Integer.toString(cameraNumber);
+		return camera.getId();
+	}
+	public void setCameraId(String id){
+		id = id.toUpperCase();
 		while(id.length()<3) id = "0" + id;
-		return "C" + id;
+		if(!id.startsWith("C")) id = "C" + id;
+		if(camera == null) camera = new Camera();
+		camera.setId(id);
 	}
 }

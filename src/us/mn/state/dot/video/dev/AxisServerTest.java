@@ -41,7 +41,7 @@ public class AxisServerTest {
 			FileOutputStream out = new FileOutputStream(f);
 			byte[] image = null;
 			Client client = new Client();
-			client.setCameraNumber(1);
+			client.setCameraId("C001");
 			image = server.getImage(client);
 			System.out.println("Image size: " + image.length);
 			out.write(image);
@@ -58,7 +58,7 @@ public class AxisServerTest {
 		try{
 			byte[] image = null;
 			Client c = new Client();
-			c.setCameraNumber(1);
+			c.setCameraId("C001");
 			MJPEGStream stream = server.getStream(c);
 			for(int i=0; i<5; i++){
 				File f = new File(baseName + i + ".jpg");

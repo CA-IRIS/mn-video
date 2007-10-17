@@ -51,7 +51,7 @@ public class StreamTest {
 			AxisServer server = AxisServer.getServer(host);
 			server.setCamera("C001",1);
 			Client c = new Client();
-			c.setCameraNumber(1);
+			c.setCameraId("C001");
 			c.setSize(AxisServer.MEDIUM);
 			MJPEGStream stream = server.getStream(c);
 			for(int i=0; i<5; i++){

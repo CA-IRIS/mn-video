@@ -26,18 +26,17 @@ public class VideoClip {
 
 	protected Calendar start = Calendar.getInstance();
 	protected int duration = 0;
-	protected int camera = -1;
+	protected String cameraId = null;
 	
 	public VideoClip(){
-		
 	}
 
-	public int getCamera() {
-		return camera;
+	public String getCameraId() {
+		return cameraId;
 	}
 
-	public void setCamera(int camera) {
-		this.camera = camera;
+	public void setCameraId(String id) {
+		cameraId = id;
 	}
 
 	public int getDuration() {
@@ -57,7 +56,7 @@ public class VideoClip {
 	}
 
 	public String getName(){
-		String s = "C" + camera + "_" +
+		String s = cameraId + "_" +
 			Constants.DATE_FORMAT.format(start.getTime()) +
 			".mpg";
 		s = s.replace("-", "");

@@ -118,7 +118,7 @@ public class TimeSelector extends JPanel
 		try{
 			URL url = new URL(
 					"http://" + videoHost + ":" + videoPort + rangeURI +
-					"?id=" + camera.getNumber());
+					"?id=" + camera.getId());
 			con = ConnectionFactory.createConnection(url);
 			InputStream is = con.getInputStream();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -138,7 +138,7 @@ public class TimeSelector extends JPanel
 				s = reader.readLine();
 			}
 		}catch(FileNotFoundException fnfe){
-			System.out.println("No NVR defined for camera " + camera.getNumber());
+			System.out.println("No NVR defined for camera " + camera.getId());
 			begin = end = null;
 		}catch(IOException ioe){
 			ioe.printStackTrace();

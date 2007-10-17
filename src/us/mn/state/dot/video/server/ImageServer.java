@@ -72,7 +72,7 @@ public final class ImageServer extends VideoServlet{
 			response.getOutputStream().write(image);
 			response.flushBuffer();
 		}catch(Throwable t){
-			logger.warning("Error serving image " + c.getCameraNumber());
+			logger.warning("Error serving image " + c.getCameraId());
 		}
 	}
 }

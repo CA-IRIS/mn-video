@@ -43,7 +43,7 @@ public class VideoMonitorTest extends JFrame {
 		mon.setLabelVisible(false);
 		this.getContentPane().add(mon);
 		Client c = new Client();
-		c.setCameraNumber(1);
+		c.setCameraId("C001");
 		c.setRate(30);
 		try{
 			mon.setImageFactory(

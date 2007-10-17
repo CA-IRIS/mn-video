@@ -185,7 +185,7 @@ public class VideoMonitor extends JPanel
 		if(camera == null) setImage(null);
     	URLConnection con = null;
 		try{
-			URL url = new URL(imageURI + "?id=" + camera.getNumber());
+			URL url = new URL(imageURI + "?id=" + camera.getId());
 			con = ConnectionFactory.createConnection(url);
 			InputStream is = con.getInputStream();
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();

@@ -37,8 +37,8 @@ public class RangeServer extends NvrServer {
 
 	public void processRequest(HttpServletResponse res, Client c)
 			throws VideoException {
-		Calendar start = nvrDb.getBegin(c.getCameraNumber());
-		Calendar end = nvrDb.getEnd(c.getCameraNumber());
+		Calendar start = nvrDb.getBegin(c.getCameraId());
+		Calendar end = nvrDb.getEnd(c.getCameraId());
 		if(start == null || end == null) return;
 		try{
 			OutputStreamWriter w = new OutputStreamWriter(res.getOutputStream());

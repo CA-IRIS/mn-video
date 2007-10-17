@@ -46,11 +46,11 @@ public class ClipServer extends NvrServer {
 			throws VideoException {
 		try{
 			VideoClip clip = c.getClip();
-			String fileName = nvrDb.getFilename(c.getCameraNumber());
+			String fileName = nvrDb.getFilename(c.getCameraId());
 			File f = new File(fileName);
 			long fileSize = f.length();
-			long startOff = nvrDb.getOffset(clip.getStart(), c.getCameraNumber());
-			long endOff = nvrDb.getOffset(clip.getEnd(), c.getCameraNumber());
+			long startOff = nvrDb.getOffset(clip.getStart(), c.getCameraId());
+			long endOff = nvrDb.getOffset(clip.getEnd(), c.getCameraId());
 			logger.fine("Start of clip at " + startOff);
 			logger.fine("End of clip at " + endOff);
 			BufferedOutputStream bOut = new BufferedOutputStream(

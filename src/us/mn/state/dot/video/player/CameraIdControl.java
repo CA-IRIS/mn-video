@@ -52,7 +52,7 @@ public class CameraIdControl extends AbstractStreamControl{
 		start.addActionListener( new ActionListener() {
 			public void actionPerformed( ActionEvent ae ) {
 				try{
-					setCamera(Integer.parseInt(cameraField.getText()));
+					setCameraId(createId());
 					start();
 				}catch(NumberFormatException nfe){
 					return;
@@ -75,4 +75,9 @@ public class CameraIdControl extends AbstractStreamControl{
 		add( stop, c );
 	}
 
+	protected String createId(){
+		String id = cameraField.getText();
+		while(id.length()<3) id = "0" + id;
+		return "C" + id;
+	}
 }

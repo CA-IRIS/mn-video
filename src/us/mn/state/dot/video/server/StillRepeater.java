@@ -82,7 +82,7 @@ public final class StillRepeater extends VideoServlet{
 			}
 			response.flushBuffer();
 		}catch(Throwable th){
-			logger.info("Unable to write image (" +c.getCameraNumber() + ") " +
+			logger.info("Unable to write image (" +c.getCameraId() + ") " +
 					" to client (" + c.getHost() + ").");
 		}
     }
@@ -93,14 +93,14 @@ public final class StillRepeater extends VideoServlet{
      * the image cannot be obtained.
      */
     private byte[] getImage(Client c) throws VideoException{
-    	if(c.getCameraNumber()==-1)return null;
+    	if(c.getCameraId()==null)return null;
     	byte[] image = null;
     	image = lookupImage(c);
     	if(image != null) return image;
 		URL url = null;
 		String s = "";
 		try{
-			s = backendUrls[c.getArea()] + "?id=" + c.getCameraNumber() +
+			s = backendUrls[c.getArea()] + "?id=" + c.getCameraId() +
 				"&size=" + c.getSize();
 			logger.fine("Fetching image: " + s);
 			url = new URL(s);
@@ -122,7 +122,7 @@ public final class StillRepeater extends VideoServlet{
 	}
 
     private static String createHashKey(Client c){
-    	return c.getArea() + ":" + c.getCameraNumber() + ":" + c.getSize();
+    	return c.getArea() + ":" + c.getCameraId() + ":" + c.getSize();
     }
 
     /* Lookup an image in the cache */
@@ -174,7 +174,7 @@ public final class StillRepeater extends VideoServlet{
 		String s = "[CACHE]";
 		if(imageData == null) s = "[FETCH]";
 		logger.info(s + " [EXP:" + cacheAge + "]" + c.getHost() + 
-			" CAM: " + c.getCameraNumber());
+			" CAM: " + c.getCameraId());
 	}
 	
 	/** Add an entry into the cache */
