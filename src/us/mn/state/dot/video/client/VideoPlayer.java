@@ -156,9 +156,9 @@ public class VideoPlayer extends JFrame {
 
 	public static void main(String[] args){
 		Properties p = new Properties();
-		p.setProperty("proxyHost", "proxy.dot.state.mn.us");
-		p.setProperty("proxyPort", "3128");
-		p.setProperty("noProxyHosts", "151.111.");
+		p.setProperty("proxy.host", "proxy.dot.state.mn.us");
+		p.setProperty("proxy.port", "3128");
+		p.setProperty("no.proxy.hosts", "151.111.,192.168.,10.");
 //		ProxySelector.setDefault(new HTTPProxySelector(p));
 		new VideoPlayer();
 	}
