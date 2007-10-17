@@ -20,6 +20,6 @@
 	<security>
 		<all-permissions/>
 	</security>
-	<application-desc main-class="us.mn.state.dot.video.player.VideoPlayer">
+	<application-desc main-class="us.mn.state.dot.video.client.VideoPlayer">
 	</application-desc>
 </jnlp>
