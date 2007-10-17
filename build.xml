@@ -107,11 +107,11 @@
 				<filter token="BUILD.ID"
 					value="${DSTAMP}:${TSTAMP}"/>
 				<filter token="REPEATER.HOST"
-					value="${video.repeater.HOST}"/>
+					value="${video.repeater.host}"/>
 				<filter token="REPEATER.PORT"
 					value="${video.repeater.port}"/>
 				<filter token="BACKEND.HOST"
-					value="${video.backend.HOST}"/>
+					value="${video.backend.host}"/>
 				<filter token="BACKEND.PORT"
 					value="${video.backend.port}"/>
 				<filter token="VIDEO.WEBSTART.HOST"
