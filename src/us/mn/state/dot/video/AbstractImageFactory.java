@@ -137,12 +137,11 @@ public abstract class AbstractImageFactory extends VideoThread {
     		String port = p.getProperty("backend.port" + id,
     				p.getProperty("backend.port" + 0));
     		String servletName = "";
-    		if(type==1) servletName = p.getProperty("stream.servlet");
-    		if(type==2) servletName = p.getProperty("image.servlet");
+    		if(type==1) servletName = "stream";
+    		if(type==2) servletName = "image";
     		baseUrls.add(
 				"http://" + ip + ":" + port +
-				"/" + p.getProperty("app.name") +
-				"/" + servletName);
+				"/@@NAME@@/" + servletName);
     		id++;
 	    }
 	    System.out.println("Video server backend URLs:");

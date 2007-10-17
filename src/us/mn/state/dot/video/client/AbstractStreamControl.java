@@ -52,14 +52,10 @@ public class AbstractStreamControl extends JPanel{
 		this.monitor = monitor;
 		String server = null;
 		String port = null;
-		String servlet = null;
 		server = p.getProperty("server.host");
 		port = p.getProperty("server.port");
-		servlet = p.getProperty("stream.servlet") + "repeater";
 		baseUrl = "http://" +
-			server + ":" + port + "/" +
-			p.getProperty("app.name") + "/" +
-			servlet;
+			server + ":" + port + "/@@NAME@@/stream";
 		threadMonitor = new ThreadMonitor("IncidentControl", 10000, logger);
 	}
 
