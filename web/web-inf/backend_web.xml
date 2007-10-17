@@ -28,6 +28,10 @@
 		<servlet-name>ImageServer</servlet-name>
 		<url-pattern>/image</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>ImageServer</servlet-name>
+		<url-pattern>/imageserver</url-pattern>
+	</servlet-mapping>
 
 	<servlet>
 		<servlet-name>ArchiveManager</servlet-name>
