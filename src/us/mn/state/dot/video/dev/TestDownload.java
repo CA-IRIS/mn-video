@@ -18,13 +18,10 @@
 */
 package us.mn.state.dot.video.dev;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.net.ProxySelector;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Calendar;
 import java.util.Properties;
 
@@ -38,15 +35,14 @@ public class TestDownload {
 	public TestDownload(){
 		Properties p = new Properties();
 		ProxySelector.setDefault(new HTTPProxySelector(p));
-		String cal = "2007-09-27_15:00:00";
-		int dur = 20;
-		String camId = "C630";
+		String cal = "2007-10-17_10:20:30";
+		int dur = 60;
+		String camId = "C629";
 		saveClip(cal, camId, dur);
 	}
 	
 	protected void saveClip(String cal, String camId, int dur){
 		VideoClip clip = new VideoClip();
-    	URLConnection con = null;
     	FileOutputStream out = null;
     	try{
     		Calendar start = Calendar.getInstance();
@@ -56,23 +52,13 @@ public class TestDownload {
     		clip.setCameraId(camId);
 			String home = System.getProperty("user.home");
 			File f = new File(home, clip.getName());
-			out = new FileOutputStream(f);
 			String loc = "http://tms-nms:8080/video/clip" +
 					"?id=" + camId +
 					"&start=" + cal +
 					"&duration=" + dur;
 			System.out.println("Clip URL: " + loc);
 			URL url = new URL(loc);
-			con = ConnectionFactory.createConnection(url);
-			InputStream in = con.getInputStream();
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			byte[] data = new byte[1024];
-			int bytesRead = 0;
-			while(true){
-				bytesRead = in.read(data);
-				if(bytesRead==-1) break;
-				out.write(data, 0, bytesRead);
-			}
+			ConnectionFactory.readData(url, new FileOutputStream(f));
 		}catch(Exception e){
 			e.printStackTrace();
 		}finally{

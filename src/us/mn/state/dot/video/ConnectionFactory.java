@@ -19,7 +19,9 @@
 
 package us.mn.state.dot.video;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -41,5 +43,18 @@ abstract public class ConnectionFactory {
 		c.setConnectTimeout(VideoThread.TIMEOUT_PROXY);
 		c.setReadTimeout(VideoThread.TIMEOUT_PROXY);
 		return c;
+	}
+	
+	public static void readData(URL url, FileOutputStream out)
+			throws IOException{
+		URLConnection c = createConnection(url);
+		InputStream in = c.getInputStream();
+		byte[] data = new byte[1024];
+		int bytesRead = 0;
+		while(true){
+			bytesRead = in.read(data);
+			if(bytesRead==-1) break;
+			out.write(data, 0, bytesRead);
+		}
 	}
 }
