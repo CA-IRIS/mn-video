@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package us.mn.state.dot.video.player;
+package us.mn.state.dot.video.dev;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -26,6 +26,7 @@ import javax.swing.JFrame;
 
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.RepeaterImageFactory;
+import us.mn.state.dot.video.player.VideoMonitor;
 
 public class VideoMonitorTest extends JFrame {
 
