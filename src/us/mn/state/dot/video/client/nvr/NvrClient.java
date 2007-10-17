@@ -26,16 +26,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ProxySelector;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Calendar;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -169,12 +166,9 @@ public class NvrClient extends JFrame implements ListSelectionListener {
 		clip.setDuration(durations.getDuration());
 		Camera c = (Camera)cameras.getSelectedValue();
 		clip.setCameraId(c.getId());
-    	URLConnection con = null;
-    	FileOutputStream out = null;
     	try{
 			String home = System.getProperty("user.home");
-			File f = new File(home, clip.getName());
-			out = new FileOutputStream(f);
+			File file = new File(home, clip.getName());
 			String start = Constants.DATE_FORMAT.format(startCal.getTime());
 			start = start.replaceAll(" ", "");
 			String s = createClipURL() +
@@ -183,17 +177,8 @@ public class NvrClient extends JFrame implements ListSelectionListener {
 					"&duration=" + clip.getDuration();
 			System.out.println("Clip URL: " + s);
 			URL url = new URL(s);
-			con = ConnectionFactory.createConnection(url);
-			InputStream in = con.getInputStream();
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			byte[] data = new byte[1024];
-			int bytesRead = 0;
-			while(true){
-				bytesRead = in.read(data);
-				if(bytesRead==-1) break;
-				out.write(data, 0, bytesRead);
-			}
-			setStatus(STATUS_OK, "Video saved as " + f.getAbsolutePath());
+			ConnectionFactory.readData(url, file);
+			setStatus(STATUS_OK, "Video saved as " + file.getAbsolutePath());
 		}catch(FileNotFoundException fnfe){
 			fnfe.printStackTrace();
 			setStatus(STATUS_ERROR, "Video unavailable at " +
@@ -201,12 +186,6 @@ public class NvrClient extends JFrame implements ListSelectionListener {
 		}catch(IOException ioe){
 			ioe.printStackTrace();
 			setStatus(STATUS_ERROR, ioe.getMessage());
-		}finally{
-			try{
-				out.flush();
-				out.close();
-			}catch(Exception e2){
-			}
 		}
 	}
 	

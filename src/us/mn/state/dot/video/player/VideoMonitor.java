@@ -183,27 +183,12 @@ public class VideoMonitor extends JPanel
 	/** Update the video screen with the latest camera image. */
 	protected void updateScreen(){
 		if(camera == null) setImage(null);
-    	URLConnection con = null;
 		try{
 			URL url = new URL(imageURI + "?id=" + camera.getId());
-			con = ConnectionFactory.createConnection(url);
-			InputStream is = con.getInputStream();
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			byte[] data = new byte[1024];
-			int bytesRead = 0;
-			while(true){
-				bytesRead = is.read(data);
-				if(bytesRead==-1) break;
-				bos.write(data, 0, bytesRead);
-			}
-			setImage(new ImageIcon(bos.toByteArray()));
+			byte[] image = ConnectionFactory.getImage(url);
+			setImage(new ImageIcon(image));
 		}catch(IOException ioe){
 			ioe.printStackTrace();
-		}finally{
-			try{
-				con.getInputStream().close();
-			}catch(IOException ioe2){
-			}
 		}
 	}
 }

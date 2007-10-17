@@ -19,7 +19,6 @@
 package us.mn.state.dot.video.dev;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.net.ProxySelector;
 import java.net.URL;
 import java.util.Calendar;
@@ -43,7 +42,6 @@ public class TestDownload {
 	
 	protected void saveClip(String cal, String camId, int dur){
 		VideoClip clip = new VideoClip();
-    	FileOutputStream out = null;
     	try{
     		Calendar start = Calendar.getInstance();
     		start.setTime(Constants.DATE_FORMAT.parse(cal));
@@ -51,22 +49,16 @@ public class TestDownload {
     		clip.setDuration(dur);
     		clip.setCameraId(camId);
 			String home = System.getProperty("user.home");
-			File f = new File(home, clip.getName());
+			File file = new File(home, clip.getName());
 			String loc = "http://tms-nms:8080/video/clip" +
 					"?id=" + camId +
 					"&start=" + cal +
 					"&duration=" + dur;
 			System.out.println("Clip URL: " + loc);
 			URL url = new URL(loc);
-			ConnectionFactory.readData(url, new FileOutputStream(f));
+			ConnectionFactory.readData(url, file);
 		}catch(Exception e){
 			e.printStackTrace();
-		}finally{
-			try{
-				out.flush();
-				out.close();
-			}catch(Exception e2){
-			}
 		}
 	}
 	

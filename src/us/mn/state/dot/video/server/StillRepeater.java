@@ -143,27 +143,11 @@ public final class StillRepeater extends VideoServlet{
 	 * the image cannot be obtained.
 	 */
 	private byte[] fetchImage(URL url) throws VideoException{
-    	URLConnection con = null;
     	try {
-			con = ConnectionFactory.createConnection(url);
-			InputStream is = con.getInputStream();
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			byte[] data = new byte[1024];
-			int bytesRead = 0;
-			while(true){
-				bytesRead = is.read(data);
-				if(bytesRead==-1) break;
-				bos.write(data, 0, bytesRead);
-			}
-			return bos.toByteArray();
+			return ConnectionFactory.getImage(url);
 		}catch(IOException ioe){
 			throw new VideoException(ioe.getMessage() +
 					": " + url.toString());
-		}finally{
-			try{
-				con.getInputStream().close();
-			}catch(IOException ioe2){
-			}
 		}
 	}
 
