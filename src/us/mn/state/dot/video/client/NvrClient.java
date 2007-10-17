@@ -16,7 +16,7 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 59 temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-package us.mn.state.dot.video.client.nvr;
+package us.mn.state.dot.video.client;
 
 import java.awt.Color;
 import java.awt.Container;
@@ -52,7 +52,6 @@ import us.mn.state.dot.video.CameraParser;
 import us.mn.state.dot.video.ConnectionFactory;
 import us.mn.state.dot.video.Constants;
 import us.mn.state.dot.video.VideoClip;
-import us.mn.state.dot.video.player.VideoMonitor;
 
 public class NvrClient extends JFrame implements ListSelectionListener {
 

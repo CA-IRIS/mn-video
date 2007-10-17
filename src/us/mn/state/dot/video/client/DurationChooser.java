@@ -16,7 +16,7 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 59 temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-package us.mn.state.dot.video.client.nvr;
+package us.mn.state.dot.video.client;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;

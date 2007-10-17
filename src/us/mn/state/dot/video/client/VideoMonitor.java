@@ -17,18 +17,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package us.mn.state.dot.video.player;
+package us.mn.state.dot.video.client;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.LinkedList;
 
 import javax.swing.BorderFactory;
@@ -45,7 +42,6 @@ import us.mn.state.dot.video.Camera;
 import us.mn.state.dot.video.ConnectionFactory;
 import us.mn.state.dot.video.Constants;
 import us.mn.state.dot.video.ImageFactoryListener;
-import us.mn.state.dot.video.client.nvr.CameraSelector;
 
 /**
  * A JPanel that can display an RTMC video stream.

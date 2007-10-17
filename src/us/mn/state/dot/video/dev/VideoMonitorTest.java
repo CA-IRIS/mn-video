@@ -26,7 +26,7 @@ import javax.swing.JFrame;
 
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.RepeaterImageFactory;
-import us.mn.state.dot.video.player.VideoMonitor;
+import us.mn.state.dot.video.client.VideoMonitor;
 
 public class VideoMonitorTest extends JFrame {
 
