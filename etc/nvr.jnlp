@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- JNLP File for nvr-client Web Start Application -->
 <jnlp spec="1.0"
-      codebase="http://@@VIDEO.WEBSTART.HOST@@:8080/video/nvr"
+      codebase="http://@@VIDEO.WEBSTART.HOST@@:8080/@@NAME@@/nvr"
       href="nvr.jnlp">
     <information>
 	<title>NVR</title>

@@ -65,7 +65,7 @@ public class NvrClient extends JFrame implements ListSelectionListener {
 	protected DurationChooser durations = new DurationChooser();
 	protected JButton save = new JButton("Save Video");
 	protected String videoHost = null;
-	protected String clipURI = "/video/clip";
+	protected String clipURI = "/@@NAME@@/clip";
 	protected String videoPort = null;
 	protected Logger logger = null;
 	
@@ -114,11 +114,11 @@ public class NvrClient extends JFrame implements ListSelectionListener {
 	}
 
 	protected String createImageURL(){
-		return "http://" + videoHost + ":" + videoPort + "/video/imageserver";
+		return "http://" + videoHost + ":" + videoPort + "/@@NAME@@/image";
 	}
 	
 	protected String createClipURL(){
-		return "http://" + videoHost + ":" + videoPort + "/video/clip";
+		return "http://" + videoHost + ":" + videoPort + "/@@NAME@@/clip";
 	}
 
 	protected void addWidgets(){

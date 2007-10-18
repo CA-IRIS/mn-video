@@ -67,7 +67,7 @@ public class TimeSelector extends JPanel
 	public TimeSelector(String host, String port){
 		videoHost = host;
 		videoPort = port;
-		rangeURI = "/video/range";
+		rangeURI = "/@@NAME@@/range";
 		initializeWidgets();
 		addWidgets();
 	}

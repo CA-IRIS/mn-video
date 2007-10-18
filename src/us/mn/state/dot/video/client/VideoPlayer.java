@@ -66,7 +66,7 @@ public class VideoPlayer extends JFrame {
 		}
 		String uri = "http://" +
 			p.getProperty("video.host") + ":" +
-			p.getProperty("video.port") + "/video/imageserver";
+			p.getProperty("video.port") + "/@@NAME@@/image";
 		monitor = new VideoMonitor(uri);
 		controls.add( new CameraIdControl(p, monitor, logger), c );
 		c.gridx = 0;
