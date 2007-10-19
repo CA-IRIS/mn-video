@@ -18,12 +18,9 @@
 */
 package us.mn.state.dot.video.server;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Properties;
