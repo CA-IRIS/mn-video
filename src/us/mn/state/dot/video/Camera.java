@@ -6,17 +6,18 @@ public class Camera {
 
 	protected String id = null;
 	
-	protected String freeway = null;
+	protected String freeway = "";
 	
-	protected String crossStreet = null;
+	protected String crossStreet = "";
 	
 	protected Point location = new Point(0,0);
 
 	public Camera(){
 	}
 
-	public void setCrossStreet(String crossStreet) {
-		this.crossStreet = crossStreet;
+	public void setCrossStreet(String xStreet) {
+		if(xStreet==null) return;
+		this.crossStreet = xStreet;
 	}
 
 	public String getCrossStreet() { return crossStreet; }
@@ -29,8 +30,9 @@ public class Camera {
 
 	public int getNorthing(){ return location.y; }
 
-	public void setFreeway(String freeway) {
-		this.freeway = freeway;
+	public void setFreeway(String fwy) {
+		if(fwy==null) return;
+		this.freeway = fwy;
 	}
 
 	public void setId(String id) {
