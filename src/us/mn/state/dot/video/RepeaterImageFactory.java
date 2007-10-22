@@ -68,7 +68,7 @@ public class RepeaterImageFactory extends AbstractImageFactory {
 		URLConnection con = null;
 		try {
 			con = ConnectionFactory.createConnection(url);
-			MJPEGStream stream = new MJPEGStream(con.getInputStream());
+			VideoStream stream = new MJPEGStream(con.getInputStream());
 			if(stream != null){
 				logger.info("Opened factory " + this);
 				byte[] img;
@@ -91,6 +91,7 @@ public class RepeaterImageFactory extends AbstractImageFactory {
 			logger.info(this + " unable to create MJPEGStream.");
 		}finally{
 			logger.info("Closing ImageFactory: " + this);
+			removeListeners();
 			try {
 				con.getInputStream().close();
 			}catch(Exception e){
