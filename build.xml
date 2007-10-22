@@ -152,8 +152,9 @@
 	<target name="compile-client"
 		depends="check, prepare"
 		description="Compile the client source files for the project">
-		<javac srcdir="${build.src.dir}"
-			excludes="us/mn/state/dot/video/server/**"
+		<javac srcdir="${build.src.dir}" 
+			excludes="us/mn/state/dot/video/server/**,
+				us/mn/state/dot/video/dev/**"
 			destdir="${build.classes.dir}"
 			debug="on"
 			deprecation="on"
