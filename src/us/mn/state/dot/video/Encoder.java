@@ -45,4 +45,11 @@ public interface Encoder {
 	 * @param channels
 	 */
 	public void setChannels(int channels);
+
+	/**
+	 * Get an image for the Client, c
+	 * @param c
+	 * @return A byte array with image data.
+	 */
+	public byte[] getImage(Client c) throws VideoException;
 }
