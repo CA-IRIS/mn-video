@@ -18,6 +18,14 @@
  */
 package us.mn.state.dot.video;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Hashtable;
+
+import javax.imageio.stream.FileImageInputStream;
+
 /**
  * 
  * @author Timothy Johnson
@@ -25,12 +33,94 @@ package us.mn.state.dot.video;
  */
 public abstract class AbstractEncoder implements Encoder {
 
+	/** Constant string for no camera connected */
+	public static final int NO_CAMERA_CONNECTED = -1;
+
+	/** The Encoder host name (or IP). */
+	protected final String host;
+	
 	/** The tcp port of this encoder. */
 	protected int port = 80;
+
+	/** The number of video channels. */
+	protected int channels = 1;
 	
 	/** Get the tcp port of the encoder */
 	public final int getPort() { return  port; }
 
 	/** Set the tcp port of the encoder */
 	public final void setPort(int p){ this.port = p; }
+
+	/** Get the number of video channels. */
+	public final int getChannels(){ return channels; }
+	
+	/** The ids of the cameras that are connected. */
+	private Hashtable<String, Integer> ids =
+		new Hashtable<String, Integer>();
+
+	/** Set the number of available video channels. */
+	public final void setChannels(int channels){ this.channels = channels; }
+
+	/** Location of the no_video image */
+	private static String noVideoFile = 
+		"/usr/local/tomcat/current/webapps/@@NAME@@/images/novideo.jpg";
+
+	private static byte[] noVideo = createNoVideoImage();
+	
+	public final String getHost(){ return host; }
+	
+	protected String getIp() throws UnknownHostException{
+		return InetAddress.getByName(host).getHostAddress();
+	}
+
+	public AbstractEncoder(String host){
+		this.host = host;
+	}
+	
+	public String toString(){
+		String ip = "";
+		try{
+			ip = getIp();
+		}catch(Exception e){}
+		return "Encoder: " + host + " (" + ip + ")";
+	}
+
+	/** Create a no-video image */
+	protected static byte[] createNoVideoImage(){
+		try{
+			FileImageInputStream in = null;
+			in = new FileImageInputStream(new File(noVideoFile));
+			byte[] bytes = new byte[(int)in.length()];
+			in.read(bytes, 0, bytes.length);
+			return bytes;
+		}catch(IOException ioe){
+			return null;
+		}
+	}
+
+	public static byte[] getNoVideoImage(){
+		return noVideo;
+	}
+
+	/** Get the id of the camera connected to the given channel */
+	public String getCamera(int channel) {
+		for(String id : ids.keySet()){
+			if(ids.get(id).intValue() == channel) return id;
+		}
+		return null;
+	}
+
+	/** Get the channel nummber for the given camera id. */
+	public int getChannel(String id){
+		if(ids.get(id) != null){
+			return ids.get(id);
+		}
+		return NO_CAMERA_CONNECTED;
+	}
+
+	/** Set the camera id for the given channel */
+	public void setCamera(String id, int channel) {
+		ids.put(id, new Integer(channel));
+	}
+
 }

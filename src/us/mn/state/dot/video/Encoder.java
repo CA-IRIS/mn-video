@@ -36,4 +36,13 @@ public interface Encoder {
 	 * @param port
 	 */
 	public void setPort(int port);
+
+	/** Get the number of video channels. */
+	public int getChannels();
+	
+	/**
+	 * Set the number of available video channels.
+	 * @param channels
+	 */
+	public void setChannels(int channels);
 }

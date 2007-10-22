@@ -56,9 +56,6 @@ public final class AxisServer extends AbstractEncoder {
 	/** Constant for large sized images */
 	public static final int LARGE = 3;
 
-	/** Constant string for no camera connected */
-	public static final int NO_CAMERA_CONNECTED = -1;
-
 	/** The base URI for a request for an image */
 	private final String BASE_IMAGE_URI = "/axis-cgi/jpg/image.cgi?" +
 		"showlength=1&";
@@ -93,18 +90,6 @@ public final class AxisServer extends AbstractEncoder {
 	/** The parameter value for off */
 	private static final String VALUE_OFF = "0";
 	
-	/** Location of the no_video image */
-	private static String noVideoFile = 
-		"/usr/local/tomcat/current/webapps/@@NAME@@/images/novideo.jpg";
-
-	private static byte[] noVideo = createNoVideoImage();
-	
-	/** The number of video channels available */
-	private int channels = 4;
-
-	/** The host name (or IP) of the server */
-	private final String hostName;
-
 	/** The username used to connect to this server.  Only required when
 	 * Axis server does not allow anonymous connections.
 	 */
@@ -114,12 +99,6 @@ public final class AxisServer extends AbstractEncoder {
 	 * Axis server does not allow anonymous connections.
 	 */
 	private String password = null;
-
-	/** The ids of the cameras that are connected. */
-	private String[] ids = new String[ channels + 1 ];
-	// ids.size is one more than the channel count so that
-	// we can use the actual channel number to index
-	// into the ids instead of using channel - 1.
 
 	/** Get an AxisServer by host (name or IP) */
 	public static AxisServer getServer(String host){
@@ -138,20 +117,9 @@ public final class AxisServer extends AbstractEncoder {
 
 	}
 	
-	public static byte[] getNoVideoImage(){
-		return noVideo;
-	}
-
 	/** Constructor for the axis server object */
 	protected AxisServer(String host) {
-		hostName = host;
-		for( int i=0; i<ids.length; i++ ) {
-			ids[ i ] = null;
-		}
-	}
-	
-	private String getIp() throws UnknownHostException{
-		return InetAddress.getByName(hostName).getHostAddress();
+		super(host);
 	}
 	
 	/**
@@ -163,7 +131,7 @@ public final class AxisServer extends AbstractEncoder {
 		int channel = getChannel(c.getCameraId());
 		if(channel == NO_CAMERA_CONNECTED) return null;
 		try{
-			return new URL( "http://" + hostName + ":" +
+			return new URL( "http://" + host + ":" +
 					getPort() + BASE_STREAM_URI +
 					createCameraParam(c) + "&" +
 					createSizeParam(c.getSize()) + "&" +
@@ -186,7 +154,7 @@ public final class AxisServer extends AbstractEncoder {
 		if(channel == NO_CAMERA_CONNECTED) return null;
 		try{
 			String url = 
-				"http://" + hostName + ":" +
+				"http://" + host + ":" +
 				getPort() + BASE_IMAGE_URI +
 				createCameraParam(c) + "&" +
 				createSizeParam(c.getSize()) + "&" +
@@ -227,40 +195,7 @@ public final class AxisServer extends AbstractEncoder {
 		}
 		byte[] image = fetchImage(url);
 		if(image != null) return image;
-		return noVideo;
-	}
-
-	/** Create a no-video image */
-	static byte[] createNoVideoImage(){
-		try{
-			FileImageInputStream in = null;
-			in = new FileImageInputStream(new File(noVideoFile));
-			byte[] bytes = new byte[(int)in.length()];
-			in.read(bytes, 0, bytes.length);
-			return bytes;
-		}catch(IOException ioe){
-			return null;
-		}
-	}
-
-
-	/** Get the id of the camera connected to channel c */
-	public String getCamera(int channel) {
-		if(channel<1 || channel>channels)
-			throw new IndexOutOfBoundsException( "Invalid channel number: " + channel );
-		return ids[channel];
-	}
-
-	public int getChannel(String id){
-		for(int i=1; i<=channels; i++){
-			if(id.equals(ids[i])) return i;
-		}
-		return NO_CAMERA_CONNECTED;
-	}
-
-	/** Set the camera for the given channel */
-	public void setCamera(String id, int channel) {
-		ids[channel] = id;
+		return getNoVideoImage();
 	}
 
 	public MJPEGStream getStream(Client c) throws VideoException{
@@ -324,14 +259,6 @@ public final class AxisServer extends AbstractEncoder {
 			}
 		}
 		return image;
-	}
-
-	public String toString(){
-		String ip = "";
-		try{
-			ip = getIp();
-		}catch(Exception e){}
-		return "Axis Server " + hostName + " (" + ip + ")";
 	}
 
 	public void setPassword(String pwd) {
