@@ -27,6 +27,7 @@ import us.mn.state.dot.video.AxisServer;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.ConnectionFactory;
 import us.mn.state.dot.video.MJPEGStream;
+import us.mn.state.dot.video.VideoStream;
 
 /**
  * @author john3tim
@@ -53,7 +54,7 @@ public class StreamTest {
 			Client c = new Client();
 			c.setCameraId("C001");
 			c.setSize(AxisServer.MEDIUM);
-			MJPEGStream stream = server.getStream(c);
+			VideoStream stream = server.getStream(c);
 			for(int i=0; i<5; i++){
 				byte[] image = stream.getImage();
 				System.out.println(image.length);

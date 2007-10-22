@@ -23,7 +23,7 @@ import java.io.FileOutputStream;
 
 import us.mn.state.dot.video.AxisServer;
 import us.mn.state.dot.video.Client;
-import us.mn.state.dot.video.MJPEGStream;
+import us.mn.state.dot.video.VideoStream;
 
 public class AxisServerTest {
 
@@ -59,7 +59,7 @@ public class AxisServerTest {
 			byte[] image = null;
 			Client c = new Client();
 			c.setCameraId("C001");
-			MJPEGStream stream = server.getStream(c);
+			VideoStream stream = server.getStream(c);
 			for(int i=0; i<5; i++){
 				File f = new File(baseName + i + ".jpg");
 				System.out.println("Writing " + f.getAbsolutePath());

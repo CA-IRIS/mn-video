@@ -188,7 +188,7 @@ public final class AxisServer extends AbstractEncoder {
 		return getNoVideoImage();
 	}
 
-	public MJPEGStream getStream(Client c) throws VideoException{
+	public VideoStream getStream(Client c) throws VideoException{
 		URL url = getStreamURL(c);
 		if(url == null) return null;
 		try{

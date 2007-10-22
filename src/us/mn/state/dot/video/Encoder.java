@@ -53,6 +53,15 @@ public interface Encoder {
 	 */
 	public byte[] getImage(Client c) throws VideoException;
 
+
+	/**
+	 * Get a VideoStream for the Client, c
+	 * @param c
+	 * @return A VideoStream
+	 * @throws VideoException
+	 */
+	public VideoStream getStream(Client c) throws VideoException;
+
 	/**
 	 * Set the authentication password.
 	 * @param pwd

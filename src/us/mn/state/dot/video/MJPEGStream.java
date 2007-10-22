@@ -27,7 +27,7 @@ import java.io.InputStream;
  * next image in the stream.
  * @author    Timothy Johnson
  */
-public class MJPEGStream{
+public class MJPEGStream extends AbstractVideoStream {
 
 	private final InputStream stream;
 	

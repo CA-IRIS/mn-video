@@ -25,9 +25,9 @@ import java.util.logging.Logger;
 import us.mn.state.dot.video.AbstractImageFactory;
 import us.mn.state.dot.video.AxisServer;
 import us.mn.state.dot.video.Client;
-import us.mn.state.dot.video.MJPEGStream;
 import us.mn.state.dot.video.ThreadMonitor;
 import us.mn.state.dot.video.VideoException;
+import us.mn.state.dot.video.VideoStream;
 /**
  * The ImageFactory interacts with an axis server to continually produce images
  * until there are no more requests for images.
@@ -56,7 +56,7 @@ public class AxisImageFactory extends AbstractImageFactory{
 	public void run() {
 		if(server != null){
 			try{
-				MJPEGStream stream = server.getStream(getClient());
+				VideoStream stream = server.getStream(getClient());
 				logger.info("Opened factory " + this);
 				byte[] img;
 				while(!done && this.isAlive()){
