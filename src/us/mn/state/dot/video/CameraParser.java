@@ -23,9 +23,9 @@ import us.mn.state.dot.util.xml.XmlParser;
  */
 public class CameraParser extends XmlParser {
 
-	private static final String ATT_FREEWAY = "freeway";
+	private static final String FREEWAY = "freeway";
 	
-	private static final String ATT_CROSS_STREET = "crossstreet";
+	private static final String CROSS_STREET = "cross_street";
 	
 	private Hashtable<String, Camera> cameras =
 		new Hashtable<String, Camera>();
@@ -67,8 +67,8 @@ public class CameraParser extends XmlParser {
 			Element e = (Element)n;
 			String id = e.getAttribute("id");
 			c.setId(id);
-			c.setFreeway(e.getAttribute("freeway"));
-			c.setCrossStreet(e.getAttribute("cross_street"));
+			c.setFreeway(e.getAttribute(FREEWAY));
+			c.setCrossStreet(e.getAttribute(CROSS_STREET));
 			cameras.put(c.getId(), c);
 		}
 	}
