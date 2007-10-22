@@ -18,16 +18,11 @@
 */
 package us.mn.state.dot.video;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.UnknownHostException;
 import java.util.Hashtable;
-
-import javax.imageio.stream.FileImageInputStream;
 
 
 /**
