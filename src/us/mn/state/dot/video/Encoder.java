@@ -52,4 +52,17 @@ public interface Encoder {
 	 * @return A byte array with image data.
 	 */
 	public byte[] getImage(Client c) throws VideoException;
+
+	/**
+	 * Set the authentication password.
+	 * @param pwd
+	 */
+	public void setPassword(String pwd);
+
+	/**
+	 * Set the authentication username.
+	 * @param name
+	 */
+	public void setUsername(String name);
+
 }

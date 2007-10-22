@@ -90,16 +90,6 @@ public final class AxisServer extends AbstractEncoder {
 	/** The parameter value for off */
 	private static final String VALUE_OFF = "0";
 	
-	/** The username used to connect to this server.  Only required when
-	 * Axis server does not allow anonymous connections.
-	 */
-	private String username = null;
-	
-	/** The password used to connect to this server.  Only required when
-	 * Axis server does not allow anonymous connections.
-	 */
-	private String password = null;
-
 	/** Get an AxisServer by host (name or IP) */
 	public static AxisServer getServer(String host){
 		AxisServer s = servers.get(host);
@@ -259,13 +249,5 @@ public final class AxisServer extends AbstractEncoder {
 			}
 		}
 		return image;
-	}
-
-	public void setPassword(String pwd) {
-		this.password = pwd;
-	}
-
-	public void setUsername(String name) {
-		this.username = name;
 	}
 }

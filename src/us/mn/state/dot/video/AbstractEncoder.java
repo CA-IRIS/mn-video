@@ -33,6 +33,16 @@ import javax.imageio.stream.FileImageInputStream;
  */
 public abstract class AbstractEncoder implements Encoder {
 
+	/** The username used to connect to this server.  Only required when
+	 * the encoder does not allow anonymous connections.
+	 */
+	protected String username = null;
+	
+	/** The password used to connect to this server.  Only required when
+	 * the encoder does not allow anonymous connections.
+	 */
+	protected String password = null;
+
 	/** Constant string for no camera connected */
 	public static final int NO_CAMERA_CONNECTED = -1;
 
@@ -123,4 +133,17 @@ public abstract class AbstractEncoder implements Encoder {
 		ids.put(id, new Integer(channel));
 	}
 
+	/**
+	 * Set the username for authentication.
+	 */
+	public void setUsername(String user){
+		username = user;
+	}
+
+	/**
+	 * Set the password for authentication.
+	 */
+	public void setPassword(String pwd){
+		password = pwd;
+	}
 }
