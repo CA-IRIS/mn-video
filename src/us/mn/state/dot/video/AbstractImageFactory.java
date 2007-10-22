@@ -45,9 +45,6 @@ public abstract class AbstractImageFactory extends VideoThread {
 
 	protected final Logger logger;
 	
-	/** URL of the images to get */
-	protected URL url;
-
 	protected final Client client;
 	
 	/** Constructor for the ImageFactory. */

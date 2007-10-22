@@ -34,6 +34,9 @@ import java.util.logging.Logger;
  */
 public class RepeaterImageFactory extends AbstractImageFactory {
 
+	/** URL of the images to get */
+	protected URL url;
+
 	/** Constructor for the ImageFactory. */
 	public RepeaterImageFactory(Client c, String baseUrl)
 			throws VideoException {
