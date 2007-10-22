@@ -63,7 +63,7 @@ public class ServerFactory {
 		if(host_port.indexOf(":")>-1){
 			try{
 				int port = Integer.parseInt(host_port.substring(host_port.indexOf(":")+1));
-				s.setHttpPort(port);
+				s.setPort(port);
 			}catch(NumberFormatException e){
 				//host port parsing error... use default http port
 			}

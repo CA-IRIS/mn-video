@@ -36,10 +36,9 @@ import javax.imageio.stream.FileImageInputStream;
  *
  * @author    Timothy Johnson
  * @created   July 2, 2003
- * @version   $Revision: 1.24 $ $Date: 2006/04/11 21:22:48 $
  */
 
-public final class AxisServer{
+public final class AxisServer extends AbstractEncoder {
 
 	/** Collection of all Axis servers */
 	private static final Hashtable<String, AxisServer> servers =
@@ -106,9 +105,6 @@ public final class AxisServer{
 	/** The host name (or IP) of the server */
 	private final String hostName;
 
-	/** The port on which the axis server listens for HTTP requests */
-	private int httpPort = 80;
-
 	/** The username used to connect to this server.  Only required when
 	 * Axis server does not allow anonymous connections.
 	 */
@@ -168,7 +164,7 @@ public final class AxisServer{
 		if(channel == NO_CAMERA_CONNECTED) return null;
 		try{
 			return new URL( "http://" + hostName + ":" +
-					httpPort + BASE_STREAM_URI +
+					getPort() + BASE_STREAM_URI +
 					createCameraParam(c) + "&" +
 					createSizeParam(c.getSize()) + "&" +
 					createCompressionParam(c.getCompression()));
@@ -191,7 +187,7 @@ public final class AxisServer{
 		try{
 			String url = 
 				"http://" + hostName + ":" +
-				httpPort + BASE_IMAGE_URI +
+				getPort() + BASE_IMAGE_URI +
 				createCameraParam(c) + "&" +
 				createSizeParam(c.getSize()) + "&" +
 				createCompressionParam(c.getCompression());
@@ -328,14 +324,6 @@ public final class AxisServer{
 			}
 		}
 		return image;
-	}
-
-	public int getHttpPort() {
-		return httpPort;
-	}
-
-	public void setHttpPort(int httpPort) {
-		this.httpPort = httpPort;
 	}
 
 	public String toString(){
