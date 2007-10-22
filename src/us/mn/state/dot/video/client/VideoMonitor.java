@@ -25,6 +25,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.LinkedList;
 
@@ -70,12 +71,12 @@ public class VideoMonitor extends JPanel
 	public static final String WAIT_ON_USER = "Waiting for user...";
 	private int imagesRequested = 0;
 	private Dimension imageSize = new Dimension(Constants.SIF_FULL);
-	protected String imageURI = null;
+	protected URI imageURI = null;
 	
 	/**
 	 * Constructor for the VideoMonitor
 	 */
-	public VideoMonitor(String imageURI) {
+	public VideoMonitor() {
 		super(new BorderLayout());
 		JPanel p = new JPanel(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
@@ -90,9 +91,12 @@ public class VideoMonitor extends JPanel
 		this.add(p);
 		setVideoSize(imageSize);
 		screen.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
-		this.imageURI = imageURI;
 	}
 
+	public void setImageUri(URI uri){
+		imageURI = uri;
+	}
+	
 	public synchronized void setVideoSize(Dimension d){
 		imageSize = d;
 		status.setPreferredSize(new Dimension(d.width, 20));

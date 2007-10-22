@@ -38,7 +38,7 @@ public class VideoMonitorTest extends JFrame {
 		});
 		setVisible(true);
 		setSize(400, 400);
-		VideoMonitor mon = new VideoMonitor("");
+		VideoMonitor mon = new VideoMonitor();
 		mon.setProgressVisible(true);
 		mon.setStatusVisible(false);
 		mon.setLabelVisible(false);

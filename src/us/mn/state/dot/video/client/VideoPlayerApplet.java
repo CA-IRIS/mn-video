@@ -41,7 +41,7 @@ import us.mn.state.dot.log.TmsLogFactory;
  */
 public class VideoPlayerApplet extends JApplet {
 
-	private final VideoMonitor monitor = new VideoMonitor("");
+	private final VideoMonitor monitor = new VideoMonitor();
 	Container contentPane = null;
 	private Logger logger = null;
 	String cameraId = null;

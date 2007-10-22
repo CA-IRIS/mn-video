@@ -64,10 +64,7 @@ public class VideoPlayer extends JFrame {
 		}catch(IOException ioe){
 			logger.warning("Exception loading properties file.");
 		}
-		String uri = "http://" +
-			p.getProperty("video.host") + ":" +
-			p.getProperty("video.port") + "/@@NAME@@/image";
-		monitor = new VideoMonitor(uri);
+		monitor = new VideoMonitor();
 		controls.add( new CameraIdControl(p, monitor, logger), c );
 		c.gridx = 0;
 		c.gridy = 1;

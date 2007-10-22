@@ -32,6 +32,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ProxySelector;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.Properties;
@@ -87,7 +89,8 @@ public class NvrClient extends JFrame implements ListSelectionListener {
 			videoHost = p.getProperty("video.host");
 			videoPort = p.getProperty("video.port");
 			times = new TimeSelector(videoHost, videoPort);
-			monitor = new VideoMonitor(createImageURL());
+			monitor = new VideoMonitor();
+			monitor.setImageUri(createImageURI());
 			URL url = new URL(p.getProperty("cameras.xml"));
 			CameraParser parser = new CameraParser(url);
 			cameras.setCameras(parser.getCameras().values());
@@ -113,12 +116,20 @@ public class NvrClient extends JFrame implements ListSelectionListener {
 		this.setVisible(true);
 	}
 
-	protected String createImageURL(){
-		return "http://" + videoHost + ":" + videoPort + "/@@NAME@@/image";
+	protected URI createImageURI(){
+		try{
+			return new URI("http://" + videoHost + ":" + videoPort + "/@@NAME@@/image");
+		}catch(URISyntaxException e){
+			return null;
+		}
 	}
 	
-	protected String createClipURL(){
-		return "http://" + videoHost + ":" + videoPort + "/@@NAME@@/clip";
+	protected URI createClipURL(){
+		try{
+			return new URI("http://" + videoHost + ":" + videoPort + "/@@NAME@@/clip");
+		}catch(URISyntaxException e){
+			return null;
+		}
 	}
 
 	protected void addWidgets(){
