@@ -59,7 +59,7 @@ public class TestConnection extends HttpServlet {
 	
 	protected void testDatabaseConnection(){
 		TmsConnection c = new TmsConnection(props);
-		ServerFactory f = new ServerFactory(new TmsConnection(props));
+		ServerFactory f = new ServerFactory(props);
 		AxisServer.printServers();
 	}
 	

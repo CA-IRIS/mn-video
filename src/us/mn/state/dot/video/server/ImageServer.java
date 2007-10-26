@@ -44,7 +44,7 @@ public final class ImageServer extends VideoServlet{
     public void init( ServletConfig config ) throws ServletException {
 		super.init( config );
 		Properties p = (Properties)config.getServletContext().getAttribute("properties");
-		serverFactory = new ServerFactory(new TmsConnection(p));
+		serverFactory = new ServerFactory(p);
 		logger.info( "ImageServer initialized successfully." );
 	}
 

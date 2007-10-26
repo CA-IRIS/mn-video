@@ -19,6 +19,7 @@
 package us.mn.state.dot.video.server;
 
 import java.util.Hashtable;
+import java.util.Properties;
 
 import us.mn.state.dot.util.db.TmsConnection;
 import us.mn.state.dot.video.AxisServer;
@@ -32,13 +33,19 @@ import us.mn.state.dot.video.AxisServer;
 public class ServerFactory {
 
 	protected TmsConnection tms = null;
+
+	protected String encoderUser = null;
+	
+	protected String encoderPass = null;
 	
 	/** Hashtable of all axis servers indexed by camera id */
 	protected final Hashtable<String, AxisServer> servers =
 		new Hashtable<String, AxisServer>();
 
-	public ServerFactory(TmsConnection tmsConn){
-		tms = tmsConn;
+	public ServerFactory(Properties props){
+		tms = new TmsConnection(props);
+		encoderUser = props.getProperty("video.encoder.user");
+		encoderPass = props.getProperty("video.encoder.pwd");
 		updateServers();
 	}
 
@@ -71,6 +78,8 @@ public class ServerFactory {
 		for(String camId : tms.getCameraIdsByEncoder(host)){
 			int ch = tms.getEncoderChannel(camId);
 			s.setCamera(camId, ch);
+			s.setUsername(encoderUser);
+			s.setPassword(encoderPass);
 			servers.put(camId, s);
 		}
 	}

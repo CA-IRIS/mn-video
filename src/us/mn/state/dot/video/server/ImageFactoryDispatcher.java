@@ -64,7 +64,7 @@ public class ImageFactoryDispatcher {
 		if(proxy) {
 			backendUrls = AbstractImageFactory.createBackendUrls(p, 1);
 		}else{
-			serverFactory = new ServerFactory(new TmsConnection(p)); 
+			serverFactory = new ServerFactory(p);
 		}
 		Thread t = new Thread(){
 			public void run(){
