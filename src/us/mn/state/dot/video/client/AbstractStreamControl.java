@@ -52,8 +52,8 @@ public class AbstractStreamControl extends JPanel{
 		this.monitor = monitor;
 		String server = null;
 		String port = null;
-		server = p.getProperty("server.host");
-		port = p.getProperty("server.port");
+		server = p.getProperty("video.host");
+		port = p.getProperty("video.port");
 		baseUrl = "http://" +
 			server + ":" + port + "/@@NAME@@/stream";
 		threadMonitor = new ThreadMonitor("IncidentControl", 10000, logger);
