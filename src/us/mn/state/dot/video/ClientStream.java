@@ -76,6 +76,7 @@ public class ClientStream implements ImageFactoryListener {
 	/** Sends images to the client until all the requested
 	 * images have been sent. */
 	public void sendImages() {
+		String termReason = "completed";
 		long now = 0;
 		try{
 			while(!isDone()) {
@@ -87,12 +88,15 @@ public class ClientStream implements ImageFactoryListener {
 				}
 			}
 		}catch(IOException ioe){
+			termReason = "IOE:";
 			logger.info("IOE: " + this.toString() + " is closing.");
 		}catch(Exception e){
+			termReason = e.getClass().getSimpleName();
 			logger.info("Error sending images to " + client.getUser());
 		}finally{
 			factory.removeImageFactoryListener(this);
 			try{
+				halt(termReason);
 				out.close();
 			}catch(Exception e2){
 			}
