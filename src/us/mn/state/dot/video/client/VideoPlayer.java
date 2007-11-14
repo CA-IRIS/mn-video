@@ -25,8 +25,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.ProxySelector;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -38,6 +41,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
 import us.mn.state.dot.log.TmsLogFactory;
+import us.mn.state.dot.util.HTTPProxySelector;
 import us.mn.state.dot.video.Constants;
 
 /**
@@ -152,11 +156,13 @@ public class VideoPlayer extends JFrame {
 	}
 
 	public static void main(String[] args){
-		Properties p = new Properties();
-		p.setProperty("proxy.host", "proxy.dot.state.mn.us");
-		p.setProperty("proxy.port", "3128");
-		p.setProperty("no.proxy.hosts", "151.111.,192.168.,10.");
-//		ProxySelector.setDefault(new HTTPProxySelector(p));
+		try{
+			Properties p = new Properties();
+			p.load(new FileInputStream(new File("client.properties")));
+			ProxySelector.setDefault(new HTTPProxySelector(p));
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 		new VideoPlayer();
 	}
 
