@@ -63,10 +63,39 @@
 		</antcall>
 	</target>
 
+
+	<!-- Check to see if a property has been defined.  Fail if not -->
+	<target name="check-prop">
+		<condition property="prop.defined">
+			<isset property="${prop.name}"/>
+		</condition>
+		<fail unless="prop.defined"
+			message="${prop.name} has not been defined."/>
+	</target>
+		
+	<!-- ===================================================== -->
+	<!-- Check to see if required build properties are defined -->
+	<!-- ===================================================== -->
+	<target name="check-properties">
+		<antcall target="check-prop">
+			<param name="prop.name" value="video.backend.host"/>
+		</antcall>
+		<antcall target="check-prop">
+			<param name="prop.name" value="video.backend.port"/>
+		</antcall>
+		<antcall target="check-prop">
+			<param name="prop.name" value="video.repeater.host"/>
+		</antcall>
+		<antcall target="check-prop">
+			<param name="prop.name" value="video.repeater.port"/>
+		</antcall>
+	</target>
+
 	<!-- =================================================== -->
 	<!-- Prepares the directory structure-->
 	<!-- =================================================== -->
 	<target name="prepare"
+			depends="check-properties"
 	        description="Prepare the build directory">
 
 		<mkdir dir="${build.src.dir}" />
@@ -88,9 +117,9 @@
 					value="${tms-log.version}"/>
 				<filter token="BUILD.ID"
 					value="${DSTAMP}:${TSTAMP}"/>
-				<filter token="REPEATER.HOST"
+				<filter token="VIDEO.REPEATER.HOST"
 					value="${video.repeater.host}"/>
-				<filter token="REPEATER.PORT"
+				<filter token="VIDEO.REPEATER.PORT"
 					value="${video.repeater.port}"/>
 				<filter token="NAME"
 					value="${name}"/>
@@ -106,13 +135,13 @@
 					value="${tms-log.version}"/>
 				<filter token="BUILD.ID"
 					value="${DSTAMP}:${TSTAMP}"/>
-				<filter token="REPEATER.HOST"
+				<filter token="VIDEO.REPEATER.HOST"
 					value="${video.repeater.host}"/>
-				<filter token="REPEATER.PORT"
+				<filter token="VIDEO.REPEATER.PORT"
 					value="${video.repeater.port}"/>
-				<filter token="BACKEND.HOST"
+				<filter token="VIDEO.BACKEND.HOST"
 					value="${video.backend.host}"/>
-				<filter token="BACKEND.PORT"
+				<filter token="VIDEO.BACKEND.PORT"
 					value="${video.backend.port}"/>
 				<filter token="VIDEO.WEBSTART.HOST"
 					value="${video.webstart.host}"/>

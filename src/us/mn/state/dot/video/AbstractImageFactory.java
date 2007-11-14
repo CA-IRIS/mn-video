@@ -127,7 +127,7 @@ public abstract class AbstractImageFactory extends VideoThread {
 	    ArrayList<String> baseUrls = new ArrayList<String>();
 	    int id = 0;
 	    while(true){
-	    	String ip = p.getProperty("backend.host" + id);
+	    	String ip = p.getProperty("video.backend.host" + id);
 	    	if(ip==null) break;
     		try{
     			ip = InetAddress.getByName(ip).getHostAddress();
@@ -136,8 +136,8 @@ public abstract class AbstractImageFactory extends VideoThread {
     					" " + uhe.getMessage());
     			break;
     		}
-    		String port = p.getProperty("backend.port" + id,
-    				p.getProperty("backend.port" + 0));
+    		String port = p.getProperty("video.backend.port" + id,
+    				p.getProperty("video.backend.port" + 0));
     		String servletName = "";
     		if(type==1) servletName = "stream";
     		if(type==2) servletName = "image";

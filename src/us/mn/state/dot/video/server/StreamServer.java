@@ -19,6 +19,7 @@
 
 package us.mn.state.dot.video.server;
 
+import java.util.Hashtable;
 import java.util.Properties;
 
 import javax.servlet.ServletConfig;
@@ -30,8 +31,6 @@ import us.mn.state.dot.video.AbstractImageFactory;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.ClientStream;
 import us.mn.state.dot.video.ThreadMonitor;
-
-import com.sun.org.apache.xalan.internal.xsltc.runtime.Hashtable;
 
 /**
  * The <code>StreamServer</code> class is a servlet that responds to client requests for
