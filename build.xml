@@ -173,6 +173,8 @@
 					value="${version}"/>
 			</filterset>
 		</copy>
+		<chmod dir="${build.etc.dir}" perm="ugo+rx" 
+		       includes="**/*.sh"/>		
 	</target>
 
 	<!-- =================================================== -->
