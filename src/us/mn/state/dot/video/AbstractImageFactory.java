@@ -103,7 +103,7 @@ public abstract class AbstractImageFactory extends VideoThread {
 		}
 	}
 
-	protected void removeListeners(){
+	protected synchronized void removeListeners(){
 		for(ImageFactoryListener l : listeners){
 			removeImageFactoryListener(l);
 		}
