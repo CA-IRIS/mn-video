@@ -24,7 +24,6 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
-import us.mn.state.dot.util.db.TmsConnection;
 import us.mn.state.dot.video.AxisServer;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.VideoException;
@@ -40,7 +39,7 @@ public final class ImageServer extends VideoServlet{
 
 	protected ServerFactory serverFactory = null;
 	
-	/** Contructor for the VideoServer */
+	/** Constructor for the VideoServer */
     public void init( ServletConfig config ) throws ServletException {
 		super.init( config );
 		Properties p = (Properties)config.getServletContext().getAttribute("properties");
