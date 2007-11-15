@@ -168,16 +168,6 @@ public class VideoPlayer extends JFrame {
 	}
 	
 	public static void main(String[] args){
-/*		try{
-			Properties p = new Properties();
-			File home = new File(System.getProperty("user.home"));
-			System.out.println(home.toString());
-			p.load(new FileInputStream(new File(home, "client.properties")));
-			System.out.println(p.getProperty("proxy.host"));
-			ProxySelector.setDefault(new HTTPProxySelector(p));
-		}catch(Exception e){
-			e.printStackTrace();
-		}*/
 		new VideoPlayer();
 	}
 
