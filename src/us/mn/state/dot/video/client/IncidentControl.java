@@ -23,10 +23,11 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Collection;
-import java.util.Iterator;
+import java.io.IOException;
+import java.io.StringReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Properties;
-import java.util.Vector;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
@@ -38,21 +39,35 @@ import javax.swing.JScrollPane;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
+import us.mn.state.dot.video.ConnectionFactory;
 
 /**
  * @author John3Tim
- *
- * This class displays a list of current incidents and allows the user
- * to change the video stream by selecting an incident.
+ * 
+ * This class displays a list of current incidents and allows the user to change
+ * the video stream by selecting an incident.
  */
 public class IncidentControl extends AbstractStreamControl{
 
+	private SAXParser parser;
+	
 	private JList incidentList = new JList();
+	
+	private DefaultListModel incidentModel = new DefaultListModel();
 
 	private String incidentsLocation = null;
 	
 	public IncidentControl(Properties props, VideoMonitor monitor, Logger logger){
 		super(props, monitor, logger);
+		createParser();
 		this.setLayout(new GridBagLayout());
 		setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 		incidentsLocation = props.getProperty("incidents.url");
@@ -62,7 +77,7 @@ public class IncidentControl extends AbstractStreamControl{
 		scrollPane.setHorizontalScrollBarPolicy(
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		incidentList.addListSelectionListener(new IncidentListListener());
-		//add the incidents ScrollPane
+		// add the incidents ScrollPane
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
 		c.gridx = 0;
@@ -70,7 +85,7 @@ public class IncidentControl extends AbstractStreamControl{
 		c.weighty = 1;
 		scrollPane.setPreferredSize(new Dimension(300, 200));
 		this.add(scrollPane,c);
-		//add the control buttons
+		// add the control buttons
 		JPanel p = new JPanel(new GridBagLayout());
 		GridBagConstraints c2 = new GridBagConstraints();
 		c2.gridx = GridBagConstraints.RELATIVE;
@@ -104,6 +119,15 @@ public class IncidentControl extends AbstractStreamControl{
 		c.gridy = 1;
 		c.weighty = 0;
 		this.add(p,c);
+	}
+
+	private void createParser(){
+		try {
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			parser = factory.newSAXParser();
+		}
+		catch(Exception e) {
+		}
 	}
 	
 	public class IncidentListListener implements ListSelectionListener{
@@ -142,37 +166,35 @@ public class IncidentControl extends AbstractStreamControl{
 	}
 	
 	private void updateIncidents(String location){
-		DefaultListModel model = new DefaultListModel();
-		Collection c = getIncidents(location);
-		Iterator it = c.iterator();
-		while(it.hasNext()){
-			model.addElement(it.next());
-		}
-		incidentList.setModel(model);
-	}
-
-	private Collection getIncidents(String location){
-		Collection<Incident> c = new Vector<Incident>();
-/*		try{
-			Document doc = getIncidentDocument(location);
-			if(doc == null) return c;
-			List incidents = doc.getRootElement().getChildren("incident");
-			Iterator it = incidents.iterator();
-			while(it.hasNext()){
-				Element xmlIncident = (Element)it.next();
-				String cameraId = xmlIncident.getAttribute("camera").getValue();
-				int camNumber = Integer.parseInt(cameraId.substring(1));
-				String desc = xmlIncident.getAttributeValue("message");
-				desc = desc + ": " +xmlIncident.getAttributeValue("road");
-				desc = desc + xmlIncident.getAttributeValue("direction");
-				desc = desc + " @ " + xmlIncident.getAttributeValue("location");
-				desc = desc + "   " + xmlIncident.getAttributeValue("date");
-				desc = desc + " " + xmlIncident.getAttributeValue("time");
-				c.add(new Incident(desc, camNumber));
-			}
+		incidentModel.removeAllElements();
+		try {
+			URLConnection conn = ConnectionFactory.createConnection(new URL(location));
+			DefaultHandler h = new DefaultHandler() {
+				public void startElement(String uri,
+					String localName, String qname,
+					Attributes attrs)
+				{
+					if(qname.equals("incident"))
+						handleIncident(attrs);
+				}
+			};
+			parser.parse(conn.getInputStream(), h);
 		}catch(Exception e){
 			e.printStackTrace();
-		}*/
-		return c;
+		}finally{
+			incidentList.setModel(incidentModel);
+		}
 	}
+	
+	/** Handle an incident element */
+	protected void handleIncident(Attributes attrs) {
+		String desc =
+			attrs.getValue("message") + ": " + 
+			attrs.getValue("road") + " " + attrs.getValue("direction") +
+			" @ " + attrs.getValue("location");
+		String camId = attrs.getValue("camera");
+		Incident i = new Incident(desc, camId);
+		incidentModel.addElement(i);
+	}
+
 }
