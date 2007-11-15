@@ -118,12 +118,9 @@ public class VideoPlayer extends JFrame {
 		item.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae){
 				JCheckBoxMenuItem i = (JCheckBoxMenuItem)ae.getSource();
-//				System.out.println("Resizing...");
 				if(i.isSelected()){
-//					System.out.println("  scaling up.");
 					monitor.setVideoSize(Constants.SIF_4X);
 				}else{
-//					System.out.println("  scaling down.");
 					monitor.setVideoSize(Constants.SIF_FULL);
 				}
 				VideoPlayer.this.pack();
