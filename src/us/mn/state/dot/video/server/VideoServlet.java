@@ -18,6 +18,7 @@
  */
 package us.mn.state.dot.video.server;
 
+import java.io.File;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.logging.Logger;
@@ -31,9 +32,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.velocity.VelocityContext;
 
+import us.mn.state.dot.video.AxisServer;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.Constants;
 import us.mn.state.dot.video.VideoClip;
+import us.mn.state.dot.video.VideoException;
 
 
 /**
@@ -124,7 +127,11 @@ public abstract class VideoServlet extends HttpServlet {
 			t.setName("VIDEO " + servletName + " " +
 				Constants.DATE_FORMAT.format(cal.getTime()) +
 				" Camera " + c.getCameraId());
-			processRequest(response, c);
+			if(isPublic(c.getCameraId())){
+				processRequest(response, c);
+			}else{
+				sendNoVideo(response, c);
+			}
 		}
 		catch(Throwable th) {
 			th.printStackTrace();
@@ -156,4 +163,25 @@ public abstract class VideoServlet extends HttpServlet {
 
 	public abstract void processRequest(HttpServletResponse response,
 		Client c) throws Exception;
+
+	/** Check to see if a camera is viewable by the public. */
+	protected boolean isPublic(String camId){
+		//FIXME: temporary implementation, use Sonar when cameras
+		// have been migrated from RMI.
+		File f = new File("/tmp/" + camId);
+		return f.exists();
+	}
+
+	private final void sendNoVideo(HttpServletResponse response, Client c){
+		byte[] image = AxisServer.getNoVideoImage();
+		try{
+			response.setStatus(HttpServletResponse.SC_OK);
+			response.setContentType("image/jpeg");
+			response.setContentLength(image.length);
+			response.getOutputStream().write(image);
+			response.flushBuffer();
+		}catch(Throwable t){
+			logger.warning("Error serving image " + c.getCameraId());
+		}
+	}
 }
