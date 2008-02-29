@@ -18,6 +18,7 @@
 */
 package us.mn.state.dot.video.server;
 
+import java.io.File;
 import java.util.Properties;
 
 import javax.servlet.ServletConfig;
@@ -53,10 +54,14 @@ public final class ImageServer extends VideoServlet{
 	 * @param response servlet response
 	 */
 	public void processRequest(HttpServletResponse response, Client c){
-		AxisServer server = serverFactory.getServer(c.getCameraId());
+		String camId = c.getCameraId();
+		AxisServer server = null;
+		byte[] image = AxisServer.getNoVideoImage();
 		int status = HttpServletResponse.SC_OK;
 		String contentType = "image/jpeg";
-		byte[] image = AxisServer.getNoVideoImage();
+		if(isPublic(camId)){
+			server = serverFactory.getServer(camId);
+		}
 		if(server != null){
 			try{
 				image = server.getImage(c);
@@ -73,5 +78,13 @@ public final class ImageServer extends VideoServlet{
 		}catch(Throwable t){
 			logger.warning("Error serving image " + c.getCameraId());
 		}
+	}
+
+	/** Check to see if a camera is viewable by the public. */
+	protected boolean isPublic(String camId){
+		//FIXME: temporary implementation, use Sonar when cameras
+		// have been migrated from RMI.
+		File f = new File("/tmp/" + camId);
+		return f.exists();
 	}
 }

@@ -21,6 +21,7 @@ package us.mn.state.dot.video.server;
 import java.util.Hashtable;
 import java.util.Properties;
 
+import us.mn.state.dot.tms.client.SonarState;
 import us.mn.state.dot.util.db.TmsConnection;
 import us.mn.state.dot.video.AxisServer;
 
@@ -37,6 +38,8 @@ public class ServerFactory {
 	protected String encoderUser = null;
 	
 	protected String encoderPass = null;
+
+	protected SonarState sonarState = null;
 	
 	/** Hashtable of all axis servers indexed by camera id */
 	protected final Hashtable<String, AxisServer> servers =
