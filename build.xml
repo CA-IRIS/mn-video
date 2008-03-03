@@ -290,8 +290,12 @@
 		description="Creates the backend war file.">
 		<copy todir="${build.backend.dir}/WEB-INF/lib">
 			<fileset dir="${lib.dir}" >
-				<include name="tms-log-${tms-log.version}.jar" />
-				<include name="jdbc7.0-1.2.jar" />
+				<exclude name="servlet*" />
+			</fileset>
+		</copy>
+		<copy todir="${build.backend.dir}">
+			<fileset dir="${etc.dir}" >
+				<include name="*.keystore" />
 			</fileset>
 		</copy>
 		<copy file="${web.dir}/html/nvr-client.html"
