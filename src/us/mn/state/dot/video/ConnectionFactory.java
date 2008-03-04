@@ -38,7 +38,7 @@ import java.net.URLConnection;
  */
 abstract public class ConnectionFactory {
 
-	public static URLConnection createConnection(URL url)
+	public static HttpURLConnection createConnection(URL url)
 			throws IOException {
 		HttpURLConnection c = (HttpURLConnection)url.openConnection();
 		HttpURLConnection.setFollowRedirects(true);
