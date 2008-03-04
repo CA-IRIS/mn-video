@@ -58,6 +58,9 @@ public final class AxisServer extends AbstractEncoder {
 	private final String BASE_STREAM_URI = "/axis-cgi/mjpg/video.cgi?" +
 		"showlength=1&";
 	
+	/** URI for restarting the server */
+	private final String BASE_RESTART_URI = "/axis-cgi/admin/restart.cgi?";
+	
 	/** The compression request parameter */
 	private static final String PARAM_COMPRESSION = "compression";
 	
@@ -155,6 +158,15 @@ public final class AxisServer extends AbstractEncoder {
 		}
 	}
 
+	private URL getRestartURL() {
+		try{
+			return new URL("http://" + host + ":" +
+				getPort() + BASE_RESTART_URI);
+		}catch(Exception e){
+			return null;
+		}
+	}
+
 	private String createSizeParam(int size){
 		String sizeValue = "";
 		switch(size){
@@ -179,8 +191,12 @@ public final class AxisServer extends AbstractEncoder {
 			throw new VideoException("No URL for camera " + c.getCameraId());
 		}
 		byte[] image = fetchImage(url);
-		if(image != null) return image;
-		return getNoVideoImage();
+		if(image != null){
+			return image;
+		}else{
+			restart();
+			return getNoVideoImage();
+		}
 	}
 
 	public VideoStream getStream(Client c) throws VideoException{
@@ -206,6 +222,23 @@ public final class AxisServer extends AbstractEncoder {
 		}
 	}
 	
+	private synchronized final void restart() throws VideoException{
+		InputStream in = null;
+		try {
+			URL url = getRestartURL();
+			stillsCon = ConnectionFactory.createConnection(url);
+			prepareConnection(stillsCon);
+			stillsCon.getInputStream();
+		}catch(Exception e){
+			throw new VideoException("Fetch error: " + e.getMessage());
+		}finally{
+			try{
+				in.close();
+			}catch(Exception e){
+			}
+		}
+	}
+
 	private synchronized final byte[] fetchImage(URL url) throws VideoException{
 		InputStream in = null;
 		try {
