@@ -20,6 +20,7 @@ package us.mn.state.dot.video;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Hashtable;
@@ -39,8 +40,8 @@ public final class AxisServer extends AbstractEncoder {
 	private static final Hashtable<String, AxisServer> servers =
 		new Hashtable<String, AxisServer>();
 		
-	/** The URLConnection used for getting stills */
-	private URLConnection stillsCon;
+	/** The HttpURLConnection used for getting stills */
+	private HttpURLConnection stillsCon;
 	
 	/** Constant for small sized images */
 	public static final int SMALL = 1;
@@ -191,12 +192,8 @@ public final class AxisServer extends AbstractEncoder {
 			throw new VideoException("No URL for camera " + c.getCameraId());
 		}
 		byte[] image = fetchImage(url);
-		if(image != null){
-			return image;
-		}else{
-			restart();
-			return getNoVideoImage();
-		}
+		if(image != null) return image;
+		return getNoVideoImage();
 	}
 
 	public VideoStream getStream(Client c) throws VideoException{
@@ -222,20 +219,15 @@ public final class AxisServer extends AbstractEncoder {
 		}
 	}
 	
-	private synchronized final void restart() throws VideoException{
-		InputStream in = null;
+	private final void restart() throws VideoException{
+		System.out.println("Restarting " + getHost());
 		try {
 			URL url = getRestartURL();
-			stillsCon = ConnectionFactory.createConnection(url);
-			prepareConnection(stillsCon);
-			stillsCon.getInputStream();
+			HttpURLConnection conn = ConnectionFactory.createConnection(url);
+			prepareConnection(conn);
+			conn.connect();
 		}catch(Exception e){
 			throw new VideoException("Fetch error: " + e.getMessage());
-		}finally{
-			try{
-				in.close();
-			}catch(Exception e){
-			}
 		}
 	}
 
@@ -244,11 +236,17 @@ public final class AxisServer extends AbstractEncoder {
 		try {
 			stillsCon = ConnectionFactory.createConnection(url);
 			prepareConnection(stillsCon);
+			int response = stillsCon.getResponseCode();
+			if(response == 503){
+				restart();
+				return null;
+			}
 			in = stillsCon.getInputStream();
 			int length = Integer.parseInt(
 					stillsCon.getHeaderField("Content-Length"));
 			return readImage(in, length);
 		}catch(Exception e){
+			e.printStackTrace();
 			throw new VideoException("Fetch error: " + e.getMessage());
 		}finally{
 			try{
