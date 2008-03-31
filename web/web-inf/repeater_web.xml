@@ -10,7 +10,7 @@
 		<servlet-class>us.mn.state.dot.video.server.PropertiesContext</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
-	<servlet>
+<!--	<servlet>
 		<servlet-name>StreamServer</servlet-name>
 		<servlet-class>us.mn.state.dot.video.server.StreamServer</servlet-class>
 		<load-on-startup>2</load-on-startup>
@@ -18,7 +18,7 @@
 	<servlet-mapping>
 		<servlet-name>StreamServer</servlet-name>
 		<url-pattern>/stream</url-pattern>
-	</servlet-mapping>
+	</servlet-mapping>-->
 
 	<servlet>
 		<servlet-name>StillRepeater</servlet-name>
@@ -28,7 +28,7 @@
 		<servlet-name>StillRepeater</servlet-name>
 		<url-pattern>/image</url-pattern>
 	</servlet-mapping>
-	<servlet>
+<!--	<servlet>
 		<servlet-name>AccountManager</servlet-name>
 		<servlet-class>us.mn.state.dot.video.server.AccountManager</servlet-class>
 		<load-on-startup>3</load-on-startup>
@@ -40,7 +40,7 @@
 	<servlet-mapping>
 		<servlet-name>AccountManager</servlet-name>
 		<url-pattern>/client/passwordForm</url-pattern>
-	</servlet-mapping>
+	</servlet-mapping>-->
 	<security-role>
 		<role-name>hyperstream</role-name>
 	</security-role>

@@ -54,10 +54,15 @@ public final class StillRepeater extends VideoServlet{
 	/** Contructor for the redirector servlet */
     public void init(ServletConfig config) throws ServletException {
 		super.init( config );
-		ServletContext ctx = config.getServletContext();
-		Properties p = (Properties)ctx.getAttribute("properties");
-		backendUrls = AbstractImageFactory.createBackendUrls(p, 2);
-		cacheAge = Integer.parseInt(p.getProperty("cache.age"));
+		try{
+			ServletContext ctx = config.getServletContext();
+			Properties p = (Properties)ctx.getAttribute("properties");
+			backendUrls = AbstractImageFactory.createBackendUrls(p, 2);
+			cacheAge = Integer.parseInt(p.getProperty("cache.age"));
+			System.out.println("StillRepeater initialized.");
+		}catch(Exception e){
+			e.printStackTrace();
+		}
     }
 
     /** Process a request for a video image
@@ -67,7 +72,8 @@ public final class StillRepeater extends VideoServlet{
 	 */
     public void processRequest(HttpServletResponse response,
     		Client c)throws VideoException{
-		byte[] image = getImage(c);
+    	long start = System.currentTimeMillis();
+    	byte[] image = getImage(c);
 		try{
 			if(image != null){
 				response.setContentType("image/jpeg");
@@ -79,6 +85,9 @@ public final class StillRepeater extends VideoServlet{
 		}catch(Throwable th){
 			logger.info("Unable to write image (" +c.getCameraId() + ") " +
 					" to client (" + c.getHost() + ").");
+		}finally{
+			logger.fine("Request filled in " + (System.currentTimeMillis()-start) +
+					" milliseconds");
 		}
     }
 
@@ -89,68 +98,16 @@ public final class StillRepeater extends VideoServlet{
      */
     private byte[] getImage(Client c) throws VideoException{
     	if(c.getCameraId()==null)return null;
-    	byte[] image = null;
-    	image = lookupImage(c);
-    	if(image != null) return image;
-		URL url = null;
-		String s = "";
-		try{
-			s = backendUrls[c.getArea()] + "?id=" + c.getCameraId() +
-				"&size=" + c.getSize();
-			logger.fine("Fetching image: " + s);
-			url = new URL(s);
-		}catch(MalformedURLException mue){
-			throw new VideoException("Malformed URL: " + s);
+    	String key = createCacheKey(c);
+		CacheEntry entry = cache.get(key);
+		if(entry == null){
+			entry = new CacheEntry(backendUrls, c);
+			cache.put(key, entry);
 		}
-		image = fetchImage(url);
-		addEntry(c, image);
-		return image;
+		return entry.getImage();
     }
     
-    /**
-     * Get the number of milliseconds that have elapsed since start.
-     * @param start
-     * @return
-     */
-    private static float getAge(long start){
-		return (Calendar.getInstance().getTimeInMillis() - start);
-	}
-
-    private static String createHashKey(Client c){
+    private static String createCacheKey(Client c){
     	return c.getArea() + ":" + c.getCameraId() + ":" + c.getSize();
     }
-
-    /* Lookup an image in the cache */
-	private static byte[] lookupImage(Client c){
-		String key = createHashKey(c); 
-		CacheEntry entry = (CacheEntry)(cache.get(key));
-		if(entry == null) return null;
-		if(getAge(entry.imageTime) < cacheAge){
-			return entry.imageData;
-		}else{
-			cache.remove(key);
-		}
-		return null;
-	}
-	
-	/**
-	 * Get the image at the given URL
-	 * @param url
-	 * @return An image as a byte[].  Returns null if
-	 * the image cannot be obtained.
-	 */
-	private byte[] fetchImage(URL url) throws VideoException{
-    	try {
-			return ConnectionFactory.getImage(url);
-		}catch(IOException ioe){
-			throw new VideoException(ioe.getMessage() +
-					": " + url.toString());
-		}
-	}
-
-	/** Add an entry into the cache */
-	private static void addEntry(Client c, byte[] image){
-		if(image != null) cache.put(createHashKey(c), new CacheEntry(image));
-	}
-
 }

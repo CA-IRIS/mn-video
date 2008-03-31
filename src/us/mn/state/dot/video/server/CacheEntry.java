@@ -18,19 +18,69 @@
  */
 package us.mn.state.dot.video.server;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Calendar;
 
+import us.mn.state.dot.video.Client;
+import us.mn.state.dot.video.ConnectionFactory;
+import us.mn.state.dot.video.VideoException;
+
 /**
- * An object that can be placed in the stills cache.
+ * An object that can be placed in the stills cache.  This class
+ * also makes sure that the image data is not expired before returning
+ * it to calling classes.
  *
  */
 public class CacheEntry {
 
 	//Image cache entry
-	public final long imageTime = Calendar.getInstance().getTimeInMillis();
-	public byte[] imageData = null;
-		
-	public CacheEntry(byte[] imageData){
-		this.imageData = imageData;
+	protected long imageTime = System.currentTimeMillis();
+	protected Client client = null;
+	protected String[] backendUrls = null;
+	protected byte[] imageData = null;
+	protected long expirationAge = 20000; // 20 seconds
+	
+	public CacheEntry(String[] backendUrls, Client c){
+		this.backendUrls = backendUrls;
+		this.client = c;
 	}
+
+    /**
+     * Get the age of the image data in milliseconds.
+     * @param start
+     * @return
+     */
+    private long getAge(){
+		return (System.currentTimeMillis() - imageTime);
+	}
+
+    public synchronized byte[] getImage() throws VideoException {
+    	try{
+	    	if(getAge() > expirationAge){
+	    		System.out.println(client.getCameraId() + " fetching image.");
+	    		imageData = ConnectionFactory.getImage(getImageURL());
+	    		imageTime = System.currentTimeMillis();
+	    	}else{
+	    		System.out.println(client.getCameraId() + " using cache.");
+	    	}
+	    	return imageData;
+    	}catch(IOException ioe){
+    		throw new VideoException(ioe.getMessage());
+    	}
+    }
+
+    protected URL getImageURL() throws VideoException {
+		String s = "";
+    	try{
+			s = backendUrls[client.getArea()] + "?id=" + client.getCameraId() +
+				"&size=" + client.getSize();
+			return new URL(s);
+		}catch(MalformedURLException mue){
+			throw new VideoException("Malformed URL: " + s);
+		}
+    }
+
 }
+

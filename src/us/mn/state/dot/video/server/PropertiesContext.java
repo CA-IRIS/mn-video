@@ -89,7 +89,7 @@ public class PropertiesContext extends HttpServlet{
 		logger = TmsLogFactory.createLogger(appName,
 				Level.parse(props.getProperty(PROP_LOG_LEVEL, "all")),
 				logDir);
-		ProxySelector.setDefault(new HTTPProxySelector(props));
+//		ProxySelector.setDefault(new HTTPProxySelector(props));
 		try{
 			TmsLogFactory.redirectStdStreams(appName, logDir);
 		}catch(FileNotFoundException fnfe){

@@ -127,11 +127,11 @@ public abstract class VideoServlet extends HttpServlet {
 			t.setName("VIDEO " + servletName + " " +
 				Constants.DATE_FORMAT.format(cal.getTime()) +
 				" Camera " + c.getCameraId());
-			if(isPublic(c.getCameraId())){
+//			if(isPublic(c.getCameraId())){
 				processRequest(response, c);
-			}else{
-				sendNoVideo(response, c);
-			}
+//			}else{
+//				sendNoVideo(response, c);
+//			}
 		}
 		catch(Throwable th) {
 			th.printStackTrace();
