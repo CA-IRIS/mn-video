@@ -112,8 +112,8 @@ public class Client {
 	}
 	public void setCameraId(String id){
 		id = id.toUpperCase();
-		while(id.length()<3) id = "0" + id;
-		if(!id.startsWith("C")) id = "C" + id;
+//		while(id.length()<3) id = "0" + id;
+//		if(!id.startsWith("C")) id = "C" + id;
 		if(camera == null) camera = new Camera();
 		camera.setId(id);
 	}

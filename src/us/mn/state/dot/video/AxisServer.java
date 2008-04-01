@@ -246,7 +246,7 @@ public final class AxisServer extends AbstractEncoder {
 					stillsCon.getHeaderField("Content-Length"));
 			return readImage(in, length);
 		}catch(Exception e){
-			throw new VideoException(c.getCameraId() + "Encoder fetch error: " + e.getMessage());
+			throw new VideoException("Encoder fetch error: " + e.getMessage());
 		}finally{
 			try{
 				in.close();
