@@ -18,10 +18,6 @@
 */
 package us.mn.state.dot.video.server;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Properties;
 
@@ -32,7 +28,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import us.mn.state.dot.video.AbstractImageFactory;
 import us.mn.state.dot.video.Client;
-import us.mn.state.dot.video.ConnectionFactory;
 import us.mn.state.dot.video.VideoException;
 
 /**
@@ -105,7 +100,7 @@ public final class StillRepeater extends VideoServlet{
     	String key = createCacheKey(c);
 		CacheEntry entry = cache.get(key);
 		if(entry == null){
-			entry = new CacheEntry(backendUrls, c);
+			entry = new CacheEntry(backendUrls, c, logger);
 			entry.setExpiration(cacheDuration);
 			cache.put(key, entry);
 		}

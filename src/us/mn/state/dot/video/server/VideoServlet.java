@@ -134,7 +134,6 @@ public abstract class VideoServlet extends HttpServlet {
 //			}
 		}
 		catch(Throwable th) {
-			th.printStackTrace();
 			logger.warning(th.getMessage());
 		}
 		finally {
