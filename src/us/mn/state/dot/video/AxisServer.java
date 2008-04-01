@@ -191,7 +191,7 @@ public final class AxisServer extends AbstractEncoder {
 		if(url == null){
 			throw new VideoException("No URL for camera " + c.getCameraId());
 		}
-		byte[] image = fetchImage(url);
+		byte[] image = fetchImage(c, url);
 		if(image != null) return image;
 		return getNoVideoImage();
 	}
@@ -231,23 +231,22 @@ public final class AxisServer extends AbstractEncoder {
 		}
 	}
 
-	private synchronized final byte[] fetchImage(URL url) throws VideoException{
+	private synchronized final byte[] fetchImage(Client c, URL url) throws VideoException{
 		InputStream in = null;
 		try {
 			stillsCon = ConnectionFactory.createConnection(url);
 			prepareConnection(stillsCon);
-			int response = stillsCon.getResponseCode();
-			if(response == 503){
-				restart();
-				return null;
-			}
+//			int response = stillsCon.getResponseCode();
+//			if(response == 503){
+//				restart();
+//				return null;
+//			}
 			in = stillsCon.getInputStream();
 			int length = Integer.parseInt(
 					stillsCon.getHeaderField("Content-Length"));
 			return readImage(in, length);
 		}catch(Exception e){
-			e.printStackTrace();
-			throw new VideoException("Fetch error: " + e.getMessage());
+			throw new VideoException(c.getCameraId() + "Encoder fetch error: " + e.getMessage());
 		}finally{
 			try{
 				in.close();

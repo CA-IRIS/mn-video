@@ -43,24 +43,28 @@ import us.mn.state.dot.video.VideoException;
  */
 public final class StillRepeater extends VideoServlet{
 
-	/** The time that an image should remain in cache */
-	private static int cacheAge = 5000; // milliseconds
-
 	private static Hashtable<String, CacheEntry> cache =
 		new Hashtable<String, CacheEntry>();
 
+	protected final long DEFAULT_CACHE_DURATION = 10000; //10 seconds
+	
+	protected long cacheDuration = DEFAULT_CACHE_DURATION;
+	
 	protected String[] backendUrls = null;
 	
-	/** Contructor for the redirector servlet */
+	/** Constructor for the redirector servlet */
     public void init(ServletConfig config) throws ServletException {
 		super.init( config );
 		try{
 			ServletContext ctx = config.getServletContext();
 			Properties p = (Properties)ctx.getAttribute("properties");
 			backendUrls = AbstractImageFactory.createBackendUrls(p, 2);
-			cacheAge = Integer.parseInt(p.getProperty("cache.age"));
+			cacheDuration = Long.parseLong(
+					p.getProperty("video.cache.duration",
+					Long.toString(DEFAULT_CACHE_DURATION)));
 			System.out.println("StillRepeater initialized.");
 		}catch(Exception e){
+			logger.severe(e.getMessage() + " --see error log for details.");
 			e.printStackTrace();
 		}
     }
@@ -102,6 +106,7 @@ public final class StillRepeater extends VideoServlet{
 		CacheEntry entry = cache.get(key);
 		if(entry == null){
 			entry = new CacheEntry(backendUrls, c);
+			entry.setExpiration(cacheDuration);
 			cache.put(key, entry);
 		}
 		return entry.getImage();

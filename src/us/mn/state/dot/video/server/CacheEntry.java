@@ -40,13 +40,20 @@ public class CacheEntry {
 	protected Client client = null;
 	protected String[] backendUrls = null;
 	protected byte[] imageData = null;
-	protected long expirationAge = 20000; // 20 seconds
+	
+	/** Length of time that an image should be cached */
+	protected long expirationAge = 10000; // 10 seconds
 	
 	public CacheEntry(String[] backendUrls, Client c){
 		this.backendUrls = backendUrls;
 		this.client = c;
 	}
 
+	/** Set the expiration time for the cache */
+	public void setExpiration(long ex){
+		this.expirationAge = ex;
+	}
+	
     /**
      * Get the age of the image data in milliseconds.
      * @param start
