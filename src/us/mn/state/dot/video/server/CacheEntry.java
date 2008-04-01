@@ -21,7 +21,7 @@ package us.mn.state.dot.video.server;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Calendar;
+import java.util.logging.Logger;
 
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.ConnectionFactory;
@@ -35,18 +35,19 @@ import us.mn.state.dot.video.VideoException;
  */
 public class CacheEntry {
 
-	//Image cache entry
 	protected long imageTime = System.currentTimeMillis();
 	protected Client client = null;
 	protected String[] backendUrls = null;
 	protected byte[] imageData = null;
+	protected Logger logger = null;
 	
 	/** Length of time that an image should be cached */
 	protected long expirationAge = 10000; // 10 seconds
 	
-	public CacheEntry(String[] backendUrls, Client c){
+	public CacheEntry(String[] backendUrls, Client c, Logger l){
 		this.backendUrls = backendUrls;
 		this.client = c;
+		this.logger = l;
 	}
 
 	/** Set the expiration time for the cache */
@@ -65,12 +66,12 @@ public class CacheEntry {
 
     public synchronized byte[] getImage() throws VideoException {
     	try{
-	    	if(getAge() > expirationAge){
-	    		System.out.println(client.getCameraId() + " fetching image.");
+	    	if(getAge() > expirationAge || imageData == null){
+	    		logger.fine(client.getCameraId() + " fetching image.");
 	    		imageData = ConnectionFactory.getImage(getImageURL());
 	    		imageTime = System.currentTimeMillis();
 	    	}else{
-	    		System.out.println(client.getCameraId() + " using cache.");
+	    		logger.fine(client.getCameraId() + " using cache.");
 	    	}
 	    	return imageData;
     	}catch(IOException ioe){
@@ -78,6 +79,7 @@ public class CacheEntry {
     	}
     }
 
+    /** Get the URL used to retrieve a new image */
     protected URL getImageURL() throws VideoException {
 		String s = "";
     	try{
