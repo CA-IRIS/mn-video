@@ -113,7 +113,7 @@
 		<copy todir="${build.web.dir}" filtering="true">
 			<fileset dir="${web.dir}" />
 			<filterset begintoken="@@" endtoken="@@">
-				<filter token="TMSLOG.VERSION"
+				<filter token="TMS-LOG.VERSION"
 					value="${tms-log.version}"/>
 				<filter token="BUILD.ID"
 					value="${DSTAMP}:${TSTAMP}"/>
@@ -131,7 +131,7 @@
 		<copy todir="${build.etc.dir}" filtering="true">
 			<fileset dir="${etc.dir}" />
 			<filterset begintoken="@@" endtoken="@@">
-				<filter token="TMSLOG.VERSION"
+				<filter token="TMS-LOG.VERSION"
 					value="${tms-log.version}"/>
 				<filter token="BUILD.ID"
 					value="${DSTAMP}:${TSTAMP}"/>
@@ -351,6 +351,10 @@
 			<fileset dir="${lib.dir}" >
 				<include name="tms-log-${log.version}.jar" />
 			</fileset>
+		</copy>
+
+		<copy todir="${build.repeater.dir}/cameras">
+	       		<fileset dir="${build.web.dir}/cameras"/>
 		</copy>
 
 		<copy todir="${build.repeater.dir}/client">

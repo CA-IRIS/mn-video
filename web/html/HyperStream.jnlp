@@ -2,7 +2,7 @@
 <!-- JNLP File for HyperStream Client -->
 <jnlp
 	spec="1.0"
-	codebase="http://@@REPEATER.HOST@@:@@REPEATER.PORT@@/@@NAME@@/client"
+	codebase="http://@@VIDEO.REPEATER.HOST@@:@@VIDEO.REPEATER.PORT@@/@@NAME@@/client"
 	href="HyperStream.jnlp">
 	<information>
 		<title>HyperStream</title>
@@ -15,7 +15,7 @@
 	<resources>
     	<j2se version="1.5+"/>
 		<jar href="@@NAME@@-client-@@VERSION@@.jar"/>
-		<jar href="tms-log-@@TMSLOG.VERSION@@.jar"/>
+		<jar href="tms-log-@@TMS-LOG.VERSION@@.jar"/>
 	</resources>
 	<security>
 		<all-permissions/>

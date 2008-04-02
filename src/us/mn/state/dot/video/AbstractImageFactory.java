@@ -95,7 +95,7 @@ public abstract class AbstractImageFactory extends VideoThread {
 
 	/** Remove a listener from this Image Factory. */
 	public synchronized final void removeImageFactoryListener(ImageFactoryListener l) {
-		logger.info("Removing ImageFactoryListener: " + l.toString());
+		logger.info("Removing ImageFactoryListener: " + l.getClass().getSimpleName());
 		listeners.remove(l);
 		if(listeners.size()==0){
 			logger.info(this.toString() + " has no listeners, stopping now.");

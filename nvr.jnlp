@@ -14,7 +14,7 @@
     <resources>
 	<j2se version="1.5+" max-heap-size="256m"/>
 	<jar href="lib/nvrclient-@@VERSION@@.jar"/>
-	<jar href="lib/tms-log-@@TMSLOG.VERSION@@.jar"/>
+	<jar href="lib/tms-log-@@TMS-LOG.VERSION@@.jar"/>
     </resources>
     <security>
        <all-permissions/>
