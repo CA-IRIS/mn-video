@@ -42,7 +42,8 @@ import us.mn.state.dot.video.AbstractImageFactory;
 import us.mn.state.dot.video.Camera;
 import us.mn.state.dot.video.ConnectionFactory;
 import us.mn.state.dot.video.Constants;
-import us.mn.state.dot.video.ImageFactoryListener;
+import us.mn.state.dot.video.DataSink;
+import us.mn.state.dot.video.DataSource;
 
 /**
  * A JPanel that can display an RTMC video stream.
@@ -51,10 +52,10 @@ import us.mn.state.dot.video.ImageFactoryListener;
  * @created   May 30, 2002
  */
 public class VideoMonitor extends JPanel
-		implements ImageFactoryListener, ListSelectionListener {
+		implements DataSink, ListSelectionListener {
 
 	private Camera camera = null;
-	private AbstractImageFactory factory = null;
+	private DataSource source = null;
 	private int imagesRendered = 0;
 	Image image = null;
 	String imageName = null;
@@ -118,32 +119,32 @@ public class VideoMonitor extends JPanel
 		repaint();
 	}
 
-	public void setImageFactory(AbstractImageFactory f, int totalFrames){
+	public void setImageFactory(DataSource src, int totalFrames){
+		if(source != null ){
+			source.disconnectSink(this);
+		}
 		imagesRendered = 0;
 		this.imagesRequested = totalFrames;
-		if(f != null){
-			f.addImageFactoryListener(this);
+		if(src != null){
+			source.connectSink(this);
 			images.clear();
 			status.setText(CONNECTING);
 		}else{
 			status.setText(WAIT_ON_USER);
 		}
-		if(factory != null){
-			factory.removeImageFactoryListener(this);
-		}
-		factory = f;
+		source = src;
 		progress.setMaximum(imagesRequested);
 		progress.setValue(0);
 	}
 	
-	public void imageCreated(byte[] i){
+	public void flush(byte[] i){
 		status.setText(STREAMING);
 		ImageIcon icon = new ImageIcon(i);
 		setImage(icon);
 		progress.setValue(imagesRendered);
 		imagesRendered++;
 		if(imagesRendered >= imagesRequested){
-			factory.removeImageFactoryListener(this);
+			source.disconnectSink(this);
 			clear();
 		}
 	}

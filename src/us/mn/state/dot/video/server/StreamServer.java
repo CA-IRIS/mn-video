@@ -27,9 +27,9 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
-import us.mn.state.dot.video.AbstractImageFactory;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.ClientStream;
+import us.mn.state.dot.video.DataSource;
 import us.mn.state.dot.video.ThreadMonitor;
 import us.mn.state.dot.video.VideoException;
 
@@ -74,8 +74,8 @@ public class StreamServer extends VideoServlet {
 	public void processRequest(HttpServletResponse response,
 			Client c) throws VideoException {
 		if( !isAuthenticated(c) ) return;
-		AbstractImageFactory f = dispatcher.getFactory(c);
-		if(f==null || c.getCameraId() == null){
+		DataSource source = dispatcher.getFactory(c);
+		if(source==null || c.getCameraId() == null){
 			byte[] data = ("No image for camera " + c.getCameraId()).getBytes();
 			try{
 				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -91,7 +91,7 @@ public class StreamServer extends VideoServlet {
 			try{
 				ClientStream cs =
 					new ClientStream(c, response.getOutputStream(),
-							f, logger, maxFrameRate);
+							source, logger, maxFrameRate);
 				registerStream(c, cs);
 				cs.sendImages();
 			}catch(Exception e){

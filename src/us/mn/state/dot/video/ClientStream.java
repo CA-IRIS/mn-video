@@ -30,7 +30,7 @@ import java.util.logging.Logger;
  *
  * @author Timothy Johnson
  */
-public class ClientStream extends Coupler implements ImageFactoryListener {
+public class ClientStream extends Coupler {
 
 	/** The maximum time a stream can run (in seconds) */
 	private static final long MAX_DURATION = 60 * 1000 * 5; // 5 minutes
@@ -46,28 +46,28 @@ public class ClientStream extends Coupler implements ImageFactoryListener {
 
 	private Client client = null;
 	
-	private final AbstractImageFactory factory;
-	
 	private long startTime = Calendar.getInstance().getTimeInMillis();
 	
 	private Logger logger = null;
-
+	
 	/** The time to sleep, in milliseconds, between sending images to the client */
 	private final int sleepDuration;
+
+	private DataSource source = null;
 	
 	/** Constructor for the ClientStream. */
 	public ClientStream (Client c, OutputStream out,
-			AbstractImageFactory f, Logger l, int maxRate){
+			DataSource source, Logger l, int maxRate){
 		logger = l;
 		client = c;
-		factory = f;
-		factory.addImageFactoryListener(this);
 		sleepDuration = 1000 / Math.min(maxRate, client.getRate());
 		this.out = new DataOutputStream(out);
+		this.source = source;
+		source.connectSink(this);
 	}
 
 	public String toString(){
-		if(client==null || factory==null){
+		if(client==null){
 			return "Uninitialized Client Stream";
 		}
 		return "ClientStream: " + client.toString();
@@ -80,7 +80,7 @@ public class ClientStream extends Coupler implements ImageFactoryListener {
 		long now = 0;
 		try{
 			while(!isDone()) {
-				writeImage(factory.getImage());
+				writeData();
 				Thread.sleep(sleepDuration);
 				now = Calendar.getInstance().getTimeInMillis();
 				if((now-startTime) > MAX_DURATION){
@@ -94,7 +94,7 @@ public class ClientStream extends Coupler implements ImageFactoryListener {
 			termReason = e.getClass().getSimpleName();
 			logger.info("Error sending images to " + client.getUser());
 		}finally{
-			factory.removeImageFactoryListener(this);
+			source.disconnectSink(this);
 			try{
 				halt(termReason);
 				out.close();
@@ -112,22 +112,19 @@ public class ClientStream extends Coupler implements ImageFactoryListener {
 		done = true;
 	}
 	
-	/** Write the image to the output stream */
-	private void writeImage(byte[] i)throws IOException{
-		if(i==null) return;
+	/** Write the data to the output stream */
+	private synchronized void writeData()throws IOException{
+		if(data==null) return;
 		out.write(CONTENT_TYPE.getBytes());
 		out.write(CONTENT_LENGTH.getBytes());
-		out.write(Integer.toString(i.length).getBytes());
+		out.write(Integer.toString(data.length).getBytes());
 		out.write('\r');
 		out.write('\n');
 		//Axis puts an empty line after the content-length
 		//so we must also when re-creating an MJPEG stream
 		out.write('\r');
 		out.write('\n');
-		out.write(i);
+		out.write(data);
 		out.flush();
-	}
-	
-	public void imageCreated(byte[] image){
 	}
 }

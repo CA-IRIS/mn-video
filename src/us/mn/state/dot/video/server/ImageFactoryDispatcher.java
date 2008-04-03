@@ -117,5 +117,4 @@ public class ImageFactoryDispatcher {
 		factoryTable.put(name, f);
 		return f;
 	}
-
 }

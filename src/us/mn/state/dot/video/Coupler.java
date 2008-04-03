@@ -9,24 +9,18 @@ import java.util.Vector;
  */
 public class Coupler implements DataSink, DataSource {
 
+	/** The data to flush down the sink */
+	protected byte[] data = null;
+	
 	/** The collection of sinks which receive the data */
 	private final Collection<DataSink> sinks = new Vector<DataSink>();
 	
-	/** The sources which supplies the data */
+	/** The source which supplies the data */
 	private DataSource source;
 
-	/** Connect a DataSource */
-	public final void connectSource(DataSource source){
-		this.source = source;
-	}
-	
-	/** Disconnect the DataSource */
-	public final void disconnectSource(){
-		this.source = null;
-	}
-	
 	/** Flush the data down the sink */
 	public final void flush(byte[] data){
+		this.data = data;
 		for(DataSink sink : sinks){
 			sink.flush(data);
 		}
@@ -34,12 +28,12 @@ public class Coupler implements DataSink, DataSource {
 
 	/** Connect a DataSink */
 	public final void connectSink(DataSink sink){
+		if(sink == this) return;
 		sinks.add(sink);
 	}
 	
-	/** Disconnect a datasink */
+	/** Disconnect a DataSink */
 	public final void disconnectSink(DataSink sink){
 		sinks.remove(sink);
 	}
-
 }

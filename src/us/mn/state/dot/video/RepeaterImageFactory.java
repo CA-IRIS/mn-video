@@ -91,7 +91,7 @@ public class RepeaterImageFactory extends AbstractImageFactory {
 			logger.info(this + " unable to create MJPEGStream.");
 		}finally{
 			logger.info("Closing ImageFactory: " + this);
-			removeListeners();
+			removeSinks();
 			try {
 				con.getInputStream().close();
 			}catch(Exception e){

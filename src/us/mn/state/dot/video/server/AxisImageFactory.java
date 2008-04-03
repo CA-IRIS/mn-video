@@ -71,7 +71,7 @@ public class AxisImageFactory extends AbstractImageFactory{
 			}catch(VideoException ve){
 				logger.info(ve.getMessage());
 			}finally{
-				removeListeners();
+				removeSinks();
 			}
 		}
 	}
