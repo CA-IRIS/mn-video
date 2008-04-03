@@ -70,9 +70,6 @@ public class AccountManager extends HttpServlet{
 		super.init(cfg);
 		logger = (Logger)cfg.getServletContext().getAttribute("logger");
 		props = (Properties)getServletContext().getAttribute("properties");
-		if(props==null){
-			logger.warning("Unable to load properties from servlet context.");
-		}
 		appHome = props.getProperty(PropertiesContext.PROP_APP_HOME);
 		appName = props.getProperty(PropertiesContext.PROP_APP_NAME);
 		props.setProperty("file.resource.loader.path", appHome);
@@ -236,11 +233,11 @@ public class AccountManager extends HttpServlet{
 	private Connection getDBConnection(){
 		try {
 			Class.forName( "org.postgresql.Driver" );
-			String db = "video";
-			String user = "tomcat";;
-			String pwd = "tomcat";
-			return DriverManager.getConnection( driver + "://" +
-				"localhost:5432/" + db, user, pwd );
+			String user = props.getProperty("video.db.connecction.name");
+			String pwd = props.getProperty("video.db.connecction.password");
+			String url = props.getProperty("video.db.connection.url");
+			return DriverManager.getConnection(
+				url, user, pwd );
 		}catch(Exception e){
 			logger.warning(e.toString());
 			e.printStackTrace();
