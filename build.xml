@@ -61,6 +61,15 @@
 		<antcall target="check-jar">
 			<param name="file.jar" value="velocity-dep-1.3.1.jar"/>
 		</antcall>
+		<antcall target="check-jar">
+			<param name="file.jar" value="sonar-client-${sonar-client.version}.jar"/>
+		</antcall>
+		<antcall target="check-jar">
+			<param name="file.jar" value="iris-client-${iris-client.version}.jar"/>
+		</antcall>
+		<antcall target="check-jar">
+			<param name="file.jar" value="iris-rmi-${rmi.version}.jar"/>
+		</antcall>
 	</target>
 
 
@@ -202,6 +211,23 @@
 		depends="check, prepare"
 		description="Compiles all of the source files for the project.">
 		<javac destdir="${build.classes.dir}"
+			excludes="us/mn/state/dot/video/dev/**"
+			debug="on"
+			deprecation="on"
+			optimize="on"
+			target="1.5">
+			<src path="${build.src.dir}"/>
+			<classpath refid="classpath" />
+		</javac>
+	</target>
+
+	<!-- ================================================== -->
+	<!-- Compile all code including the test classes        -->
+	<!-- ================================================== -->
+	<target name="compile-test"
+		depends="prepare"
+		description="Compile all classes">
+		<javac destdir="${build.classes.dir}"
 			debug="on"
 			deprecation="on"
 			optimize="on"
@@ -262,7 +288,7 @@
 	<!-- Create a test war file                             -->
 	<!-- ================================================== -->
 	<target name="test"
-		depends="check-server, compile"
+		depends="check-server, compile-test"
 		description="Creates the test war file.">
 		<copy todir="${build.dir}/test/WEB-INF/lib">
 			<fileset dir="${lib.dir}" >
