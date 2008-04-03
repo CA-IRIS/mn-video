@@ -180,6 +180,15 @@ public class VideoMonitor extends JPanel
 		}
 	}
 
+	public String toString(){
+		String id = "";
+		try{
+			id = camera.getId();
+		}catch(Exception e){
+		}
+		return id + " video monitor";
+	}
+	
 	/** Update the video screen with the latest camera image. */
 	protected void updateScreen(){
 		if(camera == null) setImage(null);
