@@ -15,30 +15,30 @@ public class Coupler implements DataSink, DataSource {
 	/** The sources which supplies the data */
 	private DataSource source;
 
-	/** Connect a datasource */
-	public void connect(DataSource source){
+	/** Connect a DataSource */
+	public final void connectSource(DataSource source){
 		this.source = source;
 	}
 	
-	/** Disconnect a datasource */
-	public void disconnect(DataSource source){
+	/** Disconnect the DataSource */
+	public final void disconnectSource(){
 		this.source = null;
 	}
 	
 	/** Flush the data down the sink */
-	public void flush(byte[] data){
+	public final void flush(byte[] data){
 		for(DataSink sink : sinks){
 			sink.flush(data);
 		}
 	}
 
-	/** Connect a datasink */
-	public void connect(DataSink sink){
+	/** Connect a DataSink */
+	public final void connectSink(DataSink sink){
 		sinks.add(sink);
 	}
 	
 	/** Disconnect a datasink */
-	public void disconnect(DataSink sink){
+	public final void disconnectSink(DataSink sink){
 		sinks.remove(sink);
 	}
 

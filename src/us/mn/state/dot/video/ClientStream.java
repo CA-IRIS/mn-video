@@ -30,7 +30,7 @@ import java.util.logging.Logger;
  *
  * @author Timothy Johnson
  */
-public class ClientStream implements ImageFactoryListener {
+public class ClientStream extends Coupler implements ImageFactoryListener {
 
 	/** The maximum time a stream can run (in seconds) */
 	private static final long MAX_DURATION = 60 * 1000 * 5; // 5 minutes
