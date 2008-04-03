@@ -51,9 +51,6 @@ public class AccountManager extends HttpServlet{
 		"The server experienced an error processing your request.<br/>" +
 		"Please try again later or contact the site administrator.";
 
-	/** Database connection driver */
-	private String driver = "jdbc:postgresql";
-
 	protected Properties props = new Properties();
 	
 	protected String appHome = null;
