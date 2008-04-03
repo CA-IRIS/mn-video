@@ -135,14 +135,6 @@ public class AccountManager extends HttpServlet{
 					processError(request, response, ERROR_MSG);
 				}
 			}
-		}else if(action.indexOf("requestaccount")>0){
-			if(requestAccount(request, response)){
-				processSuccess(request, response,
-						"Your request for an account has been processed.<br/>" +
-						"Your will be notified when your account has been activated.");
-			}else{
-				processError(request, response, ERROR_MSG);
-			}
 		}else{
 			processError(request, response,
 				"Invalid servlet request.");
@@ -239,52 +231,6 @@ public class AccountManager extends HttpServlet{
 	private String getSHAHash(String s){
 		byte[] pwdBytes = s.getBytes();
 		return SHA_DIGEST.digest(pwdBytes).toString();
-	}
-	
-	private boolean requestAccount(HttpServletRequest request,
-			HttpServletResponse response)
-	{
-		Connection c = null;
-		try{
-			String pwd = request.getParameter("password");
-			pwd = clean(pwd);
-			String pwdHash = getSHAHash(pwd);
-			c = getDBConnection();
-			Statement statement = c.createStatement();
-			int result = statement.executeUpdate(
-				"insert into tomcat_user " +
-				"(username, password, f_name, l_name, email, phone, company, processed) " +
-				"values " +
-				"('" + clean(request.getParameter("userName")) + "', " +
-				"'" + pwdHash + "', " +
-				"'" + clean(request.getParameter("fName")) + "', " +
-				"'" + clean(request.getParameter("lName")) + "', " +
-				"'" + clean(request.getParameter("email")) + "', " +
-				"'" + clean(request.getParameter("phone")) + "', " +
-				"'" + clean(request.getParameter("company")) + "', 'f' )" );
-			if(result>0){
-				return true;
-			}
-		}catch(Exception e){
-			logger.warning(e.toString());
-			e.printStackTrace();
-		}finally{
-			try{
-				c.close();
-			}catch(Exception e2){
-			}
-		}
-		return false;
-	}
-
-	/*
-	 * Remove any characters from a string that could allow
-	 * a user to inject SQL into their responses.
-	 */
-	private String clean(String s){
-		s = s.replaceAll(";", "");
-		s = s.replaceAll("'", "");
-		return s;
 	}
 	
 	private Connection getDBConnection(){
