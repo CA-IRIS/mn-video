@@ -31,6 +31,7 @@ import us.mn.state.dot.video.AbstractImageFactory;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.ClientStream;
 import us.mn.state.dot.video.ThreadMonitor;
+import us.mn.state.dot.video.VideoException;
 
 /**
  * The <code>StreamServer</code> class is a servlet that responds to client requests for
@@ -71,7 +72,8 @@ public class StreamServer extends VideoServlet {
 	 * @param response servlet response
 	 */
 	public void processRequest(HttpServletResponse response,
-			Client c) throws Exception{
+			Client c) throws VideoException {
+		if( !isAuthenticated(c) ) return;
 		AbstractImageFactory f = dispatcher.getFactory(c);
 		if(f==null || c.getCameraId() == null){
 			byte[] data = ("No image for camera " + c.getCameraId()).getBytes();
@@ -86,14 +88,24 @@ public class StreamServer extends VideoServlet {
 						" to " + c.getUser());
 			}
 		}else{
-			ClientStream cs =
-				new ClientStream(c, response.getOutputStream(),
-						f, logger, maxFrameRate);
-			registerStream(c, cs);
-			cs.sendImages();
+			try{
+				ClientStream cs =
+					new ClientStream(c, response.getOutputStream(),
+							f, logger, maxFrameRate);
+				registerStream(c, cs);
+				cs.sendImages();
+			}catch(Exception e){
+				throw new VideoException(e.getMessage());
+			}
 		}
 	}
 
+	/** Check to see if the client is authenticated through SONAR */
+	private boolean isAuthenticated(Client c){
+		//FIXME: authenticate user through SONAR
+		return true;
+	}
+	
 	protected synchronized static final void registerStream(
 			Client c, ClientStream cs){
 		ClientStream oldStream = (ClientStream)clientStreams.get(c.getUser());

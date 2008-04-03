@@ -68,7 +68,7 @@ public class PropertiesContext extends HttpServlet{
 	/** Properties */
 	static protected final Properties props = new Properties();
 
-	/** Contructor for the VideoServer */
+	/** Constructor for the VideoServer */
 	public void init( ServletConfig config ) throws ServletException {
 		super.init( config );
 		ServletContext ctx = config.getServletContext();

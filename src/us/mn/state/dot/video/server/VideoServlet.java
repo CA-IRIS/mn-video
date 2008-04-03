@@ -62,7 +62,7 @@ public abstract class VideoServlet extends HttpServlet {
 	protected VelocityContext context= null;
 	protected HttpServletRequest request = null;
 	
-	/** Contructor for the redirector servlet */
+	/** Constructor for the redirector servlet */
 	public void init(ServletConfig config) throws ServletException {
 		super.init( config );
 		servletName = this.getClass().getSimpleName();
@@ -72,7 +72,7 @@ public abstract class VideoServlet extends HttpServlet {
 		}
 	}
 
-	/** Get an integer paramter request */
+	/** Get an integer parameter request */
 	protected int getIntRequest(HttpServletRequest req, String param) {
 		return Integer.parseInt(req.getParameter(param));
 	}
