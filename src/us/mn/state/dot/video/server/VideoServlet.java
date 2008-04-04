@@ -127,11 +127,11 @@ public abstract class VideoServlet extends HttpServlet {
 			t.setName("VIDEO " + servletName + " " +
 				Constants.DATE_FORMAT.format(cal.getTime()) +
 				" Camera " + c.getCameraId());
-//			if(isPublic(c.getCameraId())){
+			if(isPublic(c.getCameraId())){
 				processRequest(response, c);
-//			}else{
-//				sendNoVideo(response, c);
-//			}
+			}else{
+				sendNoVideo(response, c);
+			}
 		}
 		catch(Throwable th) {
 			logger.warning(th.getMessage());
@@ -165,10 +165,8 @@ public abstract class VideoServlet extends HttpServlet {
 
 	/** Check to see if a camera is viewable by the public. */
 	protected boolean isPublic(String camId){
-		//FIXME: temporary implementation, use Sonar when cameras
-		// have been migrated from RMI.
-		File f = new File("/tmp/" + camId);
-		return f.exists();
+		//FIXME: implement using SONAR
+		return true;
 	}
 
 	protected final void sendNoVideo(HttpServletResponse response, Client c)
