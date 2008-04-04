@@ -106,6 +106,11 @@ public class StreamServer extends VideoServlet {
 		logger.fine(c.getCameraId() + " registering stream...");
 		registerStream(c, cs);
 		logger.fine(c.getCameraId() + " sending images...");
+		try{
+			((Thread)source).start();
+		}catch(IllegalThreadStateException its){
+			// do nothing... it's already been started.
+		}
 		cs.sendImages();
 	}
 
