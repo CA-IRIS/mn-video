@@ -80,7 +80,7 @@ public class StreamServer extends VideoServlet {
 			if( !isAuthenticated(c) || source==null || c.getCameraId() == null){
 				sendNoVideo(response, c);
 			}else{
-				streamVideo(response, c, source); // this blocks until streaming is completed.
+				streamVideo(response, c, source);
 			}
 		}catch(Exception e){
 			throw new VideoException(e.getMessage());
@@ -88,6 +88,14 @@ public class StreamServer extends VideoServlet {
 		logger.fine(c.getCameraId() + " stream request processed.");
 	}
 	
+	/** Send MJPEG stream to the client.
+	 * This method blocks until all images have been sent or an error
+	 * occurs.
+	 * @param response
+	 * @param c
+	 * @param source
+	 * @throws IOException
+	 */
 	private void streamVideo(HttpServletResponse response, Client c, DataSource source)
 			throws IOException {
 		logger.fine(c.getCameraId() + " creating client stream...");
