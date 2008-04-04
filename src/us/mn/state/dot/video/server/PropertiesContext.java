@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.ProxySelector;
 import java.util.Calendar;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -34,7 +33,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
 import us.mn.state.dot.log.TmsLogFactory;
-import us.mn.state.dot.util.HTTPProxySelector;
 import us.mn.state.dot.video.Constants;
 
 /**

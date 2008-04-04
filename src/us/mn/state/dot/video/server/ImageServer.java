@@ -18,7 +18,6 @@
 */
 package us.mn.state.dot.video.server;
 
-import java.io.File;
 import java.util.Properties;
 
 import javax.servlet.ServletConfig;
