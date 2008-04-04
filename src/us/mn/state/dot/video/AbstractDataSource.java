@@ -28,12 +28,11 @@ import java.util.logging.Logger;
 import us.mn.state.dot.log.TmsLogFactory;
 
 /**
- * The ImageFactory connects to a video stream from the stream server.
- * It notifies each of it's listeners whenever there is a new image.
+ * An abstract implementation of a DataSource.
  *
  * @author Timothy Johnson
  */
-public abstract class AbstractImageFactory extends VideoThread implements DataSource {
+public abstract class AbstractDataSource extends VideoThread implements DataSource {
 
 	/** List of DataSinks for this stream. */
 	private ArrayList<DataSink> sinks =
@@ -47,7 +46,7 @@ public abstract class AbstractImageFactory extends VideoThread implements DataSo
 	protected final Client client;
 	
 	/** Constructor for the ImageFactory. */
-	protected AbstractImageFactory(Client c,
+	protected AbstractDataSource(Client c,
 			Logger l, ThreadMonitor m) {
 		super(m);
 		client = c;

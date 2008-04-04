@@ -26,7 +26,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
-import us.mn.state.dot.video.AbstractImageFactory;
+import us.mn.state.dot.video.AbstractDataSource;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.VideoException;
 
@@ -53,7 +53,7 @@ public final class StillRepeater extends VideoServlet{
 		try{
 			ServletContext ctx = config.getServletContext();
 			Properties p = (Properties)ctx.getAttribute("properties");
-			backendUrls = AbstractImageFactory.createBackendUrls(p, 2);
+			backendUrls = AbstractDataSource.createBackendUrls(p, 2);
 			cacheDuration = Long.parseLong(
 					p.getProperty("video.cache.duration",
 					Long.toString(DEFAULT_CACHE_DURATION)));

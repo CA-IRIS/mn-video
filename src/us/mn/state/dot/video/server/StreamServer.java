@@ -75,7 +75,7 @@ public class StreamServer extends VideoServlet {
 	public void processRequest(HttpServletResponse response,
 			Client c) throws VideoException {
 		logger.fine(c.getCameraId() + " stream requested");
-		DataSource source = dispatcher.getFactory(c);
+		DataSource source = dispatcher.getDataSource(c);
 		try{
 			if( !isAuthenticated(c) || source==null || c.getCameraId() == null){
 				sendNoVideo(response, c);

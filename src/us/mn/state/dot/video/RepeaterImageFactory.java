@@ -32,7 +32,7 @@ import java.util.logging.Logger;
  *
  * @author Timothy Johnson
  */
-public class RepeaterImageFactory extends AbstractImageFactory {
+public class RepeaterImageFactory extends AbstractDataSource {
 
 	/** URL of the images to get */
 	protected URL url;

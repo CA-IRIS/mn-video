@@ -22,7 +22,7 @@ package us.mn.state.dot.video.server;
 
 import java.util.logging.Logger;
 
-import us.mn.state.dot.video.AbstractImageFactory;
+import us.mn.state.dot.video.AbstractDataSource;
 import us.mn.state.dot.video.AxisServer;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.ThreadMonitor;
@@ -34,7 +34,7 @@ import us.mn.state.dot.video.VideoStream;
  *
  * @author Timothy Johnson
  */
-public class AxisImageFactory extends AbstractImageFactory{
+public class AxisImageFactory extends AbstractDataSource {
 
 	protected final AxisServer server;
 

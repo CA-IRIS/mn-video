@@ -38,7 +38,6 @@ import javax.swing.border.BevelBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import us.mn.state.dot.video.AbstractImageFactory;
 import us.mn.state.dot.video.Camera;
 import us.mn.state.dot.video.ConnectionFactory;
 import us.mn.state.dot.video.Constants;

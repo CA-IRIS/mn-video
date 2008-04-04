@@ -24,10 +24,10 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import us.mn.state.dot.util.db.TmsConnection;
-import us.mn.state.dot.video.AbstractImageFactory;
+import us.mn.state.dot.video.AbstractDataSource;
 import us.mn.state.dot.video.AxisServer;
 import us.mn.state.dot.video.Client;
+import us.mn.state.dot.video.DataSource;
 import us.mn.state.dot.video.RepeaterImageFactory;
 import us.mn.state.dot.video.ThreadMonitor;
 import us.mn.state.dot.video.VideoException;
@@ -42,8 +42,8 @@ public class ImageFactoryDispatcher {
 	private ThreadMonitor monitor = null;
 	
 	/** Table of video streams that are active. */
-	static final protected Hashtable<String, AbstractImageFactory>
-		factoryTable = new Hashtable<String, AbstractImageFactory>();
+	static final protected Hashtable<String, AbstractDataSource>
+		sourceTable = new Hashtable<String, AbstractDataSource>();
 
 	private final Logger logger;
 	
@@ -62,20 +62,20 @@ public class ImageFactoryDispatcher {
 		monitor = m;
 		proxy = new Boolean(p.getProperty("proxy", "false")).booleanValue();
 		if(proxy) {
-			backendUrls = AbstractImageFactory.createBackendUrls(p, 1);
+			backendUrls = AbstractDataSource.createBackendUrls(p, 1);
 		}else{
 			serverFactory = new ServerFactory(p);
 		}
 		Thread t = new Thread(){
 			public void run(){
 				while(true){
-					Enumeration<AbstractImageFactory> e = factoryTable.elements();
+					Enumeration<AbstractDataSource> e = sourceTable.elements();
 					while(e.hasMoreElements()){
-						AbstractImageFactory f = (AbstractImageFactory)e.nextElement();
-						if(!f.isAlive()){
-							Client c = f.getClient();
-							logger.info("Purging " + f);
-							factoryTable.remove(c.getCameraId() + ":" + c.getSize());
+						AbstractDataSource src = e.nextElement();
+						if(!src.isAlive()){
+							Client c = src.getClient();
+							logger.info("Purging " + src);
+							sourceTable.remove(c.getCameraId() + ":" + c.getSize());
 						}
 					}
 					try{
@@ -88,7 +88,7 @@ public class ImageFactoryDispatcher {
 		t.start();
 	}
 	
-	private AbstractImageFactory createFactory(Client c)
+	private DataSource createDataSource(Client c)
 			throws VideoException {
 		if(proxy){
 			return new RepeaterImageFactory(
@@ -96,28 +96,28 @@ public class ImageFactoryDispatcher {
 		}else{
 			AxisServer server = serverFactory.getServer(c.getCameraId());
 			if(server == null) throw new VideoException("No encoder for " + c.getCameraId());
-			AbstractImageFactory f = new AxisImageFactory(c, logger, monitor, server);
-			f.start();
-			return f;
+			AbstractDataSource src = new AxisImageFactory(c, logger, monitor, server);
+			src.start();
+			return src;
 		}
 	}
 
-	public synchronized AbstractImageFactory getFactory(Client c)
+	public synchronized DataSource getDataSource(Client c)
 			throws VideoException {
 		if(c.getCameraId()==null) throw new VideoException(
 				"Invalid camera: " + c.getCameraId());
 		String name = c.getCameraId() + ":" + c.getSize();
-		logger.info("Factory count: " + factoryTable.size());
-		AbstractImageFactory f = (AbstractImageFactory)factoryTable.get(name);
-		if(f != null){
-			if(f.isAlive()){
-				return f;
+		logger.info("Dataource count: " + sourceTable.size());
+		AbstractDataSource src = sourceTable.get(name);
+		if(src != null){
+			if(src.isAlive()){
+				return src;
 			}else{
-				factoryTable.remove(name);
+				sourceTable.remove(name);
 			}
 		}
-		f = createFactory(c);
-		factoryTable.put(name, f);
-		return f;
+		src = (AbstractDataSource)createDataSource(c);
+		sourceTable.put(name, src);
+		return src;
 	}
 }

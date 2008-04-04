@@ -23,8 +23,8 @@ import java.util.logging.Logger;
 
 import javax.swing.JPanel;
 
-import us.mn.state.dot.video.AbstractImageFactory;
 import us.mn.state.dot.video.Client;
+import us.mn.state.dot.video.DataSource;
 import us.mn.state.dot.video.RepeaterImageFactory;
 import us.mn.state.dot.video.ThreadMonitor;
 import us.mn.state.dot.video.VideoException;
@@ -39,7 +39,7 @@ public class AbstractStreamControl extends JPanel{
 
 	protected Logger logger = null;
 	private ThreadMonitor threadMonitor = null;
-	private AbstractImageFactory factory = null;
+	private DataSource source = null;
 	private String cameraId = null;
 	private int rate = 30;
 	private int duration = 60;
@@ -74,12 +74,12 @@ public class AbstractStreamControl extends JPanel{
 		c.setDuration(duration);
 		c.setRate(rate);
 		try{
-			factory = new RepeaterImageFactory(
+			source = new RepeaterImageFactory(
 				c, baseUrl, logger, threadMonitor);
 		}catch(VideoException ve){
 			logger.warning(ve.getMessage());
 		}
-		monitor.setImageFactory(factory, duration * rate);
+		monitor.setImageFactory(source, duration * rate);
 	}
 
 	public String getCameraId() {
