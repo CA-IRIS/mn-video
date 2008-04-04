@@ -43,7 +43,8 @@ import us.mn.state.dot.video.VideoException;
  */
 public class StreamServer extends VideoServlet {
 
-	protected static final Hashtable clientStreams = new Hashtable();
+	protected static final Hashtable<String, ClientStream> clientStreams =
+		new Hashtable<String, ClientStream>();
 	
 	/** The ImageFactoryDispatcher that maintains the ImageFactories. */
 	private static ImageFactoryDispatcher dispatcher;
