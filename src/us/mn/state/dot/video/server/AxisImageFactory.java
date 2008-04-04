@@ -61,7 +61,7 @@ public class AxisImageFactory extends AbstractImageFactory{
 					if(stream==null) break;
 					img = stream.getImage();
 					if(img != null){
-						imageCreated(img);
+						notifySinks(img);
 					}else{
 						break;
 					}

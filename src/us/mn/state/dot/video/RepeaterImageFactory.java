@@ -75,7 +75,7 @@ public class RepeaterImageFactory extends AbstractImageFactory {
 				while(!done && this.isAlive()){
 					img = stream.getImage();
 					if(img != null){
-						imageCreated(img);
+						notifySinks(img);
 					}else{
 						break;
 					}

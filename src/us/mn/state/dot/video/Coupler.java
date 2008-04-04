@@ -18,12 +18,17 @@ public class Coupler implements DataSink, DataSource {
 	/** The source which supplies the data */
 	private DataSource source;
 
-	/** Flush the data down the sink */
-	public final void flush(byte[] data){
-		this.data = data;
+	/** Notify the connected sinks that there is new data */
+	protected final void notifySinks(byte[] data){
 		for(DataSink sink : sinks){
 			sink.flush(data);
 		}
+	}
+
+	/** Flush the data down the sink */
+	public void flush(byte[] data){
+		this.data = data;
+		notifySinks(data);
 	}
 
 	/** Connect a DataSink */

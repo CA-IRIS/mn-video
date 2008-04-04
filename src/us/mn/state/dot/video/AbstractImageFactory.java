@@ -74,7 +74,7 @@ public abstract class AbstractImageFactory extends VideoThread implements DataSo
 	}
 	
 	/** Notify listeners that an image was created */
-	protected final void imageCreated(byte[] data) {
+	protected final void notifySinks(byte[] data) {
 		image = data;
 		for(DataSink sink : sinks) {
 			logger.fine(this.getClass().getSimpleName() +
