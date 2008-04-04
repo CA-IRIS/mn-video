@@ -19,6 +19,8 @@
 
 package us.mn.state.dot.video.server;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Properties;
@@ -91,17 +93,37 @@ public class ImageFactoryDispatcher {
 	
 	private DataSource createDataSource(Client c)
 			throws VideoException {
-		if(proxy){
-			return new RepeaterImageFactory(
-					c, backendUrls[c.getArea()], logger, monitor);
-		}else{
-			AxisServer server = serverFactory.getServer(c.getCameraId());
-			if(server == null) throw new VideoException("No encoder for " + c.getCameraId());
-			HttpDataSource src = new HttpDataSource(c, logger, monitor, server.getStreamURL(c));
+		URL url = null;
+		try{
+			if(proxy){
+				url = createURL(c, backendUrls[c.getArea()]);
+			}else{
+				AxisServer server = serverFactory.getServer(c.getCameraId());
+				if(server == null){
+					throw new VideoException("No encoder for " + c.getCameraId());
+				}else{
+					url = server.getStreamURL(c);
+				}
+			}
+			HttpDataSource src = new HttpDataSource(c, logger, monitor, url);
 			return src;
+		}catch(Exception e){
+			throw new VideoException(e.getMessage());
 		}
 	}
 
+	private URL createURL(Client c, String baseUrl) throws MalformedURLException {
+		String s = 
+			baseUrl +
+			"?id=" + c.getCameraId() +
+			"&size=" + c.getSize() +
+			"&rate=" + c.getRate() +
+			"&duration=" + c.getDuration() +
+			"&user=" + c.getUser() +
+			"&area=" + c.getArea();
+		return new URL(s);
+
+	}
 	public synchronized DataSource getDataSource(Client c)
 			throws VideoException {
 		if(c.getCameraId()==null) throw new VideoException(
