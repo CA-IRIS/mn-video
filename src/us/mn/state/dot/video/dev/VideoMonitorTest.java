@@ -21,12 +21,14 @@ package us.mn.state.dot.video.dev;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.net.URL;
 
 import javax.swing.JFrame;
 
 import us.mn.state.dot.video.Client;
-import us.mn.state.dot.video.RepeaterImageFactory;
+import us.mn.state.dot.video.HttpDataSource;
 import us.mn.state.dot.video.client.VideoMonitor;
+import us.mn.state.dot.video.server.ImageFactoryDispatcher;
 
 public class VideoMonitorTest extends JFrame {
 
@@ -47,8 +49,9 @@ public class VideoMonitorTest extends JFrame {
 		c.setCameraId("C001");
 		c.setRate(30);
 		try{
+			URL url = ImageFactoryDispatcher.createURL(c, streamUri);
 			mon.setImageFactory(
-				new RepeaterImageFactory(c, streamUri, null, null),
+					new HttpDataSource(c, null, null, url),
 					800);
 		}catch(Exception e){
 			e.printStackTrace();

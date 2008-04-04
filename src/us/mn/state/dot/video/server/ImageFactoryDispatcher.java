@@ -19,7 +19,6 @@
 
 package us.mn.state.dot.video.server;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -31,7 +30,6 @@ import us.mn.state.dot.video.AxisServer;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.DataSource;
 import us.mn.state.dot.video.HttpDataSource;
-import us.mn.state.dot.video.RepeaterImageFactory;
 import us.mn.state.dot.video.ThreadMonitor;
 import us.mn.state.dot.video.VideoException;
 
@@ -112,18 +110,22 @@ public class ImageFactoryDispatcher {
 		}
 	}
 
-	private URL createURL(Client c, String baseUrl) throws MalformedURLException {
-		String s = 
-			baseUrl +
-			"?id=" + c.getCameraId() +
-			"&size=" + c.getSize() +
-			"&rate=" + c.getRate() +
-			"&duration=" + c.getDuration() +
-			"&user=" + c.getUser() +
-			"&area=" + c.getArea();
-		return new URL(s);
-
+	public static URL createURL(Client c, String baseUrl) throws VideoException {
+		try{
+			String s = 
+				baseUrl +
+				"?id=" + c.getCameraId() +
+				"&size=" + c.getSize() +
+				"&rate=" + c.getRate() +
+				"&duration=" + c.getDuration() +
+				"&user=" + c.getUser() +
+				"&area=" + c.getArea();
+			return new URL(s);
+		}catch(Exception e){
+			throw new VideoException(e.getMessage());
+		}
 	}
+
 	public synchronized DataSource getDataSource(Client c)
 			throws VideoException {
 		if(c.getCameraId()==null) throw new VideoException(
