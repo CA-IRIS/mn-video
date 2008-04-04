@@ -30,7 +30,7 @@ import java.util.logging.Logger;
  *
  * @author Timothy Johnson
  */
-public class ClientStream extends Coupler {
+public class ClientStream implements DataSink {
 
 	/** The maximum time a stream can run (in seconds) */
 	private static final long MAX_DURATION = 60 * 1000 * 5; // 5 minutes
@@ -55,6 +55,8 @@ public class ClientStream extends Coupler {
 
 	private DataSource source = null;
 	
+	private byte[] data = null;
+	
 	/** Constructor for the ClientStream. */
 	public ClientStream (Client c, OutputStream out,
 			DataSource source, Logger l, int maxRate){
@@ -66,6 +68,11 @@ public class ClientStream extends Coupler {
 		source.connectSink(this);
 	}
 
+	/** Flush the data down the sink */
+	public synchronized void flush(byte[] data){
+		this.data = data;
+	}
+	
 	public String toString(){
 		if(client==null){
 			return "Uninitialized Client Stream";
