@@ -180,4 +180,11 @@ public abstract class VideoServlet extends HttpServlet {
 		response.getOutputStream().write(image);
 		response.flushBuffer();
 	}
+	
+	/** Check to see if the client is authenticated through SONAR */
+	protected final boolean isAuthenticated(Client c){
+		//FIXME: authenticate user through SONAR
+		return true;
+	}
+
 }

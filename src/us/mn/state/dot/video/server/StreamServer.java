@@ -109,12 +109,6 @@ public class StreamServer extends VideoServlet {
 		cs.sendImages();
 	}
 
-	/** Check to see if the client is authenticated through SONAR */
-	private boolean isAuthenticated(Client c){
-		//FIXME: authenticate user through SONAR
-		return true;
-	}
-	
 	protected synchronized static final void registerStream(
 			Client c, ClientStream cs){
 		ClientStream oldStream = (ClientStream)clientStreams.get(c.getUser());
