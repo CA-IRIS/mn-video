@@ -28,6 +28,7 @@ import us.mn.state.dot.video.AbstractDataSource;
 import us.mn.state.dot.video.AxisServer;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.DataSource;
+import us.mn.state.dot.video.HttpDataSource;
 import us.mn.state.dot.video.RepeaterImageFactory;
 import us.mn.state.dot.video.ThreadMonitor;
 import us.mn.state.dot.video.VideoException;
@@ -96,8 +97,7 @@ public class ImageFactoryDispatcher {
 		}else{
 			AxisServer server = serverFactory.getServer(c.getCameraId());
 			if(server == null) throw new VideoException("No encoder for " + c.getCameraId());
-			AbstractDataSource src = new AxisImageFactory(c, logger, monitor, server);
-			src.start();
+			HttpDataSource src = new HttpDataSource(c, logger, monitor, server.getStreamURL(c));
 			return src;
 		}
 	}

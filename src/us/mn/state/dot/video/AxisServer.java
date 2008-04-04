@@ -116,7 +116,7 @@ public final class AxisServer extends AbstractEncoder {
 	 * @param c The client object containing request parameters.
 	 * @return
 	 */
-	private URL getStreamURL(Client c){
+	public URL getStreamURL(Client c){
 		int channel = getChannel(c.getCameraId());
 		if(channel == NO_CAMERA_CONNECTED) return null;
 		try{
