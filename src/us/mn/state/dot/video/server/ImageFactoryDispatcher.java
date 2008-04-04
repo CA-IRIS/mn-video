@@ -45,8 +45,8 @@ public class ImageFactoryDispatcher {
 	private ThreadMonitor monitor = null;
 	
 	/** Table of video streams that are active. */
-	static final protected Hashtable<String, AbstractDataSource>
-		sourceTable = new Hashtable<String, AbstractDataSource>();
+	static final protected Hashtable<String, HttpDataSource>
+		sourceTable = new Hashtable<String, HttpDataSource>();
 
 	private final Logger logger;
 	
@@ -72,9 +72,9 @@ public class ImageFactoryDispatcher {
 		Thread t = new Thread(){
 			public void run(){
 				while(true){
-					Enumeration<AbstractDataSource> e = sourceTable.elements();
+					Enumeration<HttpDataSource> e = sourceTable.elements();
 					while(e.hasMoreElements()){
-						AbstractDataSource src = e.nextElement();
+						HttpDataSource src = e.nextElement();
 						if(!src.isAlive()){
 							Client c = src.getClient();
 							logger.info("Purging " + src);
@@ -130,7 +130,7 @@ public class ImageFactoryDispatcher {
 				"Invalid camera: " + c.getCameraId());
 		String name = c.getCameraId() + ":" + c.getSize();
 		logger.info("Dataource count: " + sourceTable.size());
-		AbstractDataSource src = sourceTable.get(name);
+		HttpDataSource src = sourceTable.get(name);
 		if(src != null){
 			if(src.isAlive()){
 				return src;
@@ -138,7 +138,7 @@ public class ImageFactoryDispatcher {
 				sourceTable.remove(name);
 			}
 		}
-		src = (AbstractDataSource)createDataSource(c);
+		src = (HttpDataSource)createDataSource(c);
 		sourceTable.put(name, src);
 		return src;
 	}
