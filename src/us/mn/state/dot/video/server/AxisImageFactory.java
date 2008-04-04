@@ -42,14 +42,12 @@ public class AxisImageFactory extends AbstractImageFactory{
 	public AxisImageFactory(Client c, AxisServer s) {
 		super(c, null, null);
 		server = s;
-		start();
 	}
 
 	/** Constructor for the AxisImageFactory. */
 	public AxisImageFactory(Client c, Logger l, ThreadMonitor m, AxisServer s) {
 		super(c, l, m);
 		server = s;
-		start();
 	}
 
 	/** Start the stream. */
@@ -73,6 +71,8 @@ public class AxisImageFactory extends AbstractImageFactory{
 			}finally{
 				removeSinks();
 			}
+		}else{
+			logger.fine("No encoder defined for this source.");
 		}
 	}
 

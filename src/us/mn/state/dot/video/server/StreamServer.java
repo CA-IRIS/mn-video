@@ -19,6 +19,7 @@
 
 package us.mn.state.dot.video.server;
 
+import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Properties;
 
@@ -73,31 +74,30 @@ public class StreamServer extends VideoServlet {
 	 */
 	public void processRequest(HttpServletResponse response,
 			Client c) throws VideoException {
-		if( !isAuthenticated(c) ) return;
+		logger.fine(c.getCameraId() + " stream requested");
 		DataSource source = dispatcher.getFactory(c);
-		if(source==null || c.getCameraId() == null){
-			byte[] data = ("No image for camera " + c.getCameraId()).getBytes();
-			try{
-				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-				response.setContentType("text/html");
-				response.setContentLength(data.length);
-				response.getOutputStream().write(data);
-				response.flushBuffer();
-			}catch(Exception e){
-				logger.info("Error streaming camera " + c.getCameraId() +
-						" to " + c.getUser());
+		try{
+			if( !isAuthenticated(c) || source==null || c.getCameraId() == null){
+				sendNoVideo(response, c);
+			}else{
+				streamVideo(response, c, source); // this blocks until streaming is completed.
 			}
-		}else{
-			try{
-				ClientStream cs =
-					new ClientStream(c, response.getOutputStream(),
-							source, logger, maxFrameRate);
-				registerStream(c, cs);
-				cs.sendImages();
-			}catch(Exception e){
-				throw new VideoException(e.getMessage());
-			}
+		}catch(Exception e){
+			throw new VideoException(e.getMessage());
 		}
+		logger.fine(c.getCameraId() + " stream request processed.");
+	}
+	
+	private void streamVideo(HttpServletResponse response, Client c, DataSource source)
+			throws IOException {
+		logger.fine(c.getCameraId() + " creating client stream...");
+		ClientStream cs =
+			new ClientStream(c, response.getOutputStream(),
+				source, logger, maxFrameRate);
+		logger.fine(c.getCameraId() + " registering stream...");
+		registerStream(c, cs);
+		logger.fine(c.getCameraId() + " sending images...");
+		cs.sendImages();
 	}
 
 	/** Check to see if the client is authenticated through SONAR */

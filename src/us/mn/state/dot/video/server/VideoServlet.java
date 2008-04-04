@@ -19,6 +19,7 @@
 package us.mn.state.dot.video.server;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.logging.Logger;
@@ -36,7 +37,6 @@ import us.mn.state.dot.video.AxisServer;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.Constants;
 import us.mn.state.dot.video.VideoClip;
-import us.mn.state.dot.video.VideoException;
 
 
 /**
@@ -171,16 +171,13 @@ public abstract class VideoServlet extends HttpServlet {
 		return f.exists();
 	}
 
-	private final void sendNoVideo(HttpServletResponse response, Client c){
+	protected final void sendNoVideo(HttpServletResponse response, Client c)
+			throws IOException {
 		byte[] image = AxisServer.getNoVideoImage();
-		try{
-			response.setStatus(HttpServletResponse.SC_OK);
-			response.setContentType("image/jpeg");
-			response.setContentLength(image.length);
-			response.getOutputStream().write(image);
-			response.flushBuffer();
-		}catch(Throwable t){
-			logger.warning("Error serving image " + c.getCameraId());
-		}
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.setContentType("image/jpeg");
+		response.setContentLength(image.length);
+		response.getOutputStream().write(image);
+		response.flushBuffer();
 	}
 }

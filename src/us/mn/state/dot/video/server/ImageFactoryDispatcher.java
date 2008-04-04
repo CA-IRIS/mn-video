@@ -69,7 +69,7 @@ public class ImageFactoryDispatcher {
 		Thread t = new Thread(){
 			public void run(){
 				while(true){
-					Enumeration e = factoryTable.elements();
+					Enumeration<AbstractImageFactory> e = factoryTable.elements();
 					while(e.hasMoreElements()){
 						AbstractImageFactory f = (AbstractImageFactory)e.nextElement();
 						if(!f.isAlive()){
@@ -95,7 +95,10 @@ public class ImageFactoryDispatcher {
 					c, backendUrls[c.getArea()], logger, monitor);
 		}else{
 			AxisServer server = serverFactory.getServer(c.getCameraId());
-			return new AxisImageFactory(c, logger, monitor, server);
+			if(server == null) throw new VideoException("No encoder for " + c.getCameraId());
+			AbstractImageFactory f = new AxisImageFactory(c, logger, monitor, server);
+			f.start();
+			return f;
 		}
 	}
 
