@@ -30,7 +30,7 @@ public class Client {
 	
 	private int area = 0;
 	
-	private int rate = 4;
+	private int rate = 30;
 
 	private String host = "unknown";
 	

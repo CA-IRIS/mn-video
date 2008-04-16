@@ -37,8 +37,9 @@ public class ClientStream implements DataSink {
 	
 	protected boolean done = false;
 	
-	private static final String CONTENT_TYPE = "Content-Type: image/jpeg\r\n";
-	
+	private static final String BODY_CONTENT_TYPE =
+		"Content-Type: image/jpeg\r\n";
+
 	private static final String CONTENT_LENGTH = "Content-Length: ";
 	
 	/** The output stream to write the video to. */
@@ -56,6 +57,8 @@ public class ClientStream implements DataSink {
 	private DataSource source = null;
 	
 	private byte[] data = null;
+	
+	protected final String BOUNDARY = "--myboundary\r\n";
 	
 	/** Constructor for the ClientStream. */
 	public ClientStream (Client c, OutputStream out,
@@ -87,7 +90,7 @@ public class ClientStream implements DataSink {
 		long now = 0;
 		try{
 			while(!isDone()) {
-				writeData();
+				writeBodyPart();
 				Thread.sleep(sleepDuration);
 				now = Calendar.getInstance().getTimeInMillis();
 				if((now-startTime) > MAX_DURATION){
@@ -119,19 +122,28 @@ public class ClientStream implements DataSink {
 		done = true;
 	}
 	
-	/** Write the data to the output stream */
-	private synchronized void writeData()throws IOException{
+	/** Write a body part (a piece of a multipart response) */
+	private synchronized void writeBodyPart()throws IOException{
 		if(data==null) return;
-		out.write(CONTENT_TYPE.getBytes());
+		writeBoundary();
+		writeHeaderArea();
+		out.write('\r');
+		out.write('\n');
+		writeBodyArea();
+		out.flush();
+	}
+	
+	private void writeBoundary() throws IOException {
+		out.write(BOUNDARY.getBytes());
+	}
+
+	private void writeHeaderArea() throws IOException {
+		out.write(BODY_CONTENT_TYPE.getBytes());
 		out.write(CONTENT_LENGTH.getBytes());
 		out.write(Integer.toString(data.length).getBytes());
-		out.write('\r');
-		out.write('\n');
-		//Axis puts an empty line after the content-length
-		//so we must also when re-creating an MJPEG stream
-		out.write('\r');
-		out.write('\n');
+	}
+
+	private void writeBodyArea() throws IOException {
 		out.write(data);
-		out.flush();
 	}
 }

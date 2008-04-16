@@ -55,7 +55,7 @@ public final class ImageServer extends VideoServlet{
 	public void processRequest(HttpServletResponse response, Client c){
 		byte[] image = AxisServer.getNoVideoImage();
 		int status = HttpServletResponse.SC_OK;
-		String contentType = "image/jpeg";
+		String contentType = "image/jpeg\r\n";
 		AxisServer server = serverFactory.getServer(c.getCameraId());
 		if(server != null){
 			try{

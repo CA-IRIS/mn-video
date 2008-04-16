@@ -53,6 +53,9 @@ public class StreamServer extends VideoServlet {
 	
 	private int maxFrameRate = 3;
 	
+	private final String HEADER_CONTENT_TYPE =
+		"Content-type: multipart/x-mixed-replace; boundary=--myboundary\r\n";
+	
 	/** Initializes the servlet. */
 	public void init( ServletConfig config ) throws ServletException {
 		super.init( config );
@@ -81,6 +84,9 @@ public class StreamServer extends VideoServlet {
 			if( !isAuthenticated(c) || source==null || c.getCameraId() == null){
 				sendNoVideo(response, c);
 			}else{
+				response.setStatus(HttpServletResponse.SC_OK);
+				response.setContentType(HEADER_CONTENT_TYPE);
+				response.flushBuffer();
 				streamVideo(response, c, source);
 			}
 		}catch(Exception e){
