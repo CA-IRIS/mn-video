@@ -42,8 +42,8 @@ abstract public class ConnectionFactory {
 			throws IOException {
 		HttpURLConnection c = (HttpURLConnection)url.openConnection();
 		HttpURLConnection.setFollowRedirects(true);
-		c.setConnectTimeout(VideoThread.TIMEOUT_PROXY);
-		c.setReadTimeout(VideoThread.TIMEOUT_PROXY);
+		c.setConnectTimeout(VideoThread.TIMEOUT_CONNECT);
+		c.setReadTimeout(VideoThread.TIMEOUT_READ);
 		return c;
 	}
 	
