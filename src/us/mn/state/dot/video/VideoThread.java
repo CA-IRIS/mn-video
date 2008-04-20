@@ -36,10 +36,10 @@ public abstract class VideoThread extends Thread{
 	public final static int TIMEOUT_PROXY = 5 * 1000;
 	
 	/** Default timeout for HttpUrlConnection connect */
-	public final static int TIMEOUT_CONNECT = 5 * 1000;
+	public final static int TIMEOUT_CONNECT = 1 * 1000;
 	
 	/** Default timeout for HttpUrlConnection read */
-	public final static int TIMEOUT_READ = 1 * 1000;
+	public final static int TIMEOUT_READ = 6 * 1000;
 	
 	public VideoThread(ThreadMonitor m){
 		if(m != null) m.addThread(this);
