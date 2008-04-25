@@ -62,14 +62,14 @@ public class AbstractStreamControl extends JPanel{
 	}
 
     public final void stop(){
-		monitor.setImageFactory(null, 0);
+		monitor.setDataSource(null, 0);
 	}
 	
 	public final void start() {
 		logger.info("Starting stream...");
 		stop();
 		//FIXME make the size selectable
-		logger.info("Creating imagefactory for " + cameraId);
+		logger.info("Creating DataSource for " + cameraId);
 		Client c = new Client();
 		c.setCameraId(cameraId);
 		c.setSize(size);
@@ -81,7 +81,7 @@ public class AbstractStreamControl extends JPanel{
 		}catch(VideoException ve){
 			logger.warning(ve.getMessage());
 		}
-		monitor.setImageFactory(source, duration * rate);
+		monitor.setDataSource(source, duration * rate);
 	}
 
 	public String getCameraId() {

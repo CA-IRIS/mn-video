@@ -50,7 +50,7 @@ public class VideoMonitorTest extends JFrame {
 		c.setRate(30);
 		try{
 			URL url = DataSourceFactory.createURL(c, streamUri);
-			mon.setImageFactory(
+			mon.setDataSource(
 					new HttpDataSource(c, null, null, url),
 					800);
 		}catch(Exception e){

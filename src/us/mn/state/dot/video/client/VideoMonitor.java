@@ -61,7 +61,7 @@ public class VideoMonitor extends JPanel
 	private final JLabel screen = new JLabel();
 	private final JLabel description = new JLabel(null,null,JLabel.CENTER);
 	private JProgressBar progress = new JProgressBar(0, 100);
-	private LinkedList images = new LinkedList();
+	private LinkedList<byte[]> images = new LinkedList<byte[]>();
 	private final JLabel status = new JLabel();
 	public static final String CONNECT_ERROR = "Unable to connect to stream.";
 	public static final String CONNECTING = "Connecting...";
@@ -118,7 +118,7 @@ public class VideoMonitor extends JPanel
 		repaint();
 	}
 
-	public void setImageFactory(DataSource src, int totalFrames){
+	public void setDataSource(DataSource src, int totalFrames){
 		if(source != null ){
 			source.disconnectSink(this);
 		}
