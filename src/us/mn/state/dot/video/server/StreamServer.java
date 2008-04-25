@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.DataSource;
+import us.mn.state.dot.video.DataSourceFactory;
 import us.mn.state.dot.video.MJPEG;
 import us.mn.state.dot.video.MJPEGWriter;
 import us.mn.state.dot.video.ThreadMonitor;
@@ -47,8 +48,8 @@ public class StreamServer extends VideoServlet {
 	protected static final Hashtable<String, MJPEGWriter> clientStreams =
 		new Hashtable<String, MJPEGWriter>();
 	
-	/** The ImageFactoryDispatcher that maintains the ImageFactories. */
-	private static ImageFactoryDispatcher dispatcher;
+	/** The DataSourceFactory that maintains the DataSources. */
+	private static DataSourceFactory dsFactory;
 
 	private ThreadMonitor monitor = null;
 	
@@ -63,7 +64,7 @@ public class StreamServer extends VideoServlet {
 		monitor = new ThreadMonitor("ThreadMonitor", 10000, logger);
 		ServletContext ctx = config.getServletContext();
 		Properties props =(Properties)ctx.getAttribute("properties");
-		dispatcher = new ImageFactoryDispatcher(props, logger, monitor);
+		dsFactory = new DataSourceFactory(props, logger, monitor);
 		try{
 			maxFrameRate = Integer.parseInt(props.getProperty("max.framerate"));
 		}catch(Exception e){
@@ -80,7 +81,7 @@ public class StreamServer extends VideoServlet {
 	public void processRequest(HttpServletResponse response,
 			Client c) throws VideoException {
 		logger.fine(c.getCameraId() + " stream requested");
-		DataSource source = dispatcher.getDataSource(c);
+		DataSource source = dsFactory.getDataSource(c);
 		try{
 			if( !isAuthenticated(c) || source==null || c.getCameraId() == null){
 				sendNoVideo(response, c);

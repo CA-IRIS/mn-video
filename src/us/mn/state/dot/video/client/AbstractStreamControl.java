@@ -26,10 +26,10 @@ import javax.swing.JPanel;
 
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.DataSource;
+import us.mn.state.dot.video.DataSourceFactory;
 import us.mn.state.dot.video.HttpDataSource;
 import us.mn.state.dot.video.ThreadMonitor;
 import us.mn.state.dot.video.VideoException;
-import us.mn.state.dot.video.server.ImageFactoryDispatcher;
 
 /**
  * @author john3tim
@@ -76,7 +76,7 @@ public class AbstractStreamControl extends JPanel{
 		c.setDuration(duration);
 		c.setRate(rate);
 		try{
-			URL url = ImageFactoryDispatcher.createURL(c, baseUrl);
+			URL url = DataSourceFactory.createURL(c, baseUrl);
 			source = new HttpDataSource(c, logger, threadMonitor, url);
 		}catch(VideoException ve){
 			logger.warning(ve.getMessage());

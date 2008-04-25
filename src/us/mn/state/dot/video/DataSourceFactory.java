@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package us.mn.state.dot.video.server;
+package us.mn.state.dot.video;
 
 import java.net.URL;
 import java.util.Enumeration;
@@ -25,20 +25,14 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import us.mn.state.dot.video.AbstractDataSource;
-import us.mn.state.dot.video.AxisServer;
-import us.mn.state.dot.video.Client;
-import us.mn.state.dot.video.DataSource;
-import us.mn.state.dot.video.HttpDataSource;
-import us.mn.state.dot.video.ThreadMonitor;
-import us.mn.state.dot.video.VideoException;
+import us.mn.state.dot.video.server.ServerFactory;
 
 /**
  * The StreamDispatcher creates and distributes ClientStreams.
  *
  * @author Timothy Johnson
  */
-public class ImageFactoryDispatcher {
+public class DataSourceFactory {
 
 	private ThreadMonitor monitor = null;
 	
@@ -56,8 +50,8 @@ public class ImageFactoryDispatcher {
 	
 	protected ServerFactory serverFactory;
 	
-	/** Constructor for the ImagefactoryDispatcher. */
-	public ImageFactoryDispatcher(Properties p,
+	/** Constructor for the DataSourceFactory. */
+	public DataSourceFactory(Properties p,
 			Logger l, ThreadMonitor m) {
 		logger = l;
 		monitor = m;

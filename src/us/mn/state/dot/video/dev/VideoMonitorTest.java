@@ -26,9 +26,9 @@ import java.net.URL;
 import javax.swing.JFrame;
 
 import us.mn.state.dot.video.Client;
+import us.mn.state.dot.video.DataSourceFactory;
 import us.mn.state.dot.video.HttpDataSource;
 import us.mn.state.dot.video.client.VideoMonitor;
-import us.mn.state.dot.video.server.ImageFactoryDispatcher;
 
 public class VideoMonitorTest extends JFrame {
 
@@ -49,7 +49,7 @@ public class VideoMonitorTest extends JFrame {
 		c.setCameraId("C001");
 		c.setRate(30);
 		try{
-			URL url = ImageFactoryDispatcher.createURL(c, streamUri);
+			URL url = DataSourceFactory.createURL(c, streamUri);
 			mon.setImageFactory(
 					new HttpDataSource(c, null, null, url),
 					800);
