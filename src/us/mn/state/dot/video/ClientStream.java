@@ -58,8 +58,6 @@ public class ClientStream implements DataSink {
 	
 	private byte[] data = null;
 	
-	protected final String BOUNDARY = "--myboundary\r\n";
-	
 	/** Constructor for the ClientStream. */
 	public ClientStream (Client c, OutputStream out,
 			DataSource source, Logger l, int maxRate){
@@ -134,7 +132,7 @@ public class ClientStream implements DataSink {
 	}
 	
 	private void writeBoundary() throws IOException {
-		out.write(BOUNDARY.getBytes());
+		out.write(MJPEGStream.BOUNDARY.getBytes());
 	}
 
 	private void writeHeaderArea() throws IOException {

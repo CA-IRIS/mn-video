@@ -30,6 +30,8 @@ import java.io.InputStream;
 public class MJPEGStream extends AbstractVideoStream {
 
 	private final InputStream stream;
+
+	public static final String BOUNDARY = "--myboundary\r\n";
 	
 	public MJPEGStream(InputStream is)throws InstantiationException{
 		if(is==null)throw new InstantiationException(

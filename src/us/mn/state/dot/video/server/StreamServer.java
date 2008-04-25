@@ -31,13 +31,14 @@ import javax.servlet.http.HttpServletResponse;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.ClientStream;
 import us.mn.state.dot.video.DataSource;
+import us.mn.state.dot.video.MJPEGStream;
 import us.mn.state.dot.video.ThreadMonitor;
 import us.mn.state.dot.video.VideoException;
 
 /**
  * The <code>StreamServer</code> class is a servlet that responds to client requests for
- * a MN/Dot video stream.  The response stream consists of repeatedly sending an
- * int (image size in bytes) followed by the image data.
+ * a MN/Dot video stream.  The response is a standard multipart http response which
+ * can be parsed as an MJPEG stream.
  *
  * @author Timothy Johnson
  */
@@ -54,7 +55,7 @@ public class StreamServer extends VideoServlet {
 	private int maxFrameRate = 3;
 	
 	private final String HEADER_CONTENT_TYPE =
-		"Content-type: multipart/x-mixed-replace; boundary=--myboundary\r\n";
+		"Content-type: multipart/x-mixed-replace; boundary=" + MJPEGStream.BOUNDARY;
 	
 	/** Initializes the servlet. */
 	public void init( ServletConfig config ) throws ServletException {
