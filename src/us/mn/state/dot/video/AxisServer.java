@@ -219,8 +219,8 @@ public final class AxisServer extends AbstractEncoder {
 		}
 	}
 	
-	private final void restart() throws VideoException{
-		System.out.println("Restarting " + getHost());
+	private final void reboot() throws VideoException{
+		System.out.println("Rebooting " + getHost());
 		try {
 			URL url = getRestartURL();
 			HttpURLConnection conn = ConnectionFactory.createConnection(url);
@@ -238,7 +238,7 @@ public final class AxisServer extends AbstractEncoder {
 			prepareConnection(stillsCon);
 //			int response = stillsCon.getResponseCode();
 //			if(response == 503){
-//				restart();
+//				reboot();
 //				return null;
 //			}
 			in = stillsCon.getInputStream();
