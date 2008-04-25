@@ -203,7 +203,7 @@ public final class AxisServer extends AbstractEncoder {
 			URLConnection con = ConnectionFactory.createConnection(url);
 			prepareConnection(con);
 			InputStream s = con.getInputStream();
-			MJPEGStream videoStream = new MJPEGStream(s);
+			MJPEGReader videoStream = new MJPEGReader(s);
 			return videoStream;
 		}catch(Exception e){
 			throw new VideoException(e.getMessage() + ": " + url.toString());

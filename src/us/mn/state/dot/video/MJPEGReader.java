@@ -27,13 +27,11 @@ import java.io.InputStream;
  * next image in the stream.
  * @author    Timothy Johnson
  */
-public class MJPEGStream extends AbstractVideoStream {
+public class MJPEGReader extends AbstractVideoStream implements MJPEG {
 
 	private final InputStream stream;
 
-	public static final String BOUNDARY = "--myboundary\r\n";
-	
-	public MJPEGStream(InputStream is)throws InstantiationException{
+	public MJPEGReader(InputStream is)throws InstantiationException{
 		if(is==null)throw new InstantiationException(
 				"Can't create a MJPEGStream with null InputStream.");
 		stream = is;

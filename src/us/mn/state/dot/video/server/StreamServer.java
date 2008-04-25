@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.ClientStream;
 import us.mn.state.dot.video.DataSource;
-import us.mn.state.dot.video.MJPEGStream;
+import us.mn.state.dot.video.MJPEG;
 import us.mn.state.dot.video.ThreadMonitor;
 import us.mn.state.dot.video.VideoException;
 
@@ -55,7 +55,7 @@ public class StreamServer extends VideoServlet {
 	private int maxFrameRate = 3;
 	
 	private final String HEADER_CONTENT_TYPE =
-		"Content-type: multipart/x-mixed-replace; boundary=" + MJPEGStream.BOUNDARY;
+		"Content-type: multipart/x-mixed-replace; boundary=" + MJPEG.BOUNDARY;
 	
 	/** Initializes the servlet. */
 	public void init( ServletConfig config ) throws ServletException {

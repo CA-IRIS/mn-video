@@ -132,7 +132,7 @@ public class ClientStream implements DataSink {
 	}
 	
 	private void writeBoundary() throws IOException {
-		out.write(MJPEGStream.BOUNDARY.getBytes());
+		out.write(MJPEG.BOUNDARY.getBytes());
 	}
 
 	private void writeHeaderArea() throws IOException {
