@@ -94,6 +94,8 @@ public abstract class VideoServlet extends HttpServlet {
 			c.setSize(getIntRequest(req, "size"));
 		if(req.getParameter("rate") != null)
 			c.setRate(getIntRequest(req, "rate"));
+		if(req.getParameter("compression") != null)
+			c.setCompression(getIntRequest(req, "compression"));
 		if(req.getParameter("duration") != null)
 			c.setDuration(getIntRequest(req, "duration"));
 		String host = req.getHeader("x-forwarded-for");
