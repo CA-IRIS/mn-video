@@ -29,9 +29,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
 import us.mn.state.dot.video.Client;
-import us.mn.state.dot.video.ClientStream;
 import us.mn.state.dot.video.DataSource;
 import us.mn.state.dot.video.MJPEG;
+import us.mn.state.dot.video.MJPEGWriter;
 import us.mn.state.dot.video.ThreadMonitor;
 import us.mn.state.dot.video.VideoException;
 
@@ -44,8 +44,8 @@ import us.mn.state.dot.video.VideoException;
  */
 public class StreamServer extends VideoServlet {
 
-	protected static final Hashtable<String, ClientStream> clientStreams =
-		new Hashtable<String, ClientStream>();
+	protected static final Hashtable<String, MJPEGWriter> clientStreams =
+		new Hashtable<String, MJPEGWriter>();
 	
 	/** The ImageFactoryDispatcher that maintains the ImageFactories. */
 	private static ImageFactoryDispatcher dispatcher;
@@ -107,26 +107,26 @@ public class StreamServer extends VideoServlet {
 	private void streamVideo(HttpServletResponse response, Client c, DataSource source)
 			throws IOException {
 		logger.fine(c.getCameraId() + " creating client stream...");
-		ClientStream cs =
-			new ClientStream(c, response.getOutputStream(),
+		MJPEGWriter w =
+			new MJPEGWriter(c, response.getOutputStream(),
 				source, logger, maxFrameRate);
 		logger.fine(c.getCameraId() + " registering stream...");
-		registerStream(c, cs);
+		registerStream(c, w);
 		logger.fine(c.getCameraId() + " sending images...");
 		try{
 			((Thread)source).start();
 		}catch(IllegalThreadStateException its){
 			// do nothing... it's already been started.
 		}
-		cs.sendImages();
+		w.sendImages();
 	}
 
 	protected synchronized static final void registerStream(
-			Client c, ClientStream cs){
-		ClientStream oldStream = (ClientStream)clientStreams.get(c.getUser());
+			Client c, MJPEGWriter w){
+		MJPEGWriter oldStream = (MJPEGWriter)clientStreams.get(c.getUser());
 		if(oldStream != null){
 			oldStream.halt("New stream requested.");
 		}
-		clientStreams.put(c.getUser(), cs);
+		clientStreams.put(c.getUser(), w);
 	}
 }

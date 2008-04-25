@@ -30,7 +30,7 @@ import java.util.logging.Logger;
  *
  * @author Timothy Johnson
  */
-public class ClientStream implements DataSink {
+public class MJPEGWriter implements DataSink, MJPEG {
 
 	/** The maximum time a stream can run (in seconds) */
 	private static final long MAX_DURATION = 60 * 1000 * 5; // 5 minutes
@@ -58,8 +58,8 @@ public class ClientStream implements DataSink {
 	
 	private byte[] data = null;
 	
-	/** Constructor for the ClientStream. */
-	public ClientStream (Client c, OutputStream out,
+	/** Constructor for the MJPEGWriter. */
+	public MJPEGWriter (Client c, OutputStream out,
 			DataSource source, Logger l, int maxRate){
 		logger = l;
 		client = c;
