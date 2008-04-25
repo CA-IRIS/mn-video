@@ -37,7 +37,7 @@ public class MJPEGWriter implements DataSink, MJPEG {
 	
 	protected boolean done = false;
 	
-	private static final String BODY_CONTENT_TYPE =
+	private static final String CONTENT_TYPE =
 		"Content-Type: image/jpeg\r\n";
 
 	private static final String CONTENT_LENGTH = "Content-Length: ";
@@ -136,7 +136,7 @@ public class MJPEGWriter implements DataSink, MJPEG {
 	}
 
 	private void writeHeaderArea() throws IOException {
-		out.write(BODY_CONTENT_TYPE.getBytes());
+		out.write(CONTENT_TYPE.getBytes());
 		out.write(CONTENT_LENGTH.getBytes());
 		out.write(Integer.toString(data.length).getBytes());
 	}
