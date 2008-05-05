@@ -49,13 +49,13 @@ public class HttpDataSource extends AbstractDataSource {
 		if(url != null){
 			try{
 				HttpURLConnection conn = ConnectionFactory.createConnection(url); 
-				VideoStream stream = new MJPEGReader(conn.getInputStream());
+				MJPEGReader stream = new MJPEGReader(conn.getInputStream());
 				logger.fine("Starting datasoure: " + this);
 				byte[] img;
 				while(!done && this.isAlive()){
 					if(stream==null) break;
 					img = stream.getImage();
-					if(img != null){
+					if(img != null && img.length > 0){
 						notifySinks(img);
 					}else{
 						break;
