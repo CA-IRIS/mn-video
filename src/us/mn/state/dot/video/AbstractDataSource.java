@@ -56,10 +56,10 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 	/** Get the string representation of this factory */
 	public final String toString() {
 		if(client==null){
-			return "Uninitialized image factory.";
+			return "Uninitialized DataSource";
 		}
-		return "ImageFactory: " +
-			Constants.DATE_FORMAT.format(getStartTime().getTime()) + 
+		return "DataSource for" +
+//			Constants.DATE_FORMAT.format(getStartTime().getTime()) + 
 			" " + client.getCameraId() + " " +
 			"size " + client.getSize();
 	}
