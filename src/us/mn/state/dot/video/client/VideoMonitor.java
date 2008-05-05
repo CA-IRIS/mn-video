@@ -125,9 +125,14 @@ public class VideoMonitor extends JPanel
 		imagesRendered = 0;
 		this.imagesRequested = totalFrames;
 		if(src != null){
-			source.connectSink(this);
+			src.connectSink(this);
 			images.clear();
 			status.setText(CONNECTING);
+			try{
+				((Thread)src).start();
+			}catch(IllegalThreadStateException its){
+				// do nothing... it's already been started.
+			}
 		}else{
 			status.setText(WAIT_ON_USER);
 		}
@@ -137,6 +142,7 @@ public class VideoMonitor extends JPanel
 	}
 	
 	public void flush(byte[] i){
+		System.out.println("Received image of size " + i.length);
 		status.setText(STREAMING);
 		ImageIcon icon = new ImageIcon(i);
 		setImage(icon);
