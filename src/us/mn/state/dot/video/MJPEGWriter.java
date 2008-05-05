@@ -38,7 +38,7 @@ public class MJPEGWriter implements DataSink {
 	protected boolean done = false;
 	
 	private static final String CONTENT_TYPE =
-		"Content-Type: image/jpeg\r\n";
+		"Content-Type: image/jpeg";
 
 	private static final String CONTENT_LENGTH = "Content-Length: ";
 	
@@ -142,11 +142,17 @@ public class MJPEGWriter implements DataSink {
 
 	private void writeHeaderArea() throws IOException {
 		out.write(CONTENT_TYPE.getBytes());
+		out.write('\r');
+		out.write('\n');
 		out.write(CONTENT_LENGTH.getBytes());
 		out.write(Integer.toString(data.length).getBytes());
+		out.write('\r');
+		out.write('\n');
 	}
 
 	private void writeBodyArea() throws IOException {
 		out.write(data);
+		out.write('\r');
+		out.write('\n');
 	}
 }
