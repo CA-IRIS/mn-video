@@ -28,7 +28,10 @@ import java.util.logging.Logger;
 import us.mn.state.dot.video.server.ServerFactory;
 
 /**
- * The StreamDispatcher creates and distributes ClientStreams.
+ * The DataSourceFactory creates and maintains DataSources.
+ * It is responsible for making sure that only one DataSource
+ * object is created for each stream regardless of the number 
+ * of clients requesting the stream.
  *
  * @author Timothy Johnson
  */
