@@ -46,11 +46,12 @@ public class HttpDataSource extends AbstractDataSource {
 	
 	/** Start the stream. */
 	public void run() {
+		HttpURLConnection conn = null;
 		if(url != null){
 			try{
-				HttpURLConnection conn = ConnectionFactory.createConnection(url); 
+				conn = ConnectionFactory.createConnection(url); 
 				MJPEGReader stream = new MJPEGReader(conn.getInputStream());
-				logger.fine("Starting datasoure: " + this);
+				logger.fine("Starting: " + this);
 				byte[] img;
 				while(!done && this.isAlive()){
 					if(stream==null) break;
@@ -66,11 +67,14 @@ public class HttpDataSource extends AbstractDataSource {
 			}catch(InstantiationException ie){
 				logger.info(ie.getMessage());
 			}finally{
+				logger.fine("Stopping: " + this);
+				try{
+					conn.disconnect();
+				}catch(Exception e2){}
 				removeSinks();
 			}
 		}else{
 			logger.fine("No encoder defined for this source.");
 		}
 	}
-
 }
