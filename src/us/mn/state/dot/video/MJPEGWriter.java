@@ -30,7 +30,7 @@ import java.util.logging.Logger;
  *
  * @author Timothy Johnson
  */
-public class MJPEGWriter implements DataSink, MJPEG {
+public class MJPEGWriter implements DataSink {
 
 	/** The maximum time a stream can run (in seconds) */
 	private static final long MAX_DURATION = 60 * 1000 * 5; // 5 minutes
@@ -73,12 +73,16 @@ public class MJPEGWriter implements DataSink, MJPEG {
 	public synchronized void flush(byte[] data){
 		this.data = data;
 	}
+
+	public synchronized byte[] getData(){
+		return data;
+	}
 	
 	public String toString(){
 		if(client==null){
-			return "Uninitialized Client Stream";
+			return "Uninitialized " + this.getClass().getSimpleName();
 		}
-		return "ClientStream: " + client.toString();
+		return this.getClass().getSimpleName() + " " + client.toString();
 	}
 
 	/** Sends images to the client until all the requested
@@ -122,13 +126,14 @@ public class MJPEGWriter implements DataSink, MJPEG {
 	
 	/** Write a body part (a piece of a multipart response) */
 	private synchronized void writeBodyPart()throws IOException{
-		if(data==null) return;
+		if(data==null || data.length == 0) return;
 		writeBoundary();
 		writeHeaderArea();
 		out.write('\r');
 		out.write('\n');
 		writeBodyArea();
 		out.flush();
+		data = null;
 	}
 	
 	private void writeBoundary() throws IOException {
