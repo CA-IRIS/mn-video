@@ -27,7 +27,7 @@ import java.io.InputStream;
  * next image in the stream.
  * @author    Timothy Johnson
  */
-public class MJPEGReader extends AbstractVideoStream implements MJPEG {
+public class MJPEGReader implements VideoStream {
 
 	private final InputStream stream;
 
@@ -99,5 +99,4 @@ public class MJPEGReader extends AbstractVideoStream implements MJPEG {
 		}
 		return 0;
 	}
-
 }
