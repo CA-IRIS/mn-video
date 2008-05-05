@@ -46,10 +46,11 @@ public class VideoMonitorTest extends JFrame {
 		mon.setLabelVisible(false);
 		this.getContentPane().add(mon);
 		Client c = new Client();
-		c.setCameraId("C001");
+		c.setCameraId("C814");
 		c.setRate(30);
 		try{
-			URL url = DataSourceFactory.createURL(c, streamUri);
+//			URL url = DataSourceFactory.createURL(c, streamUri);
+			URL url = new URL("http://10.69.9.18/axis-cgi/mjpg/video.cgi?camera=1");
 			mon.setDataSource(
 					new HttpDataSource(c, null, null, url),
 					800);
