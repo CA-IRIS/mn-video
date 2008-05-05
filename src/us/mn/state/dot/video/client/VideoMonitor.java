@@ -24,6 +24,8 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
@@ -143,6 +145,7 @@ public class VideoMonitor extends JPanel
 	
 	public void flush(byte[] i){
 		System.out.println("Received image of size " + i.length);
+//		write2File(i);
 		status.setText(STREAMING);
 		ImageIcon icon = new ImageIcon(i);
 		setImage(icon);
@@ -151,6 +154,19 @@ public class VideoMonitor extends JPanel
 		if(imagesRendered >= imagesRequested){
 			source.disconnectSink(this);
 			clear();
+		}
+	}
+	
+	private void write2File(byte[] image){
+		try{
+			System.out.println("Writing image file...");
+			File f = new File("/tmp/image_" + imagesRendered + ".jpg");
+			FileOutputStream fos = new FileOutputStream(f);
+			fos.write(image);
+			fos.flush();
+			fos.close();
+		}catch(Exception e){
+			e.printStackTrace();
 		}
 	}
 	
