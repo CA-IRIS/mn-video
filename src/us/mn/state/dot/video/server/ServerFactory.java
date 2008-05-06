@@ -24,6 +24,7 @@ import java.util.Properties;
 import us.mn.state.dot.tms.client.SonarState;
 import us.mn.state.dot.util.db.TmsConnection;
 import us.mn.state.dot.video.AxisServer;
+import us.mn.state.dot.video.Camera;
 
 /**
  * @author john3tim
@@ -80,10 +81,11 @@ public class ServerFactory {
 		}
 		for(String camId : tms.getCameraIdsByEncoder(host)){
 			int ch = tms.getEncoderChannel(camId);
-			s.setCamera(camId, ch);
+			String standardId = Camera.createStandardId(camId);
+			s.setCamera(standardId, ch);
 			s.setUsername(encoderUser);
 			s.setPassword(encoderPass);
-			servers.put(camId, s);
+			servers.put(standardId, s);
 		}
 	}
 }
