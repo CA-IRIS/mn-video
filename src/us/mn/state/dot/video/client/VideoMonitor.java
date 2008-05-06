@@ -112,7 +112,7 @@ public class VideoMonitor extends JPanel
 	 *
 	 * @param image  The image to display.
 	 */
-	public synchronized void setImage(ImageIcon icon){
+	private synchronized void setImage(ImageIcon icon){
 		Image i = icon.getImage().getScaledInstance(
 			imageSize.width, imageSize.height,
 				Image.SCALE_FAST);
@@ -144,7 +144,6 @@ public class VideoMonitor extends JPanel
 	}
 	
 	public void flush(byte[] i){
-		System.out.println("Received image of size " + i.length);
 //		write2File(i);
 		status.setText(STREAMING);
 		ImageIcon icon = new ImageIcon(i);
@@ -159,7 +158,6 @@ public class VideoMonitor extends JPanel
 	
 	private void write2File(byte[] image){
 		try{
-			System.out.println("Writing image file...");
 			File f = new File("/tmp/image_" + imagesRendered + ".jpg");
 			FileOutputStream fos = new FileOutputStream(f);
 			fos.write(image);
