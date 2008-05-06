@@ -249,9 +249,8 @@ public final class AxisServer extends AbstractEncoder {
 			throw new VideoException("Encoder fetch error: " + e.getMessage());
 		}finally{
 			try{
-				in.close();
-			}catch(Exception e){
-			}
+				stillsCon.disconnect();
+			}catch(Exception e){}
 		}
 	}
 
