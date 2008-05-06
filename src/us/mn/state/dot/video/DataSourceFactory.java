@@ -128,7 +128,7 @@ public class DataSourceFactory {
 		if(c.getCameraId()==null) throw new VideoException(
 				"Invalid camera: " + c.getCameraId());
 		String name = c.getCameraId() + ":" + c.getSize();
-		logger.info("Dataource count: " + sourceTable.size());
+		logger.fine("There are currently " + sourceTable.size() + " datasources.");
 		HttpDataSource src = sourceTable.get(name);
 		if(src != null){
 			if(src.isAlive()){
