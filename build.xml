@@ -61,15 +61,6 @@
 		<antcall target="check-jar">
 			<param name="file.jar" value="velocity-dep-1.3.1.jar"/>
 		</antcall>
-		<antcall target="check-jar">
-			<param name="file.jar" value="sonar-client-${sonar-client.version}.jar"/>
-		</antcall>
-		<antcall target="check-jar">
-			<param name="file.jar" value="iris-client-${iris-client.version}.jar"/>
-		</antcall>
-		<antcall target="check-jar">
-			<param name="file.jar" value="iris-rmi-${rmi.version}.jar"/>
-		</antcall>
 	</target>
 
 
