@@ -43,15 +43,6 @@ public final class AxisServer extends AbstractEncoder {
 	/** The HttpURLConnection used for getting stills */
 	private HttpURLConnection stillsCon;
 	
-	/** Constant for small sized images */
-	public static final int SMALL = 1;
-
-	/** Constant for medium sized images */
-	public static final int MEDIUM = 2;
-
-	/** Constant for large sized images */
-	public static final int LARGE = 3;
-
 	/** The base URI for a request for an image */
 	private final String BASE_IMAGE_URI = "/axis-cgi/jpg/image.cgi?" +
 		"showlength=1&";
@@ -171,16 +162,14 @@ public final class AxisServer extends AbstractEncoder {
 	private String createSizeParam(int size){
 		String sizeValue = "";
 		switch(size){
-			case SMALL:
+			case Client.SMALL:
 				sizeValue = VALUE_SMALL;
 				break;
-			case MEDIUM:
+			case Client.MEDIUM:
 				sizeValue = VALUE_MEDIUM;
 				break;
-			case LARGE:
-				//don't let anyone get the big images until
-				//we find a way to limit access to them (bandwidth issue)
-				sizeValue = VALUE_MEDIUM;
+			case Client.LARGE:
+				sizeValue = VALUE_LARGE;
 				break;
 		}
 		return PARAM_SIZE + "=" + sizeValue;

@@ -53,7 +53,7 @@ public class StreamTest {
 			server.setCamera("C001",1);
 			Client c = new Client();
 			c.setCameraId("C001");
-			c.setSize(AxisServer.MEDIUM);
+			c.setSize(Client.MEDIUM);
 			VideoStream stream = server.getStream(c);
 			for(int i=0; i<5; i++){
 				byte[] image = stream.getImage();

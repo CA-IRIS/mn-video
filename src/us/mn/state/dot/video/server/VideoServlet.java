@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Calendar;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletConfig;
@@ -67,6 +68,9 @@ public abstract class VideoServlet extends HttpServlet {
 		super.init( config );
 		servletName = this.getClass().getSimpleName();
 		ServletContext ctx = config.getServletContext();
+		Properties props =(Properties)ctx.getAttribute("properties");
+		int max = Integer.parseInt(props.getProperty("max.imagesize"));
+		Client.setMaxImageSize(max);
 		if(logger==null){
 			logger = (Logger)ctx.getAttribute(PropertiesContext.PROP_LOGGER);
 		}
