@@ -127,6 +127,11 @@ public abstract class VideoServlet extends HttpServlet {
 		return Integer.parseInt(req.getParameter(param));
 	}
 
+	/** Get a 'long' parameter request */
+	protected long getLongRequest(HttpServletRequest req, String param) {
+		return Long.parseLong(req.getParameter(param));
+	}
+
 	/** Configure a client from an HTTP request */
 	protected void configureClient(Client c, HttpServletRequest req) {
 		if(req.getParameter(PARAM_USER) != null)
@@ -144,7 +149,7 @@ public abstract class VideoServlet extends HttpServlet {
 		if(req.getParameter(PARAM_DURATION) != null)
 			c.setDuration(getIntRequest(req, PARAM_DURATION));
 		if(req.getParameter(PARAM_SSID) != null)
-			c.setDuration(getIntRequest(req, PARAM_SSID));
+			c.setSonarSessionId(getLongRequest(req, PARAM_SSID));
 		String host = req.getHeader("x-forwarded-for");
 		if(host == null)
 			host = req.getRemoteHost();
@@ -235,7 +240,7 @@ public abstract class VideoServlet extends HttpServlet {
 	}
 
 	/** Validate the Sonar Session ID */
-	protected final boolean isValidSSID(int ssid){
+	protected final boolean isValidSSID(long ssid){
 		logger.fine("Validating client " + ssid + "...");
 		try{
 			HttpURLConnection conn = ConnectionFactory.createConnection(ssidURL);
@@ -247,7 +252,7 @@ public abstract class VideoServlet extends HttpServlet {
 			while(l != null){
 				logger.fine("\tchecking against " + l);
 				try{
-					int validId = Integer.parseInt(l);
+					long validId = Long.parseLong(l);
 					if(ssid == validId) return true;
 				}catch(NumberFormatException nfe){
 					//invalid ssid... ignore it!

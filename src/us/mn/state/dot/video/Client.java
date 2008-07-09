@@ -26,7 +26,7 @@ package us.mn.state.dot.video;
 public class Client {
 
 	/** Sonar session identifier for authenticating to the video system */
-	private int sonarSessionId = -1;
+	private long sonarSessionId = -1;
 	
 	/** Constant for small sized images */
 	public static final int SMALL = 1;
@@ -136,12 +136,12 @@ public class Client {
 	}
 
 	/** Get the SONAR session ID */
-	public int getSonarSessionId() {
+	public long getSonarSessionId() {
 		return sonarSessionId;
 	}
 
 	/** Set the SONAR session ID */
-	public void setSonarSessionId(int sonarSessionId) {
+	public void setSonarSessionId(long sonarSessionId) {
 		this.sonarSessionId = sonarSessionId;
 	}
 }
