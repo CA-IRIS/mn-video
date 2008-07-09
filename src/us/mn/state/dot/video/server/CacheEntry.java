@@ -23,6 +23,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Logger;
 
+import us.mn.state.dot.video.AxisServer;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.ConnectionFactory;
 import us.mn.state.dot.video.VideoException;
@@ -40,12 +41,19 @@ public class CacheEntry {
 	protected String[] backendUrls = null;
 	protected byte[] imageData = null;
 	protected Logger logger = null;
+	protected AxisServer encoder = null;
 	
 	/** Length of time that an image should be cached */
 	protected long expirationAge = 10000; // 10 seconds
 	
 	public CacheEntry(String[] backendUrls, Client c, Logger l){
 		this.backendUrls = backendUrls;
+		this.client = c;
+		this.logger = l;
+	}
+
+	public CacheEntry(AxisServer s, Client c, Logger l){
+		this.encoder = s;
 		this.client = c;
 		this.logger = l;
 	}
@@ -65,20 +73,28 @@ public class CacheEntry {
 	}
 
     public synchronized byte[] getImage() throws VideoException {
+    	if(getAge() > expirationAge || imageData == null){
+    		logger.fine(client.getCameraId() + " fetching image.");
+	    	imageData = retrieveImage();
+	    	imageTime = System.currentTimeMillis();
+	    }else{
+	    	logger.fine(client.getCameraId() + " using cache.");
+	    }
+	    return imageData;
+    }
+
+    protected byte[] retrieveImage() throws VideoException {
     	try{
-	    	if(getAge() > expirationAge || imageData == null){
-	    		logger.fine(client.getCameraId() + " fetching image.");
-	    		imageData = ConnectionFactory.getImage(getImageURL());
-	    		imageTime = System.currentTimeMillis();
+	    	if(encoder != null){
+	    		return encoder.getImage(client);
 	    	}else{
-	    		logger.fine(client.getCameraId() + " using cache.");
+	    		return ConnectionFactory.getImage(getImageURL());
 	    	}
-	    	return imageData;
     	}catch(IOException ioe){
     		throw new VideoException(ioe.getMessage());
     	}
     }
-
+    
     /** Get the URL used to retrieve a new image */
     protected URL getImageURL() throws VideoException {
 		String s = "";

@@ -74,7 +74,7 @@ public abstract class VideoServlet extends HttpServlet {
 		ServletContext ctx = config.getServletContext();
 		Properties props =(Properties)ctx.getAttribute("properties");
 		proxy = new Boolean(props.getProperty("proxy", "false")).booleanValue();
-		int max = Integer.parseInt(props.getProperty("max.imagesize"));
+		int max = Integer.parseInt(props.getProperty("max.imagesize", "2"));
 		Client.setMaxImageSize(max);
 		if(logger==null){
 			logger = (Logger)ctx.getAttribute(PropertiesContext.PROP_LOGGER);

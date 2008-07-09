@@ -79,74 +79,38 @@ public final class ImageServer extends VideoServlet{
 	public void processRequest(HttpServletResponse response, Client c)
 		throws VideoException
 	{
-		if(proxy){
-			processProxyRequest(response, c);
-			return;
-		}
-		byte[] image = AxisServer.getNoVideoImage();
-		int status = HttpServletResponse.SC_OK;
-		String contentType = "image/jpeg\r\n";
-		AxisServer server = serverFactory.getServer(c.getCameraId());
-		if(server != null){
-			try{
-				image = server.getImage(c);
-			}catch(VideoException ve){
-				logger.info(c.getCameraId() + ": " + ve.getMessage());
-			}
-		}
+    	long start = System.currentTimeMillis();
+   		CacheEntry entry = getCacheEntry(c);
+    	byte[] image = entry.getImage();
+		if(image == null) image = AxisServer.getNoVideoImage();
 		try{
-			response.setStatus(status);
-			response.setContentType(contentType);
+			response.setStatus(HttpServletResponse.SC_OK);
+			response.setContentType("image/jpeg\r\n");
 			response.setContentLength(image.length);
 			response.getOutputStream().write(image);
 			response.flushBuffer();
 		}catch(Throwable t){
-			logger.warning("Error serving image " + c.getCameraId());
-		}
-	}
-	
-
-    /** Process a request for a video image
-	 * 
-	 * @param request servlet request
-	 * @param response servlet response
-	 */
-    public void processProxyRequest(HttpServletResponse response,
-    		Client c)throws VideoException{
-    	long start = System.currentTimeMillis();
-    	byte[] image = getImage(c);
-		try{
-			if(image != null){
-				response.setContentType("image/jpeg");
-				response.getOutputStream().write(image);
-			}else{
-				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			}
-			response.flushBuffer();
-		}catch(Throwable th){
-			logger.info("Unable to write image (" +c.getCameraId() + ") " +
-					" to client (" + c.getHost() + ").");
+			logger.warning("Error serving image " + c.getCameraId() +
+					" to client " + c.getHost());
 		}finally{
 			logger.fine("Request filled in " + (System.currentTimeMillis()-start) +
 					" milliseconds");
 		}
-    }
-
-    /** Get the image requested by the client
-     * 
-     * @return The image as a byte[].  Returns null if
-     * the image cannot be obtained.
-     */
-    private byte[] getImage(Client c) throws VideoException{
-    	if(c.getCameraId()==null)return null;
+	}
+	
+    private CacheEntry getCacheEntry(Client c) {
    		String key = createCacheKey(c);
-   		CacheEntry entry = cache.get(key);
-   		if(entry == null){
+    	CacheEntry entry = cache.get(key);
+    	if(entry != null) return entry;
+    	if(!proxy){
+			entry = new CacheEntry(serverFactory.getServer(c.getCameraId()),
+					c, logger);
+		}else{
 			entry = new CacheEntry(backendUrls, c, logger);
-			entry.setExpiration(cacheDuration);
-			cache.put(key, entry);
 		}
-		return entry.getImage();
+		entry.setExpiration(cacheDuration);
+		cache.put(key, entry);
+		return entry;
     }
     
     private static String createCacheKey(Client c){
