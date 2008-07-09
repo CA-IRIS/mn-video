@@ -116,7 +116,8 @@ public class DataSourceFactory {
 				"&rate=" + c.getRate() +
 				"&duration=" + c.getDuration() +
 				"&user=" + c.getUser() +
-				"&area=" + c.getArea();
+				"&area=" + c.getArea() +
+				"&ssid=" + c.getSonarSessionId();
 			return new URL(s);
 		}catch(Exception e){
 			throw new VideoException(e.getMessage());
