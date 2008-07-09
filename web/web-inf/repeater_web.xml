@@ -21,8 +21,8 @@
 	</servlet-mapping>
 
 	<servlet>
-		<servlet-name>StillRepeater</servlet-name>
-		<servlet-class>us.mn.state.dot.video.server.StillRepeater</servlet-class>
+		<servlet-name>ImageServer</servlet-name>
+		<servlet-class>us.mn.state.dot.video.server.ImageServer</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>StillRepeater</servlet-name>

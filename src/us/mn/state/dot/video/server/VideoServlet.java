@@ -47,6 +47,10 @@ import us.mn.state.dot.video.VideoClip;
  */
 public abstract class VideoServlet extends HttpServlet {
 	
+	/**Flag that controls whether this instance is acting as a proxy 
+	 * or a direct video server */
+	protected boolean proxy = false;
+	
 	/** The logger used to log all output for the application */
 	protected static Logger logger;
 
@@ -69,6 +73,7 @@ public abstract class VideoServlet extends HttpServlet {
 		servletName = this.getClass().getSimpleName();
 		ServletContext ctx = config.getServletContext();
 		Properties props =(Properties)ctx.getAttribute("properties");
+		proxy = new Boolean(props.getProperty("proxy", "false")).booleanValue();
 		int max = Integer.parseInt(props.getProperty("max.imagesize"));
 		Client.setMaxImageSize(max);
 		if(logger==null){
@@ -133,7 +138,7 @@ public abstract class VideoServlet extends HttpServlet {
 			t.setName("VIDEO " + servletName + " " +
 				Constants.DATE_FORMAT.format(cal.getTime()) +
 				" Camera " + c.getCameraId());
-			if(isPublic(c.getCameraId())){
+			if(isPublished(c.getCameraId())){
 				processRequest(response, c);
 			}else{
 				sendNoVideo(response, c);
@@ -169,9 +174,8 @@ public abstract class VideoServlet extends HttpServlet {
 	public abstract void processRequest(HttpServletResponse response,
 		Client c) throws Exception;
 
-	/** Check to see if a camera is viewable by the public. */
-	protected boolean isPublic(String camId){
-		//FIXME: implement using SONAR
+	/** Check to see if a camera is published (public). */
+	protected boolean isPublished(String camId){
 		return true;
 	}
 
