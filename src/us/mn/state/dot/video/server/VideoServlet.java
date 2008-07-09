@@ -47,7 +47,7 @@ import us.mn.state.dot.video.VideoClip;
  */
 public abstract class VideoServlet extends HttpServlet {
 	
-	protected TmsConnection tms = null;
+	protected static TmsConnection tms = null;
 	
 	/**Flag that controls whether this instance is acting as a proxy 
 	 * or a direct video server */
@@ -69,7 +69,28 @@ public abstract class VideoServlet extends HttpServlet {
 	protected VelocityContext context= null;
 	protected HttpServletRequest request = null;
 	
-	/** Constructor for the redirector servlet */
+	/** The request parameter name for the SONAR session ID */
+	public static final String PARAM_SSID = "ssid";
+	
+	/** The request parameter name for the video area (sub-system) */
+	public static final String PARAM_AREA = "area";
+
+	/** The request parameter name for the frame rate of MJPEG stream */
+	public static final String PARAM_RATE = "rate";
+
+	/** The request parameter name for the size of video images */
+	public static final String PARAM_SIZE = "size";
+
+	/** The request parameter name for the duration of MJPEG streams */
+	public static final String PARAM_DURATION = "duration";
+
+	/** The request parameter name for the compression of JPEG images */
+	public static final String PARAM_COMPRESSION = "compression";
+
+	/** The request parameter name for the user making the request */
+	public static final String PARAM_USER = "user";
+
+	/** Initialize the VideoServlet */
 	public void init(ServletConfig config) throws ServletException {
 		super.init( config );
 		servletName = this.getClass().getSimpleName();
@@ -93,25 +114,22 @@ public abstract class VideoServlet extends HttpServlet {
 
 	/** Configure a client from an HTTP request */
 	protected void configureClient(Client c, HttpServletRequest req) {
-		try {
-			c.setUser(req.getUserPrincipal().getName());
-		}
-		catch(NullPointerException npe) {
-			if(req.getParameter("user") != null)
-				c.setUser(req.getParameter("user"));
-		}
-		if(req.getParameter("area") != null)
-			c.setArea(getIntRequest(req, "area"));
+		if(req.getParameter(PARAM_USER) != null)
+			c.setUser(req.getParameter(PARAM_USER));
+		if(req.getParameter(PARAM_AREA) != null)
+			c.setArea(getIntRequest(req, PARAM_AREA));
 		if(req.getParameter("id") != null)
 			c.setCameraId(req.getParameter("id"));
-		if(req.getParameter("size") != null)
-			c.setSize(getIntRequest(req, "size"));
-		if(req.getParameter("rate") != null)
-			c.setRate(getIntRequest(req, "rate"));
-		if(req.getParameter("compression") != null)
-			c.setCompression(getIntRequest(req, "compression"));
-		if(req.getParameter("duration") != null)
-			c.setDuration(getIntRequest(req, "duration"));
+		if(req.getParameter(PARAM_SIZE) != null)
+			c.setSize(getIntRequest(req, PARAM_SIZE));
+		if(req.getParameter(PARAM_RATE) != null)
+			c.setRate(getIntRequest(req, PARAM_RATE));
+		if(req.getParameter(PARAM_COMPRESSION) != null)
+			c.setCompression(getIntRequest(req, PARAM_COMPRESSION));
+		if(req.getParameter(PARAM_DURATION) != null)
+			c.setDuration(getIntRequest(req, PARAM_DURATION));
+		if(req.getParameter(PARAM_SSID) != null)
+			c.setDuration(getIntRequest(req, PARAM_SSID));
 		String host = req.getHeader("x-forwarded-for");
 		if(host == null)
 			host = req.getRemoteHost();
@@ -197,7 +215,7 @@ public abstract class VideoServlet extends HttpServlet {
 	
 	/** Check to see if the client is authenticated through SONAR */
 	protected final boolean isAuthenticated(Client c){
-		//FIXME: authenticate user through SONAR
+		if(!proxy) return true;
 		return true;
 	}
 
