@@ -24,7 +24,7 @@
 		<servlet-class>us.mn.state.dot.video.server.ImageServer</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>StillRepeater</servlet-name>
+		<servlet-name>ImageServer</servlet-name>
 		<url-pattern>/image</url-pattern>
 	</servlet-mapping>
 </web-app>

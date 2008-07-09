@@ -18,7 +18,12 @@
  */
 package us.mn.state.dot.video.server;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Properties;
@@ -36,8 +41,10 @@ import org.apache.velocity.VelocityContext;
 import us.mn.state.dot.util.db.TmsConnection;
 import us.mn.state.dot.video.AxisServer;
 import us.mn.state.dot.video.Client;
+import us.mn.state.dot.video.ConnectionFactory;
 import us.mn.state.dot.video.Constants;
 import us.mn.state.dot.video.VideoClip;
+import us.mn.state.dot.video.VideoThread;
 
 
 /**
@@ -47,6 +54,8 @@ import us.mn.state.dot.video.VideoClip;
  */
 public abstract class VideoServlet extends HttpServlet {
 	
+	protected URL ssidURL = null;
+
 	protected static TmsConnection tms = null;
 	
 	/**Flag that controls whether this instance is acting as a proxy 
@@ -99,6 +108,12 @@ public abstract class VideoServlet extends HttpServlet {
 		proxy = new Boolean(props.getProperty("proxy", "false")).booleanValue();
 		if(!proxy){
 			tms = new TmsConnection(props);
+		}else{
+			try{
+				ssidURL = new URL(props.getProperty("ssid.url"));
+			}catch(Exception e){
+				e.printStackTrace();
+			}
 		}
 		int max = Integer.parseInt(props.getProperty("max.imagesize", "2"));
 		Client.setMaxImageSize(max);
@@ -216,7 +231,32 @@ public abstract class VideoServlet extends HttpServlet {
 	/** Check to see if the client is authenticated through SONAR */
 	protected final boolean isAuthenticated(Client c){
 		if(!proxy) return true;
-		return true;
+		return isValidSSID(c.getSonarSessionId());
 	}
 
+	/** Validate the Sonar Session ID */
+	protected final boolean isValidSSID(int ssid){
+		logger.fine("Validating client " + ssid + "...");
+		try{
+			HttpURLConnection conn = ConnectionFactory.createConnection(ssidURL);
+			conn.setConnectTimeout(VideoThread.TIMEOUT_DIRECT);
+			conn.setReadTimeout(VideoThread.TIMEOUT_DIRECT);
+			InputStreamReader in = new InputStreamReader(conn.getInputStream());
+			BufferedReader reader = new BufferedReader(in);
+			String l = reader.readLine();
+			while(l != null){
+				logger.fine("\tchecking against " + l);
+				try{
+					int validId = Integer.parseInt(l);
+					if(ssid == validId) return true;
+				}catch(NumberFormatException nfe){
+					//invalid ssid... ignore it!
+				}
+				l = reader.readLine();
+			}
+		}catch(Exception e){
+			logger.warning(e.getMessage());
+		}
+		return false;
+	}
 }
