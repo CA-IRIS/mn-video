@@ -18,7 +18,6 @@
  */
 package us.mn.state.dot.video.server;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Calendar;
@@ -34,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.velocity.VelocityContext;
 
+import us.mn.state.dot.util.db.TmsConnection;
 import us.mn.state.dot.video.AxisServer;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.Constants;
@@ -46,6 +46,8 @@ import us.mn.state.dot.video.VideoClip;
  *
  */
 public abstract class VideoServlet extends HttpServlet {
+	
+	protected TmsConnection tms = null;
 	
 	/**Flag that controls whether this instance is acting as a proxy 
 	 * or a direct video server */
@@ -74,6 +76,9 @@ public abstract class VideoServlet extends HttpServlet {
 		ServletContext ctx = config.getServletContext();
 		Properties props =(Properties)ctx.getAttribute("properties");
 		proxy = new Boolean(props.getProperty("proxy", "false")).booleanValue();
+		if(!proxy){
+			tms = new TmsConnection(props);
+		}
 		int max = Integer.parseInt(props.getProperty("max.imagesize", "2"));
 		Client.setMaxImageSize(max);
 		if(logger==null){
@@ -176,7 +181,8 @@ public abstract class VideoServlet extends HttpServlet {
 
 	/** Check to see if a camera is published (public). */
 	protected boolean isPublished(String camId){
-		return true;
+		if(proxy) return true;
+		return tms.isPublished(camId);
 	}
 
 	protected final void sendNoVideo(HttpServletResponse response, Client c)
