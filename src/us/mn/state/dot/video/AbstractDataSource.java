@@ -67,12 +67,12 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 		return sinks.size() + " listeners.";
 	}
 
-	public final DataSink[] getListeners(){
+	public final synchronized DataSink[] getListeners(){
 		return (DataSink[])sinks.toArray(new DataSink[0]);
 	}
 	
 	/** Notify listeners that an image was created */
-	protected final void notifySinks(byte[] data) {
+	protected final synchronized void notifySinks(byte[] data) {
 		image = data;
 		for(DataSink sink : sinks) {
 			logger.fine(this.getClass().getSimpleName() +
