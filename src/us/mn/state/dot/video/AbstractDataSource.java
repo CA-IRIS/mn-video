@@ -70,6 +70,8 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 	
 	/** Notify listeners that an image was created */
 	protected final synchronized void notifySinks(byte[] data) {
+		//take a copy of the sinks to avoid concurrent modification exception
+		// if the sink tries to remove itself during the flush call
 		DataSink[] tempSinks = sinks.toArray(new DataSink[0]);
 		for(DataSink sink : tempSinks) {
 			logger.fine(this.getClass().getSimpleName() +
