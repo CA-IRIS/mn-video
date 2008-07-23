@@ -38,9 +38,6 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 	private ArrayList<DataSink> sinks =
 		new ArrayList<DataSink>();
 
-	/** A byte array used to store the image.*/
-	private byte[] image;
-
 	protected final Logger logger;
 	
 	protected final Client client;
@@ -73,11 +70,11 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 	
 	/** Notify listeners that an image was created */
 	protected final synchronized void notifySinks(byte[] data) {
-		image = data;
-		for(DataSink sink : sinks) {
+		DataSink[] tempSinks = sinks.toArray(new DataSink[0]);
+		for(DataSink sink : tempSinks) {
 			logger.fine(this.getClass().getSimpleName() +
 					" is Notifying " + sink.toString() +
-					": image size is " + image.length);
+					": image size is " + data.length);
 			sink.flush(data);
 		}
 	}
@@ -108,10 +105,6 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 	
 	public final Client getClient() {
 		return client;
-	}
-
-	public byte[] getImage(){
-		return image;
 	}
 
 	/** Create an array of baseUrls for connecting to the backend
