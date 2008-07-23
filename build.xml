@@ -10,6 +10,7 @@
 	<property name="etc.dir" value="etc" />
 	<property name="web.dir" value="web" />
 	<property name="lib.dir" value="lib" />
+	<property name="bin.dir" value="bin" />
 	<property name="images.dir" value="web/images" />
 	<property name="build.dir" value="build" />
 	<property name="build.repeater.dir" value="${build.dir}/repeater" />
@@ -19,6 +20,7 @@
 	<property name="build.etc.dir" value="${build.dir}/etc" />
 	<property name="build.web.dir" value="${build.dir}/web" />
 	<property name="build.lib.dir" value="${build.dir}/lib" />
+	<property name="build.dist.dir" value="${build.dir}/dist" />
 	<property name="build.classes.dir" value="${build.dir}/classes" />
 	<property name="build.javadocs.dir" value="${build.dir}/javadocs" />
 
@@ -240,11 +242,38 @@
 				<include name="us/mn/state/dot/video/client/*.*"/>
 				<include name="us/mn/state/dot/video/*.*"/>
 			</fileset>
-			<fileset dir="${build.etc.dir}">
-				<include name="client.properties"/>
+			<fileset dir="${lib.dir}">
+				<include name="video-client.properties"/>
 				<include name="nvr-client.properties"/>
 			</fileset>
 		</jar>
+	</target>
+
+	<!-- ================================================== -->
+	<!-- Create the client distribution                     -->
+	<!-- ================================================== -->
+	<target name="dist"
+		depends="client"
+		description="Creates the client distribution.">
+		<copy todir="${build.dist.dir}/lib">
+			<fileset dir="${build.lib.dir}" />
+		</copy>
+		<copy todir="${build.dist.dir}/lib">
+			<fileset dir="${lib.dir}" >
+				<include name="tms-log-${tms-log.version}.jar" />
+			</fileset>
+		</copy>
+		<copy todir="${build.dist.dir}" filtering="true">
+			<fileset dir="${bin.dir}" >
+				<include name="*.sh" />
+			</fileset>
+			<filterset begintoken="@@" endtoken="@@">
+				<filter token="VERSION"
+					value="${version}"/>
+			</filterset>
+		</copy>
+		<chmod file="${build.dist.dir}/video.sh" perm="ugo+x"/>
+		<fixcrlf srcDir="${build.dist.dir}" eol="lf" includes="*.sh"/>
 	</target>
 
 	<!-- Jar target for iris buildall target -->
@@ -378,8 +407,8 @@
 	       		<fileset dir="${build.web.dir}/html" >
 				<include name="*.jnlp" />
 	           	</fileset>
-	       		<fileset dir="${build.etc.dir}" >
-				<include name="client.properties" />
+	       		<fileset dir="${lib.dir}" >
+				<include name="video-client.properties" />
 	           	</fileset>
 	       		<fileset dir="${build.lib.dir}" >
 				<include name="${name}-client-${version}.jar" />

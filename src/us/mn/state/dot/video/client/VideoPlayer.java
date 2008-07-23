@@ -19,14 +19,13 @@
 package us.mn.state.dot.video.client;
 
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ProxySelector;
@@ -38,7 +37,6 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 
 import us.mn.state.dot.log.TmsLogFactory;
 import us.mn.state.dot.util.HTTPProxySelector;
@@ -52,35 +50,18 @@ import us.mn.state.dot.video.Constants;
  */
 public class VideoPlayer extends JFrame {
 
-	private VideoMonitor monitor;
+	private final VideoMonitor monitor = new VideoMonitor();
 	Container contentPane = null;
 	private Logger logger = null;
 	
-	private void initGui() {
-		JPanel controls = new JPanel(new GridBagLayout());
+	private void initGui(Properties p) {
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
-		Properties p = new Properties();
-		InputStream is =
-			this.getClass().getClassLoader().getResourceAsStream("client.properties");
-		try{
-			p.load(is);
-		}catch(IOException ioe){
-			logger.warning("Exception loading properties file.");
-		}
-		monitor = new VideoMonitor();
-		controls.add( new CameraIdControl(p, monitor, logger), c );
 		c.gridx = 0;
-		c.gridy = 1;
-		controls.add( new IncidentControl(p, monitor, logger), c );
 		contentPane = this.getContentPane();
 		contentPane.setLayout( new GridBagLayout() );
-		GridBagConstraints c2 = new GridBagConstraints();
-		c2.fill = GridBagConstraints.BOTH;
-		contentPane.add(controls, c2);
-		c2.gridx = 1;
-		c2.gridy = 0;
-		contentPane.add(monitor, c2);
+		contentPane.add(monitor, c);
+		contentPane.add(new CameraIdControl(p, monitor, logger), c);
 		addWindowListener(
 			new WindowAdapter() {
 				public void windowClosing( WindowEvent evt ) {
@@ -88,6 +69,9 @@ public class VideoPlayer extends JFrame {
 				}
 			} );
 		this.setJMenuBar( createMenuBar() );
+		this.setPreferredSize(new Dimension(400, 600));
+		setVisible( true );
+		setResizable(false);
 		this.pack();
 	}
 
@@ -146,24 +130,19 @@ public class VideoPlayer extends JFrame {
 	/** Initialize the video player */
 	public VideoPlayer() {
 		super("HyperStream");
-		setupProxy();
+		Properties p = new Properties();
+		InputStream is =
+			this.getClass().getClassLoader().getResourceAsStream("video-client.properties");
+		try{
+			p.load(is);
+			ProxySelector.setDefault(new HTTPProxySelector(p));
+		}catch(IOException ioe){
+			logger.warning("Exception loading properties file.");
+		}
 		logger = TmsLogFactory.createLogger("hyperstream", null, null);
-		setVisible( true );
-		initGui();
-		setResizable(false);
+		initGui(p);
 	}
 
-	public void setupProxy(){
-		try{
-			Properties p = new Properties();
-			File home = new File(System.getProperty("user.home"));
-			p.load(new FileInputStream(new File(home, "client.properties")));
-			ProxySelector.setDefault(new HTTPProxySelector(p));
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-	}
-	
 	public static void main(String[] args){
 		new VideoPlayer();
 	}

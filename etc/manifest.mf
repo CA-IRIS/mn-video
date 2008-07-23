@@ -1,2 +1,2 @@
 Class-Path: tms-log-@@TMS-LOG.VERSION@@.jar
-Main-Class: us.mn.state.dot.video.client.NvrClient
+Main-Class: us.mn.state.dot.video.client.VideoPlayer
