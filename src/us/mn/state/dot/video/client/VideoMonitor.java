@@ -24,6 +24,8 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
@@ -38,11 +40,11 @@ import javax.swing.border.BevelBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import us.mn.state.dot.video.AbstractImageFactory;
 import us.mn.state.dot.video.Camera;
 import us.mn.state.dot.video.ConnectionFactory;
 import us.mn.state.dot.video.Constants;
-import us.mn.state.dot.video.ImageFactoryListener;
+import us.mn.state.dot.video.DataSink;
+import us.mn.state.dot.video.DataSource;
 
 /**
  * A JPanel that can display an RTMC video stream.
@@ -51,17 +53,17 @@ import us.mn.state.dot.video.ImageFactoryListener;
  * @created   May 30, 2002
  */
 public class VideoMonitor extends JPanel
-		implements ImageFactoryListener, ListSelectionListener {
+		implements DataSink, ListSelectionListener {
 
 	private Camera camera = null;
-	private AbstractImageFactory factory = null;
+	private DataSource source = null;
 	private int imagesRendered = 0;
 	Image image = null;
 	String imageName = null;
 	private final JLabel screen = new JLabel();
 	private final JLabel description = new JLabel(null,null,JLabel.CENTER);
 	private JProgressBar progress = new JProgressBar(0, 100);
-	private LinkedList images = new LinkedList();
+	private LinkedList<byte[]> images = new LinkedList<byte[]>();
 	private final JLabel status = new JLabel();
 	public static final String CONNECT_ERROR = "Unable to connect to stream.";
 	public static final String CONNECTING = "Connecting...";
@@ -110,7 +112,7 @@ public class VideoMonitor extends JPanel
 	 *
 	 * @param image  The image to display.
 	 */
-	public synchronized void setImage(ImageIcon icon){
+	private synchronized void setImage(ImageIcon icon){
 		Image i = icon.getImage().getScaledInstance(
 			imageSize.width, imageSize.height,
 				Image.SCALE_FAST);
@@ -118,33 +120,51 @@ public class VideoMonitor extends JPanel
 		repaint();
 	}
 
-	public void setImageFactory(AbstractImageFactory f, int totalFrames){
+	public void setDataSource(DataSource src, int totalFrames){
+		if(source != null ){
+			source.disconnectSink(this);
+		}
 		imagesRendered = 0;
 		this.imagesRequested = totalFrames;
-		if(f != null){
-			f.addImageFactoryListener(this);
+		if(src != null){
+			src.connectSink(this);
 			images.clear();
 			status.setText(CONNECTING);
+			try{
+				((Thread)src).start();
+			}catch(IllegalThreadStateException its){
+				// do nothing... it's already been started.
+			}
 		}else{
 			status.setText(WAIT_ON_USER);
 		}
-		if(factory != null){
-			factory.removeImageFactoryListener(this);
-		}
-		factory = f;
+		source = src;
 		progress.setMaximum(imagesRequested);
 		progress.setValue(0);
 	}
 	
-	public void imageCreated(byte[] i){
+	public void flush(byte[] i){
+//		write2File(i);
 		status.setText(STREAMING);
 		ImageIcon icon = new ImageIcon(i);
 		setImage(icon);
 		progress.setValue(imagesRendered);
 		imagesRendered++;
 		if(imagesRendered >= imagesRequested){
-			factory.removeImageFactoryListener(this);
+			source.disconnectSink(this);
 			clear();
+		}
+	}
+	
+	private void write2File(byte[] image){
+		try{
+			File f = new File("/tmp/image_" + imagesRendered + ".jpg");
+			FileOutputStream fos = new FileOutputStream(f);
+			fos.write(image);
+			fos.flush();
+			fos.close();
+		}catch(Exception e){
+			e.printStackTrace();
 		}
 	}
 	
@@ -180,6 +200,15 @@ public class VideoMonitor extends JPanel
 		}
 	}
 
+	public String toString(){
+		String id = "";
+		try{
+			id = camera.getId();
+		}catch(Exception e){
+		}
+		return id + " video monitor";
+	}
+	
 	/** Update the video screen with the latest camera image. */
 	protected void updateScreen(){
 		if(camera == null) setImage(null);

@@ -38,12 +38,14 @@ import java.net.URLConnection;
  */
 abstract public class ConnectionFactory {
 
-	public static URLConnection createConnection(URL url)
+	public static HttpURLConnection createConnection(URL url)
 			throws IOException {
 		HttpURLConnection c = (HttpURLConnection)url.openConnection();
 		HttpURLConnection.setFollowRedirects(true);
 		c.setConnectTimeout(VideoThread.TIMEOUT_CONNECT);
 		c.setReadTimeout(VideoThread.TIMEOUT_READ);
+//SD MERGE:		c.setConnectTimeout(VideoThread.TIMEOUT_DIRECT);
+//SD MERGE:		c.setReadTimeout(VideoThread.TIMEOUT_DIRECT);
 		return c;
 	}
 	
@@ -100,6 +102,7 @@ abstract public class ConnectionFactory {
 			try{
 				in.close();
 			}catch(IOException ioe2){
+			}catch(NullPointerException npe){
 			}
 		}
 	}

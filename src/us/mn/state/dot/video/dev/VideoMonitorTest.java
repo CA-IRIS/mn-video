@@ -21,11 +21,13 @@ package us.mn.state.dot.video.dev;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.net.URL;
 
 import javax.swing.JFrame;
 
 import us.mn.state.dot.video.Client;
-import us.mn.state.dot.video.RepeaterImageFactory;
+import us.mn.state.dot.video.DataSourceFactory;
+import us.mn.state.dot.video.HttpDataSource;
 import us.mn.state.dot.video.client.VideoMonitor;
 
 public class VideoMonitorTest extends JFrame {
@@ -44,11 +46,13 @@ public class VideoMonitorTest extends JFrame {
 		mon.setLabelVisible(false);
 		this.getContentPane().add(mon);
 		Client c = new Client();
-		c.setCameraId("C001");
+		c.setCameraId("C814");
 		c.setRate(30);
 		try{
-			mon.setImageFactory(
-				new RepeaterImageFactory(c, streamUri, null, null),
+//			URL url = DataSourceFactory.createURL(c, streamUri);
+			URL url = new URL("http://10.69.9.18/axis-cgi/mjpg/video.cgi?camera=1");
+			mon.setDataSource(
+					new HttpDataSource(c, null, null, url),
 					800);
 		}catch(Exception e){
 			e.printStackTrace();

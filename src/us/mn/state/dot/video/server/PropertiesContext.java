@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.ProxySelector;
 import java.util.Calendar;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -34,7 +33,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
 import us.mn.state.dot.log.TmsLogFactory;
-import us.mn.state.dot.util.HTTPProxySelector;
 import us.mn.state.dot.video.Constants;
 
 /**
@@ -68,7 +66,7 @@ public class PropertiesContext extends HttpServlet{
 	/** Properties */
 	static protected final Properties props = new Properties();
 
-	/** Contructor for the VideoServer */
+	/** Constructor for the VideoServer */
 	public void init( ServletConfig config ) throws ServletException {
 		super.init( config );
 		ServletContext ctx = config.getServletContext();
@@ -89,7 +87,7 @@ public class PropertiesContext extends HttpServlet{
 		logger = TmsLogFactory.createLogger(appName,
 				Level.parse(props.getProperty(PROP_LOG_LEVEL, "all")),
 				logDir);
-		ProxySelector.setDefault(new HTTPProxySelector(props));
+//		ProxySelector.setDefault(new HTTPProxySelector(props));
 		try{
 			TmsLogFactory.redirectStdStreams(appName, logDir);
 		}catch(FileNotFoundException fnfe){

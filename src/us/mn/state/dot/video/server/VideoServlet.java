@@ -18,8 +18,15 @@
  */
 package us.mn.state.dot.video.server;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.ParseException;
 import java.util.Calendar;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletConfig;
@@ -31,9 +38,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.velocity.VelocityContext;
 
+import us.mn.state.dot.util.db.TmsConnection;
+import us.mn.state.dot.video.AxisServer;
 import us.mn.state.dot.video.Client;
+import us.mn.state.dot.video.ConnectionFactory;
 import us.mn.state.dot.video.Constants;
 import us.mn.state.dot.video.VideoClip;
+import us.mn.state.dot.video.VideoThread;
 
 
 /**
@@ -42,6 +53,14 @@ import us.mn.state.dot.video.VideoClip;
  *
  */
 public abstract class VideoServlet extends HttpServlet {
+	
+	protected URL ssidURL = null;
+
+	protected static TmsConnection tms = null;
+	
+	/**Flag that controls whether this instance is acting as a proxy 
+	 * or a direct video server */
+	protected boolean proxy = false;
 	
 	/** The logger used to log all output for the application */
 	protected static Logger logger;
@@ -59,40 +78,78 @@ public abstract class VideoServlet extends HttpServlet {
 	protected VelocityContext context= null;
 	protected HttpServletRequest request = null;
 	
-	/** Contructor for the redirector servlet */
+	/** The request parameter name for the SONAR session ID */
+	public static final String PARAM_SSID = "ssid";
+	
+	/** The request parameter name for the video area (sub-system) */
+	public static final String PARAM_AREA = "area";
+
+	/** The request parameter name for the frame rate of MJPEG stream */
+	public static final String PARAM_RATE = "rate";
+
+	/** The request parameter name for the size of video images */
+	public static final String PARAM_SIZE = "size";
+
+	/** The request parameter name for the duration of MJPEG streams */
+	public static final String PARAM_DURATION = "duration";
+
+	/** The request parameter name for the compression of JPEG images */
+	public static final String PARAM_COMPRESSION = "compression";
+
+	/** The request parameter name for the user making the request */
+	public static final String PARAM_USER = "user";
+
+	/** Initialize the VideoServlet */
 	public void init(ServletConfig config) throws ServletException {
 		super.init( config );
 		servletName = this.getClass().getSimpleName();
 		ServletContext ctx = config.getServletContext();
+		Properties props =(Properties)ctx.getAttribute("properties");
+		proxy = new Boolean(props.getProperty("proxy", "false")).booleanValue();
+		if(!proxy){
+			tms = new TmsConnection(props);
+		}else{
+			try{
+				ssidURL = new URL(props.getProperty("ssid.url"));
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+		int max = Integer.parseInt(props.getProperty("max.imagesize", "2"));
+		Client.setMaxImageSize(max);
 		if(logger==null){
 			logger = (Logger)ctx.getAttribute(PropertiesContext.PROP_LOGGER);
 		}
 	}
 
-	/** Get an integer paramter request */
+	/** Get an integer parameter request */
 	protected int getIntRequest(HttpServletRequest req, String param) {
 		return Integer.parseInt(req.getParameter(param));
 	}
 
+	/** Get a 'long' parameter request */
+	protected long getLongRequest(HttpServletRequest req, String param) {
+		return Long.parseLong(req.getParameter(param));
+	}
+
 	/** Configure a client from an HTTP request */
 	protected void configureClient(Client c, HttpServletRequest req) {
-		try {
-			c.setUser(req.getUserPrincipal().getName());
-		}
-		catch(NullPointerException npe) {
-			if(req.getParameter("user") != null)
-				c.setUser(req.getParameter("user"));
-		}
-		if(req.getParameter("area") != null)
-			c.setArea(getIntRequest(req, "area"));
+		if(req.getParameter(PARAM_USER) != null)
+			c.setUser(req.getParameter(PARAM_USER));
+		if(req.getParameter(PARAM_AREA) != null)
+			c.setArea(getIntRequest(req, PARAM_AREA));
 		if(req.getParameter("id") != null)
 			c.setCameraId(req.getParameter("id"));
-		if(req.getParameter("size") != null)
-			c.setSize(getIntRequest(req, "size"));
-		if(req.getParameter("rate") != null)
-			c.setRate(getIntRequest(req, "rate"));
-		if(req.getParameter("duration") != null)
-			c.setDuration(getIntRequest(req, "duration"));
+		if(req.getParameter(PARAM_SIZE) != null)
+			c.setSize(getIntRequest(req, PARAM_SIZE));
+		if(req.getParameter(PARAM_RATE) != null)
+			c.setRate(getIntRequest(req, PARAM_RATE));
+		if(req.getParameter(PARAM_COMPRESSION) != null)
+			c.setCompression(getIntRequest(req, PARAM_COMPRESSION));
+		if(req.getParameter(PARAM_DURATION) != null)
+			c.setDuration(getIntRequest(req, PARAM_DURATION));
+		if(req.getParameter(PARAM_SSID) != null)
+			c.setSonarSessionId(getLongRequest(req, PARAM_SSID));
 		String host = req.getHeader("x-forwarded-for");
 		if(host == null)
 			host = req.getRemoteHost();
@@ -124,10 +181,13 @@ public abstract class VideoServlet extends HttpServlet {
 			t.setName("VIDEO " + servletName + " " +
 				Constants.DATE_FORMAT.format(cal.getTime()) +
 				" Camera " + c.getCameraId());
-			processRequest(response, c);
+			if(isPublished(c.getCameraId())){
+				processRequest(response, c);
+			}else{
+				sendNoVideo(response, c);
+			}
 		}
 		catch(Throwable th) {
-			th.printStackTrace();
 			logger.warning(th.getMessage());
 		}
 		finally {
@@ -156,4 +216,52 @@ public abstract class VideoServlet extends HttpServlet {
 
 	public abstract void processRequest(HttpServletResponse response,
 		Client c) throws Exception;
+
+	/** Check to see if a camera is published (public). */
+	protected boolean isPublished(String camId){
+		if(proxy) return true;
+		return tms.isPublished(camId);
+	}
+
+	protected final void sendNoVideo(HttpServletResponse response, Client c)
+			throws IOException {
+		byte[] image = AxisServer.getNoVideoImage();
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.setContentType("image/jpeg");
+		response.setContentLength(image.length);
+		response.getOutputStream().write(image);
+		response.flushBuffer();
+	}
+	
+	/** Check to see if the client is authenticated through SONAR */
+	protected final boolean isAuthenticated(Client c){
+		if(!proxy) return true;
+		return isValidSSID(c.getSonarSessionId());
+	}
+
+	/** Validate the Sonar Session ID */
+	protected final boolean isValidSSID(long ssid){
+		logger.fine("Validating client " + ssid + "...");
+		try{
+			HttpURLConnection conn = ConnectionFactory.createConnection(ssidURL);
+			conn.setConnectTimeout(VideoThread.TIMEOUT_DIRECT);
+			conn.setReadTimeout(VideoThread.TIMEOUT_DIRECT);
+			InputStreamReader in = new InputStreamReader(conn.getInputStream());
+			BufferedReader reader = new BufferedReader(in);
+			String l = reader.readLine();
+			while(l != null){
+				logger.fine("\tchecking against " + l);
+				try{
+					long validId = Long.parseLong(l);
+					if(ssid == validId) return true;
+				}catch(NumberFormatException nfe){
+					//invalid ssid... ignore it!
+				}
+				l = reader.readLine();
+			}
+		}catch(Exception e){
+			logger.warning(e.getMessage());
+		}
+		return false;
+	}
 }

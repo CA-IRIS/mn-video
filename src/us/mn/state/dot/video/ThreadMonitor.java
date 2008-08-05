@@ -18,7 +18,6 @@
  */
 package us.mn.state.dot.video;
 
-import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
@@ -64,13 +63,11 @@ public class ThreadMonitor extends Thread {
 	}
 
 	private void printThreads(){
-		Iterator it = threads.iterator();
-		while(it.hasNext()){
-			VideoThread t = (VideoThread)it.next();
-			if(!t.isAlive()){
-				it.remove();
+		for(VideoThread vt : threads){
+			if(!vt.isAlive()){
+				threads.remove(vt);
 			}else{
-				logger.fine(t + " " + t.getStatus());
+				logger.fine(vt + " " + vt.getStatus());
 			}
 		}
 	}

@@ -2,17 +2,4 @@
 		docBase="@@NAME@@.war"
 		debug="99"
 		reloadable="true">
-	<Realm
-		className="org.apache.catalina.realm.JDBCRealm"
-		connectionName="@@CONNECTION.NAME@@"
-		connectionPassword="@@CONNECTION.PASSWORD@@"
-		connectionURL="@@CONNECTION.URL@@"
-		driverName="org.postgresql.Driver"
-		roleNameCol="@@ROLE.NAME.COL@@"
-		userCredCol="@@USER.CRED.COL@@"
-		userNameCol="@@USER.NAME.COL@@"
-		userRoleTable="@@USER.ROLE.TABLE@@"
-		userTable="@@USER.TABLE@@"
-		digest="SHA"
-	/>
 </Context>

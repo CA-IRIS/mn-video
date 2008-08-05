@@ -25,8 +25,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.ProxySelector;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -38,6 +41,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
 import us.mn.state.dot.log.TmsLogFactory;
+import us.mn.state.dot.util.HTTPProxySelector;
 import us.mn.state.dot.video.Constants;
 
 /**
@@ -114,12 +118,9 @@ public class VideoPlayer extends JFrame {
 		item.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ae){
 				JCheckBoxMenuItem i = (JCheckBoxMenuItem)ae.getSource();
-//				System.out.println("Resizing...");
 				if(i.isSelected()){
-//					System.out.println("  scaling up.");
 					monitor.setVideoSize(Constants.SIF_4X);
 				}else{
-//					System.out.println("  scaling down.");
 					monitor.setVideoSize(Constants.SIF_FULL);
 				}
 				VideoPlayer.this.pack();
@@ -145,18 +146,25 @@ public class VideoPlayer extends JFrame {
 	/** Initialize the video player */
 	public VideoPlayer() {
 		super("HyperStream");
+		setupProxy();
 		logger = TmsLogFactory.createLogger("hyperstream", null, null);
 		setVisible( true );
 		initGui();
 		setResizable(false);
 	}
 
+	public void setupProxy(){
+		try{
+			Properties p = new Properties();
+			File home = new File(System.getProperty("user.home"));
+			p.load(new FileInputStream(new File(home, "client.properties")));
+			ProxySelector.setDefault(new HTTPProxySelector(p));
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
 	public static void main(String[] args){
-		Properties p = new Properties();
-		p.setProperty("proxy.host", "proxy.dot.state.mn.us");
-		p.setProperty("proxy.port", "3128");
-		p.setProperty("no.proxy.hosts", "151.111.,192.168.,10.");
-//		ProxySelector.setDefault(new HTTPProxySelector(p));
 		new VideoPlayer();
 	}
 

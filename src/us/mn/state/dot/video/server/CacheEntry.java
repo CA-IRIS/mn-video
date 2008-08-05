@@ -18,19 +18,94 @@
  */
 package us.mn.state.dot.video.server;
 
-import java.util.Calendar;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.logging.Logger;
+
+import us.mn.state.dot.video.AxisServer;
+import us.mn.state.dot.video.Client;
+import us.mn.state.dot.video.ConnectionFactory;
+import us.mn.state.dot.video.VideoException;
 
 /**
- * An object that can be placed in the stills cache.
+ * An object that can be placed in the stills cache.  This class
+ * also makes sure that the image data is not expired before returning
+ * it to calling classes.
  *
  */
 public class CacheEntry {
 
-	//Image cache entry
-	public final long imageTime = Calendar.getInstance().getTimeInMillis();
-	public byte[] imageData = null;
-		
-	public CacheEntry(byte[] imageData){
-		this.imageData = imageData;
+	protected long imageTime = System.currentTimeMillis();
+	protected Client client = null;
+	protected String[] backendUrls = null;
+	protected byte[] imageData = null;
+	protected Logger logger = null;
+	protected AxisServer encoder = null;
+	
+	/** Length of time that an image should be cached */
+	protected long expirationAge = 10000; // 10 seconds
+	
+	public CacheEntry(String[] backendUrls, Client c, Logger l){
+		this.backendUrls = backendUrls;
+		this.client = c;
+		this.logger = l;
 	}
+
+	public CacheEntry(AxisServer s, Client c, Logger l){
+		this.encoder = s;
+		this.client = c;
+		this.logger = l;
+	}
+
+	/** Set the expiration time for the cache */
+	public void setExpiration(long ex){
+		this.expirationAge = ex;
+	}
+	
+    /**
+     * Get the age of the image data in milliseconds.
+     * @param start
+     * @return
+     */
+    private long getAge(){
+		return (System.currentTimeMillis() - imageTime);
+	}
+
+    public synchronized byte[] getImage() throws VideoException {
+    	if(getAge() > expirationAge || imageData == null){
+    		logger.fine(client.getCameraId() + " fetching image.");
+	    	imageData = retrieveImage();
+	    	imageTime = System.currentTimeMillis();
+	    }else{
+	    	logger.fine(client.getCameraId() + " using cache.");
+	    }
+	    return imageData;
+    }
+
+    protected byte[] retrieveImage() throws VideoException {
+    	try{
+	    	if(encoder != null){
+	    		return encoder.getImage(client);
+	    	}else{
+	    		return ConnectionFactory.getImage(getImageURL());
+	    	}
+    	}catch(IOException ioe){
+    		throw new VideoException(ioe.getMessage());
+    	}
+    }
+    
+    /** Get the URL used to retrieve a new image */
+    protected URL getImageURL() throws VideoException {
+		String s = "";
+    	try{
+			s = backendUrls[client.getArea()] + "?id=" + client.getCameraId() +
+				"&size=" + client.getSize();
+			return new URL(s);
+		}catch(MalformedURLException mue){
+			throw new VideoException("Malformed URL: " + s);
+		}
+    }
+
 }
+

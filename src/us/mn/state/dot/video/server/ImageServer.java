@@ -18,13 +18,15 @@
 */
 package us.mn.state.dot.video.server;
 
+import java.util.Hashtable;
 import java.util.Properties;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
-import us.mn.state.dot.util.db.TmsConnection;
+import us.mn.state.dot.video.AbstractDataSource;
 import us.mn.state.dot.video.AxisServer;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.VideoException;
@@ -38,41 +40,80 @@ import us.mn.state.dot.video.VideoException;
  */
 public final class ImageServer extends VideoServlet{
 
+	private static Hashtable<String, CacheEntry> cache =
+		new Hashtable<String, CacheEntry>();
+
+	protected final long DEFAULT_CACHE_DURATION = 10000; //10 seconds
+	
+	protected long cacheDuration = DEFAULT_CACHE_DURATION;
+	
+	protected String[] backendUrls = null;
+	
 	protected ServerFactory serverFactory = null;
 	
-	/** Contructor for the VideoServer */
-    public void init( ServletConfig config ) throws ServletException {
+	/** Constructor for the ImageServer */
+    public void init(ServletConfig config) throws ServletException {
 		super.init( config );
-		Properties p = (Properties)config.getServletContext().getAttribute("properties");
-		serverFactory = new ServerFactory(new TmsConnection(p));
-		logger.info( "ImageServer initialized successfully." );
-	}
-
+		try{
+			ServletContext ctx = config.getServletContext();
+			Properties p = (Properties)ctx.getAttribute("properties");
+			if(proxy){
+				backendUrls = AbstractDataSource.createBackendUrls(p, 2);
+			}else{
+				serverFactory = new ServerFactory(p);
+			}
+			cacheDuration = Long.parseLong(
+					p.getProperty("video.cache.duration",
+					Long.toString(DEFAULT_CACHE_DURATION)));
+			logger.info( "ImageServer initialized successfully." );
+		}catch(Exception e){
+			logger.severe(e.getMessage() + " --see error log for details.");
+			e.printStackTrace();
+		}
+    }
 
 	/**
 	 * @param request servlet request
 	 * @param response servlet response
 	 */
-	public void processRequest(HttpServletResponse response, Client c){
-		AxisServer server = serverFactory.getServer(c.getCameraId());
-		int status = HttpServletResponse.SC_OK;
-		String contentType = "image/jpeg";
-		byte[] image = AxisServer.getNoVideoImage();
-		if(server != null){
-			try{
-				image = server.getImage(c);
-			}catch(VideoException ve){
-				logger.info(c.getCameraId() + ": " + ve.getMessage());
-			}
-		}
+	public void processRequest(HttpServletResponse response, Client c)
+		throws VideoException
+	{
+    	long start = System.currentTimeMillis();
+   		CacheEntry entry = getCacheEntry(c);
+    	byte[] image = entry.getImage();
+		if(image == null) image = AxisServer.getNoVideoImage();
 		try{
-			response.setStatus(status);
-			response.setContentType(contentType);
+			response.setStatus(HttpServletResponse.SC_OK);
+			response.setContentType("image/jpeg\r\n");
 			response.setContentLength(image.length);
 			response.getOutputStream().write(image);
 			response.flushBuffer();
 		}catch(Throwable t){
-			logger.warning("Error serving image " + c.getCameraId());
+			logger.warning("Error serving image " + c.getCameraId() +
+					" to client " + c.getHost());
+		}finally{
+			logger.fine("Request filled in " + (System.currentTimeMillis()-start) +
+					" milliseconds");
 		}
 	}
+	
+    private CacheEntry getCacheEntry(Client c) {
+   		String key = createCacheKey(c);
+    	CacheEntry entry = cache.get(key);
+    	if(entry != null) return entry;
+    	if(!proxy){
+			entry = new CacheEntry(serverFactory.getServer(c.getCameraId()),
+					c, logger);
+		}else{
+			entry = new CacheEntry(backendUrls, c, logger);
+		}
+		entry.setExpiration(cacheDuration);
+		cache.put(key, entry);
+		return entry;
+    }
+    
+    private static String createCacheKey(Client c){
+    	return c.getArea() + ":" + c.getCameraId() + ":" + c.getSize();
+    }
 }

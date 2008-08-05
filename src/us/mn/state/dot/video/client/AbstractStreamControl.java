@@ -18,14 +18,16 @@
  */
 package us.mn.state.dot.video.client;
 
+import java.net.URL;
 import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.swing.JPanel;
 
-import us.mn.state.dot.video.AbstractImageFactory;
 import us.mn.state.dot.video.Client;
-import us.mn.state.dot.video.RepeaterImageFactory;
+import us.mn.state.dot.video.DataSource;
+import us.mn.state.dot.video.DataSourceFactory;
+import us.mn.state.dot.video.HttpDataSource;
 import us.mn.state.dot.video.ThreadMonitor;
 import us.mn.state.dot.video.VideoException;
 
@@ -39,7 +41,7 @@ public class AbstractStreamControl extends JPanel{
 
 	protected Logger logger = null;
 	private ThreadMonitor threadMonitor = null;
-	private AbstractImageFactory factory = null;
+	private DataSource source = null;
 	private String cameraId = null;
 	private int rate = 30;
 	private int duration = 60;
@@ -52,34 +54,34 @@ public class AbstractStreamControl extends JPanel{
 		this.monitor = monitor;
 		String server = null;
 		String port = null;
-		server = p.getProperty("server.host");
-		port = p.getProperty("server.port");
+		server = p.getProperty("video.host");
+		port = p.getProperty("video.port");
 		baseUrl = "http://" +
 			server + ":" + port + "/@@NAME@@/stream";
 		threadMonitor = new ThreadMonitor("IncidentControl", 10000, logger);
 	}
 
     public final void stop(){
-		monitor.setImageFactory(null, 0);
+		monitor.setDataSource(null, 0);
 	}
 	
 	public final void start() {
 		logger.info("Starting stream...");
 		stop();
 		//FIXME make the size selectable
-		logger.info("Creating imagefactory for " + cameraId);
+		logger.info("Creating DataSource for " + cameraId);
 		Client c = new Client();
 		c.setCameraId(cameraId);
 		c.setSize(size);
 		c.setDuration(duration);
 		c.setRate(rate);
 		try{
-			factory = new RepeaterImageFactory(
-				c, baseUrl, logger, threadMonitor);
+			URL url = DataSourceFactory.createURL(c, baseUrl);
+			source = new HttpDataSource(c, logger, threadMonitor, url);
 		}catch(VideoException ve){
 			logger.warning(ve.getMessage());
 		}
-		monitor.setImageFactory(factory, duration * rate);
+		monitor.setDataSource(source, duration * rate);
 	}
 
 	public String getCameraId() {

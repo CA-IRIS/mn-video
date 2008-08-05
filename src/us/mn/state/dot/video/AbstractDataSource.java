@@ -28,16 +28,15 @@ import java.util.logging.Logger;
 import us.mn.state.dot.log.TmsLogFactory;
 
 /**
- * The ImageFactory connects to a video stream from the stream server.
- * It notifies each of it's listeners whenever there is a new image.
+ * An abstract implementation of a DataSource.
  *
  * @author Timothy Johnson
  */
-public abstract class AbstractImageFactory extends VideoThread {
+public abstract class AbstractDataSource extends VideoThread implements DataSource {
 
-	/** List of registered listeners to this stream. */
-	private ArrayList<ImageFactoryListener> listeners =
-		new ArrayList<ImageFactoryListener>();
+	/** List of DataSinks for this stream. */
+	private ArrayList<DataSink> sinks =
+		new ArrayList<DataSink>();
 
 	/** A byte array used to store the image.*/
 	private byte[] image;
@@ -47,7 +46,7 @@ public abstract class AbstractImageFactory extends VideoThread {
 	protected final Client client;
 	
 	/** Constructor for the ImageFactory. */
-	protected AbstractImageFactory(Client c,
+	protected AbstractDataSource(Client c,
 			Logger l, ThreadMonitor m) {
 		super(m);
 		client = c;
@@ -57,55 +56,53 @@ public abstract class AbstractImageFactory extends VideoThread {
 	/** Get the string representation of this factory */
 	public final String toString() {
 		if(client==null){
-			return "Uninitialized image factory.";
+			return "Uninitialized DataSource";
 		}
-		return "ImageFactory: " +
-			Constants.DATE_FORMAT.format(getStartTime().getTime()) + 
+		return "DataSource for" +
 			" " + client.getCameraId() + " " +
 			"size " + client.getSize();
 	}
 
 	public final String getStatus(){
-		return listeners.size() + " listeners.";
+		return sinks.size() + " listeners.";
 	}
 
-	public final ImageFactoryListener[] getListeners(){
-		return (ImageFactoryListener[])listeners.toArray(new ImageFactoryListener[0]);
+	public final synchronized DataSink[] getListeners(){
+		return (DataSink[])sinks.toArray(new DataSink[0]);
 	}
 	
 	/** Notify listeners that an image was created */
-	protected final void imageCreated(byte[] img) {
-		image = img;
-		for(int i=0; i<listeners.size(); i++) {
-			ImageFactoryListener l = (ImageFactoryListener)listeners.get(i);
+	protected final synchronized void notifySinks(byte[] data) {
+		image = data;
+		for(DataSink sink : sinks) {
 			logger.fine(this.getClass().getSimpleName() +
-					" is Notifying " + l.toString() +
+					" is Notifying " + sink.toString() +
 					": image size is " + image.length);
-			l.imageCreated(img);
+			sink.flush(data);
 		}
 	}
 
-	/** Add a listener to this Image Factory. */
-	public synchronized final void addImageFactoryListener(ImageFactoryListener l) {
-		if(l != null){
-			logger.info("Adding ImageFactoryListener: " + l.toString());
-			listeners.add(l);
+	/** Add a DataSink to this Image Factory. */
+	public synchronized final void connectSink(DataSink sink) {
+		if(sink != null){
+			logger.info("Adding DataSink: " + sink.toString());
+			sinks.add(sink);
 		}
 	}
 
-	/** Remove a listener from this Image Factory. */
-	public synchronized final void removeImageFactoryListener(ImageFactoryListener l) {
-		logger.info("Removing ImageFactoryListener: " + l.toString());
-		listeners.remove(l);
-		if(listeners.size()==0){
-			logger.info(this.toString() + " has no listeners, stopping now.");
+	/** Remove a DataSink from this DataSource. */
+	public synchronized final void disconnectSink(DataSink sink) {
+		logger.info("Removing DataSink: " + sink.getClass().getSimpleName());
+		sinks.remove(sink);
+		if(sinks.size()==0){
+			logger.info(this.toString() + " has no sinks, stopping now.");
 			halt();
 		}
 	}
 
-	protected void removeListeners(){
-		for(ImageFactoryListener l : listeners){
-			removeImageFactoryListener(l);
+	protected synchronized void removeSinks(){
+		for(DataSink sink : sinks){
+			disconnectSink(sink);
 		}
 	}
 	
@@ -127,7 +124,7 @@ public abstract class AbstractImageFactory extends VideoThread {
 	    ArrayList<String> baseUrls = new ArrayList<String>();
 	    int id = 0;
 	    while(true){
-	    	String ip = p.getProperty("backend.host" + id);
+	    	String ip = p.getProperty("video.backend.host" + id);
 	    	if(ip==null) break;
     		try{
     			ip = InetAddress.getByName(ip).getHostAddress();
@@ -136,8 +133,8 @@ public abstract class AbstractImageFactory extends VideoThread {
     					" " + uhe.getMessage());
     			break;
     		}
-    		String port = p.getProperty("backend.port" + id,
-    				p.getProperty("backend.port" + 0));
+    		String port = p.getProperty("video.backend.port" + id,
+    				p.getProperty("video.backend.port" + 0));
     		String servletName = "";
     		if(type==1) servletName = "stream";
     		if(type==2) servletName = "image";

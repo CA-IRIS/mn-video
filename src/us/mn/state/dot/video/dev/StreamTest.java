@@ -26,7 +26,7 @@ import java.net.URLConnection;
 import us.mn.state.dot.video.AxisServer;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.ConnectionFactory;
-import us.mn.state.dot.video.MJPEGStream;
+import us.mn.state.dot.video.MJPEGReader;
 import us.mn.state.dot.video.VideoStream;
 
 /**
@@ -53,7 +53,7 @@ public class StreamTest {
 			server.setCamera("C001",1);
 			Client c = new Client();
 			c.setCameraId("C001");
-			c.setSize(AxisServer.MEDIUM);
+			c.setSize(Client.MEDIUM);
 			VideoStream stream = server.getStream(c);
 			for(int i=0; i<5; i++){
 				byte[] image = stream.getImage();
@@ -74,7 +74,7 @@ public class StreamTest {
 		try{
 			URLConnection con = ConnectionFactory.createConnection(url);
 			System.out.println("  creating mjpegstream...");
-			MJPEGStream stream = new MJPEGStream(con.getInputStream());
+			MJPEGReader stream = new MJPEGReader(con.getInputStream());
 			System.out.println("  mjpegstream created.");
 			for(int i=0; i<5; i++){
 				byte[] image = stream.getImage();

@@ -63,10 +63,39 @@
 		</antcall>
 	</target>
 
+
+	<!-- Check to see if a property has been defined.  Fail if not -->
+	<target name="check-prop">
+		<condition property="prop.defined">
+			<isset property="${prop.name}"/>
+		</condition>
+		<fail unless="prop.defined"
+			message="${prop.name} has not been defined."/>
+	</target>
+		
+	<!-- ===================================================== -->
+	<!-- Check to see if required build properties are defined -->
+	<!-- ===================================================== -->
+	<target name="check-properties">
+		<antcall target="check-prop">
+			<param name="prop.name" value="video.backend.host"/>
+		</antcall>
+		<antcall target="check-prop">
+			<param name="prop.name" value="video.backend.port"/>
+		</antcall>
+		<antcall target="check-prop">
+			<param name="prop.name" value="video.repeater.host"/>
+		</antcall>
+		<antcall target="check-prop">
+			<param name="prop.name" value="video.repeater.port"/>
+		</antcall>
+	</target>
+
 	<!-- =================================================== -->
 	<!-- Prepares the directory structure-->
 	<!-- =================================================== -->
 	<target name="prepare"
+			depends="check-properties"
 	        description="Prepare the build directory">
 
 		<mkdir dir="${build.src.dir}" />
@@ -84,13 +113,13 @@
 		<copy todir="${build.web.dir}" filtering="true">
 			<fileset dir="${web.dir}" />
 			<filterset begintoken="@@" endtoken="@@">
-				<filter token="TMSLOG.VERSION"
+				<filter token="TMS-LOG.VERSION"
 					value="${tms-log.version}"/>
 				<filter token="BUILD.ID"
 					value="${DSTAMP}:${TSTAMP}"/>
-				<filter token="REPEATER.HOST"
+				<filter token="VIDEO.REPEATER.HOST"
 					value="${video.repeater.host}"/>
-				<filter token="REPEATER.PORT"
+				<filter token="VIDEO.REPEATER.PORT"
 					value="${video.repeater.port}"/>
 				<filter token="NAME"
 					value="${name}"/>
@@ -102,17 +131,17 @@
 		<copy todir="${build.etc.dir}" filtering="true">
 			<fileset dir="${etc.dir}" />
 			<filterset begintoken="@@" endtoken="@@">
-				<filter token="TMSLOG.VERSION"
+				<filter token="TMS-LOG.VERSION"
 					value="${tms-log.version}"/>
 				<filter token="BUILD.ID"
 					value="${DSTAMP}:${TSTAMP}"/>
-				<filter token="REPEATER.HOST"
+				<filter token="VIDEO.REPEATER.HOST"
 					value="${video.repeater.host}"/>
-				<filter token="REPEATER.PORT"
+				<filter token="VIDEO.REPEATER.PORT"
 					value="${video.repeater.port}"/>
-				<filter token="BACKEND.HOST"
+				<filter token="VIDEO.BACKEND.HOST"
 					value="${video.backend.host}"/>
-				<filter token="BACKEND.PORT"
+				<filter token="VIDEO.BACKEND.PORT"
 					value="${video.backend.port}"/>
 				<filter token="VIDEO.WEBSTART.HOST"
 					value="${video.webstart.host}"/>
@@ -144,6 +173,8 @@
 					value="${version}"/>
 			</filterset>
 		</copy>
+		<chmod dir="${build.etc.dir}" perm="ugo+rx" 
+		       includes="**/*.sh"/>		
 	</target>
 
 	<!-- =================================================== -->
@@ -170,6 +201,23 @@
 	<target name="compile"
 		depends="check, prepare"
 		description="Compiles all of the source files for the project.">
+		<javac destdir="${build.classes.dir}"
+			excludes="us/mn/state/dot/video/dev/**"
+			debug="on"
+			deprecation="on"
+			optimize="on"
+			target="1.5">
+			<src path="${build.src.dir}"/>
+			<classpath refid="classpath" />
+		</javac>
+	</target>
+
+	<!-- ================================================== -->
+	<!-- Compile all code including the test classes        -->
+	<!-- ================================================== -->
+	<target name="compile-test"
+		depends="prepare"
+		description="Compile all classes">
 		<javac destdir="${build.classes.dir}"
 			debug="on"
 			deprecation="on"
@@ -231,7 +279,7 @@
 	<!-- Create a test war file                             -->
 	<!-- ================================================== -->
 	<target name="test"
-		depends="check-server, compile"
+		depends="check-server, compile-test"
 		description="Creates the test war file.">
 		<copy todir="${build.dir}/test/WEB-INF/lib">
 			<fileset dir="${lib.dir}" >
@@ -259,8 +307,12 @@
 		description="Creates the backend war file.">
 		<copy todir="${build.backend.dir}/WEB-INF/lib">
 			<fileset dir="${lib.dir}" >
-				<include name="tms-log-${tms-log.version}.jar" />
-				<include name="jdbc7.0-1.2.jar" />
+				<exclude name="servlet*" />
+			</fileset>
+		</copy>
+		<copy todir="${build.backend.dir}">
+			<fileset dir="${etc.dir}" >
+				<include name="*.keystore" />
 			</fileset>
 		</copy>
 		<copy file="${web.dir}/html/nvr-client.html"
@@ -316,6 +368,10 @@
 			<fileset dir="${lib.dir}" >
 				<include name="tms-log-${log.version}.jar" />
 			</fileset>
+		</copy>
+
+		<copy todir="${build.repeater.dir}/cameras">
+	       		<fileset dir="${build.web.dir}/cameras"/>
 		</copy>
 
 		<copy todir="${build.repeater.dir}/client">

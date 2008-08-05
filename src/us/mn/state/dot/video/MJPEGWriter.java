@@ -30,15 +30,16 @@ import java.util.logging.Logger;
  *
  * @author Timothy Johnson
  */
-public class ClientStream implements ImageFactoryListener {
+public class MJPEGWriter implements DataSink {
 
 	/** The maximum time a stream can run (in seconds) */
 	private static final long MAX_DURATION = 60 * 1000 * 5; // 5 minutes
 	
 	protected boolean done = false;
 	
-	private static final String CONTENT_TYPE = "Content-Type: image/jpeg\r\n";
-	
+	private static final String CONTENT_TYPE =
+		"Content-Type: image/jpeg";
+
 	private static final String CONTENT_LENGTH = "Content-Length: ";
 	
 	/** The output stream to write the video to. */
@@ -46,40 +47,52 @@ public class ClientStream implements ImageFactoryListener {
 
 	private Client client = null;
 	
-	private final AbstractImageFactory factory;
-	
 	private long startTime = Calendar.getInstance().getTimeInMillis();
 	
 	private Logger logger = null;
-
+	
 	/** The time to sleep, in milliseconds, between sending images to the client */
 	private final int sleepDuration;
+
+	private DataSource source = null;
 	
-	/** Constructor for the ClientStream. */
-	public ClientStream (Client c, OutputStream out,
-			AbstractImageFactory f, Logger l, int maxRate){
+	private byte[] data = null;
+	
+	/** Constructor for the MJPEGWriter. */
+	public MJPEGWriter (Client c, OutputStream out,
+			DataSource source, Logger l, int maxRate){
 		logger = l;
 		client = c;
-		factory = f;
-		factory.addImageFactoryListener(this);
 		sleepDuration = 1000 / Math.min(maxRate, client.getRate());
 		this.out = new DataOutputStream(out);
+		this.source = source;
+		source.connectSink(this);
 	}
 
+	/** Flush the data down the sink */
+	public synchronized void flush(byte[] data){
+		this.data = data;
+	}
+
+	public synchronized byte[] getData(){
+		return data;
+	}
+	
 	public String toString(){
-		if(client==null || factory==null){
-			return "Uninitialized Client Stream";
+		if(client==null){
+			return "Uninitialized " + this.getClass().getSimpleName();
 		}
-		return "ClientStream: " + client.toString();
+		return this.getClass().getSimpleName() + " " + client.toString();
 	}
 
 	/** Sends images to the client until all the requested
 	 * images have been sent. */
 	public void sendImages() {
+		String termReason = "completed";
 		long now = 0;
 		try{
 			while(!isDone()) {
-				writeImage(factory.getImage());
+				writeBodyPart();
 				Thread.sleep(sleepDuration);
 				now = Calendar.getInstance().getTimeInMillis();
 				if((now-startTime) > MAX_DURATION){
@@ -87,12 +100,15 @@ public class ClientStream implements ImageFactoryListener {
 				}
 			}
 		}catch(IOException ioe){
+			termReason = "IOE:";
 			logger.info("IOE: " + this.toString() + " is closing.");
 		}catch(Exception e){
+			termReason = e.getClass().getSimpleName();
 			logger.info("Error sending images to " + client.getUser());
 		}finally{
-			factory.removeImageFactoryListener(this);
+			source.disconnectSink(this);
 			try{
+				halt(termReason);
 				out.close();
 			}catch(Exception e2){
 			}
@@ -108,22 +124,35 @@ public class ClientStream implements ImageFactoryListener {
 		done = true;
 	}
 	
-	/** Write the image to the output stream */
-	private void writeImage(byte[] i)throws IOException{
-		if(i==null) return;
-		out.write(CONTENT_TYPE.getBytes());
-		out.write(CONTENT_LENGTH.getBytes());
-		out.write(Integer.toString(i.length).getBytes());
+	/** Write a body part (a piece of a multipart response) */
+	private synchronized void writeBodyPart()throws IOException{
+		if(data==null || data.length == 0) return;
+		writeBoundary();
+		writeHeaderArea();
 		out.write('\r');
 		out.write('\n');
-		//Axis puts an empty line after the content-length
-		//so we must also when re-creating an MJPEG stream
-		out.write('\r');
-		out.write('\n');
-		out.write(i);
+		writeBodyArea();
 		out.flush();
+		data = null;
 	}
 	
-	public void imageCreated(byte[] image){
+	private void writeBoundary() throws IOException {
+		out.write(MJPEG.BOUNDARY.getBytes());
+	}
+
+	private void writeHeaderArea() throws IOException {
+		out.write(CONTENT_TYPE.getBytes());
+		out.write('\r');
+		out.write('\n');
+		out.write(CONTENT_LENGTH.getBytes());
+		out.write(Integer.toString(data.length).getBytes());
+		out.write('\r');
+		out.write('\n');
+	}
+
+	private void writeBodyArea() throws IOException {
+		out.write(data);
+		out.write('\r');
+		out.write('\n');
 	}
 }

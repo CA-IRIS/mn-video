@@ -20,6 +20,7 @@ package us.mn.state.dot.video;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Hashtable;
@@ -39,24 +40,18 @@ public final class AxisServer extends AbstractEncoder {
 	private static final Hashtable<String, AxisServer> servers =
 		new Hashtable<String, AxisServer>();
 		
-	/** The URLConnection used for getting stills */
-	private URLConnection stillsCon;
+	/** The HttpURLConnection used for getting stills */
+	private HttpURLConnection stillsCon;
 	
-	/** Constant for small sized images */
-	public static final int SMALL = 1;
-
-	/** Constant for medium sized images */
-	public static final int MEDIUM = 2;
-
-	/** Constant for large sized images */
-	public static final int LARGE = 3;
-
 	/** The base URI for a request for an image */
 	private final String BASE_IMAGE_URI = "/axis-cgi/jpg/image.cgi?" +
 		"showlength=1&";
 	
 	private final String BASE_STREAM_URI = "/axis-cgi/mjpg/video.cgi?" +
 		"showlength=1&";
+	
+	/** URI for restarting the server */
+	private final String BASE_RESTART_URI = "/axis-cgi/admin/restart.cgi?";
 	
 	/** The compression request parameter */
 	private static final String PARAM_COMPRESSION = "compression";
@@ -112,7 +107,7 @@ public final class AxisServer extends AbstractEncoder {
 	 * @param c The client object containing request parameters.
 	 * @return
 	 */
-	private URL getStreamURL(Client c){
+	public URL getStreamURL(Client c){
 		int channel = getChannel(c.getCameraId());
 		if(channel == NO_CAMERA_CONNECTED) return null;
 		try{
@@ -155,19 +150,26 @@ public final class AxisServer extends AbstractEncoder {
 		}
 	}
 
+	private URL getRestartURL() {
+		try{
+			return new URL("http://" + host + ":" +
+				getPort() + BASE_RESTART_URI);
+		}catch(Exception e){
+			return null;
+		}
+	}
+
 	private String createSizeParam(int size){
 		String sizeValue = "";
 		switch(size){
-			case SMALL:
+			case Client.SMALL:
 				sizeValue = VALUE_SMALL;
 				break;
-			case MEDIUM:
+			case Client.MEDIUM:
 				sizeValue = VALUE_MEDIUM;
 				break;
-			case LARGE:
-				//don't let anyone get the big images until
-				//we find a way to limit access to them (bandwidth issue)
-				sizeValue = VALUE_MEDIUM;
+			case Client.LARGE:
+				sizeValue = VALUE_LARGE;
 				break;
 		}
 		return PARAM_SIZE + "=" + sizeValue;
@@ -178,7 +180,7 @@ public final class AxisServer extends AbstractEncoder {
 		if(url == null){
 			throw new VideoException("No URL for camera " + c.getCameraId());
 		}
-		byte[] image = fetchImage(url);
+		byte[] image = fetchImage(c, url);
 		if(image != null) return image;
 		return getNoVideoImage();
 	}
@@ -190,7 +192,7 @@ public final class AxisServer extends AbstractEncoder {
 			URLConnection con = ConnectionFactory.createConnection(url);
 			prepareConnection(con);
 			InputStream s = con.getInputStream();
-			MJPEGStream videoStream = new MJPEGStream(s);
+			MJPEGReader videoStream = new MJPEGReader(s);
 			return videoStream;
 		}catch(Exception e){
 			throw new VideoException(e.getMessage() + ": " + url.toString());
@@ -206,22 +208,38 @@ public final class AxisServer extends AbstractEncoder {
 		}
 	}
 	
-	private synchronized final byte[] fetchImage(URL url) throws VideoException{
+	private final void reboot() throws VideoException{
+		System.out.println("Rebooting " + getHost());
+		try {
+			URL url = getRestartURL();
+			HttpURLConnection conn = ConnectionFactory.createConnection(url);
+			prepareConnection(conn);
+			conn.connect();
+		}catch(Exception e){
+			throw new VideoException("Fetch error: " + e.getMessage());
+		}
+	}
+
+	private synchronized final byte[] fetchImage(Client c, URL url) throws VideoException{
 		InputStream in = null;
 		try {
 			stillsCon = ConnectionFactory.createConnection(url);
 			prepareConnection(stillsCon);
+//			int response = stillsCon.getResponseCode();
+//			if(response == 503){
+//				reboot();
+//				return null;
+//			}
 			in = stillsCon.getInputStream();
 			int length = Integer.parseInt(
 					stillsCon.getHeaderField("Content-Length"));
 			return readImage(in, length);
 		}catch(Exception e){
-			throw new VideoException("Fetch error: " + e.getMessage());
+			throw new VideoException("Encoder fetch error: " + e.getMessage());
 		}finally{
 			try{
-				in.close();
-			}catch(Exception e){
-			}
+				stillsCon.disconnect();
+			}catch(Exception e){}
 		}
 	}
 

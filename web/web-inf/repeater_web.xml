@@ -19,71 +19,12 @@
 		<servlet-name>StreamServer</servlet-name>
 		<url-pattern>/stream</url-pattern>
 	</servlet-mapping>
-
 	<servlet>
-		<servlet-name>StillRepeater</servlet-name>
-		<servlet-class>us.mn.state.dot.video.server.StillRepeater</servlet-class>
+		<servlet-name>ImageServer</servlet-name>
+		<servlet-class>us.mn.state.dot.video.server.ImageServer</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>StillRepeater</servlet-name>
+		<servlet-name>ImageServer</servlet-name>
 		<url-pattern>/image</url-pattern>
 	</servlet-mapping>
-	<servlet>
-		<servlet-name>AccountManager</servlet-name>
-		<servlet-class>us.mn.state.dot.video.server.AccountManager</servlet-class>
-		<load-on-startup>3</load-on-startup>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>AccountManager</servlet-name>
-		<url-pattern>/client/changePassword</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>AccountManager</servlet-name>
-		<url-pattern>/client/passwordForm</url-pattern>
-	</servlet-mapping>
-	<security-role>
-		<role-name>hyperstream</role-name>
-	</security-role>
-	<login-config>
-		<auth-method>BASIC</auth-method>
-		<realm-name>HyperStream</realm-name>
-		<form-login-config>
-			<form-login-page>login.html</form-login-page>
-			<form-error-page>error.html</form-error-page>
-		</form-login-config>
-	</login-config>
-	<security-constraint>
-		<display-name>Secured area for HyperStream users</display-name>
-		<web-resource-collection>
-			<web-resource-name>Protected Area</web-resource-name>
-			<url-pattern>/streamrepeater</url-pattern>
-			<http-method>GET</http-method>
-		</web-resource-collection>
-		<auth-constraint>
-			<role-name>hyperstream</role-name>
-		</auth-constraint>
-	</security-constraint>
-	<security-constraint>
-		<display-name>Secured area for HyperStream users</display-name>
-		<web-resource-collection>
-			<web-resource-name>Protected Area</web-resource-name>
-			<url-pattern>/client/*</url-pattern>
-			<http-method>GET</http-method>
-			<http-method>POST</http-method>
-		</web-resource-collection>
-		<auth-constraint>
-			<role-name>hyperstream</role-name>
-		</auth-constraint>
-	</security-constraint>
-	<security-constraint>
-		<display-name>Secured area for HyperStream users</display-name>
-		<web-resource-collection>
-			<web-resource-name>Protected Area</web-resource-name>
-			<url-pattern>/index.html</url-pattern>
-			<http-method>GET</http-method>
-		</web-resource-collection>
-		<auth-constraint>
-			<role-name>hyperstream</role-name>
-		</auth-constraint>
-	</security-constraint>
 </web-app>

@@ -17,63 +17,64 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-package us.mn.state.dot.video.server;
+package us.mn.state.dot.video;
 
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.logging.Logger;
-
-import us.mn.state.dot.video.AbstractImageFactory;
-import us.mn.state.dot.video.AxisServer;
-import us.mn.state.dot.video.Client;
-import us.mn.state.dot.video.ThreadMonitor;
-import us.mn.state.dot.video.VideoException;
-import us.mn.state.dot.video.VideoStream;
 /**
- * The ImageFactory interacts with an axis server to continually produce images
- * until there are no more requests for images.
+ * The HttpDataSource gets it's data via the HTTP protocol
  *
  * @author Timothy Johnson
  */
-public class AxisImageFactory extends AbstractImageFactory{
+public class HttpDataSource extends AbstractDataSource {
 
-	protected final AxisServer server;
+	protected final URL url;
 
-	/** Constructor for the AxisImageFactory. */
-	public AxisImageFactory(Client c, AxisServer s) {
-		super(c, null, null);
-		server = s;
-		start();
+	/** Constructor for the HttpDataSource. */
+	public HttpDataSource(Client c, URL url) {
+		this(c, null, null, url);
 	}
 
-	/** Constructor for the AxisImageFactory. */
-	public AxisImageFactory(Client c, Logger l, ThreadMonitor m, AxisServer s) {
+	/** Constructor for the HttpDataSource. */
+	public HttpDataSource(Client c, Logger l, ThreadMonitor m, URL url) {
 		super(c, l, m);
-		server = s;
-		start();
+		this.url = url;
 	}
-
+	
 	/** Start the stream. */
 	public void run() {
-		if(server != null){
+		HttpURLConnection conn = null;
+		if(url != null){
 			try{
-				VideoStream stream = server.getStream(getClient());
-				logger.info("Opened factory " + this);
+				conn = ConnectionFactory.createConnection(url); 
+				MJPEGReader stream = new MJPEGReader(conn.getInputStream());
+				logger.fine("Starting: " + this);
 				byte[] img;
 				while(!done && this.isAlive()){
 					if(stream==null) break;
 					img = stream.getImage();
-					if(img != null){
-						imageCreated(img);
+					if(img != null && img.length > 0){
+						notifySinks(img);
 					}else{
 						break;
 					}
 				}
-			}catch(VideoException ve){
-				logger.info(ve.getMessage());
+			}catch(IOException ioe){
+				logger.info(ioe.getMessage());
+			}catch(InstantiationException ie){
+				logger.info(ie.getMessage());
 			}finally{
-				removeListeners();
+				logger.fine("Stopping: " + this);
+				try{
+					conn.disconnect();
+				}catch(Exception e2){}
+				removeSinks();
 			}
+		}else{
+			logger.fine("No encoder defined for this source.");
 		}
 	}
-
 }
