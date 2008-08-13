@@ -82,7 +82,7 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 	}
 
 	/** Add a DataSink to this Image Factory. */
-	public synchronized final void connectSink(DataSink sink) {
+	public final void connectSink(DataSink sink) {
 		if(sink != null){
 			logger.info("Adding DataSink: " + sink.toString());
 			sinks.add(sink);
@@ -90,7 +90,7 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 	}
 
 	/** Remove a DataSink from this DataSource. */
-	public synchronized final void disconnectSink(DataSink sink) {
+	public final void disconnectSink(DataSink sink) {
 		logger.info("Removing DataSink: " + sink.getClass().getSimpleName());
 		sinks.remove(sink);
 		if(sinks.size()==0){
@@ -100,7 +100,8 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 	}
 
 	protected synchronized void removeSinks(){
-		for(DataSink sink : sinks){
+		DataSink[] tempSinks = sinks.toArray(new DataSink[0]);
+		for(DataSink sink : tempSinks){
 			disconnectSink(sink);
 		}
 	}
