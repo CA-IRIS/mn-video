@@ -1,0 +1,55 @@
+<html>
+<head>
+<title>Mn/DOT Streaming Video Map</title>
+<meta http-equiv="title" content="Mn/DOT Streaming Video Map">
+<meta name="resource-type" content="document">
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<script src="/video/js/vlc.js"></script>
+</head>
+<body>
+<table>
+<tr>
+<td width='600px'>
+	<img
+		src='/video/images/map_camera_600.png'
+		name='camclickmap'
+		ismap
+		width='600'
+		usemap='#image_map_camera'
+		border='0'/>
+		<!--#include virtual="/video/ssi/vlc_image_map.html"-->
+</td>
+<td width='360px'>
+<TABLE>
+<TR><TD align="center" colspan="2">
+<OBJECT classid="clsid:9BE31822-FDAD-461B-AD51-BE1D1C159921"
+        codebase="http://downloads.videolan.org/pub/videolan/vlc/latest/win32/axvlc.cab#Version=0,8,6,0"
+        width="352"
+        height="240"
+        id="vlc"
+        events="True">
+<param name="MRL" value="" />
+<param name="ShowDisplay" value="True" />
+<param name="AutoLoop" value="False" />
+<param name="AutoPlay" value="False" />
+<param name="StartTime" value="0" />
+<EMBED pluginspage="http://www.videolan.org"
+       type="application/x-vlc-plugin"
+       progid="VideoLAN.VLCPlugin.2"
+       width="352"
+       height="240"
+       name="vlc">
+</EMBED>
+</OBJECT>
+</TD></TR>
+<TR><TD>
+<INPUT type=button id="PlayOrPause" value=" Play " disabled onClick='doPlayOrPause();'>
+<INPUT type=button id="Stop" value="Stop" disabled onClick='doStop();'>
+</TD>
+</TR>
+</TABLE>
+</td>
+</tr>
+</table>
+</body>
+</html>
