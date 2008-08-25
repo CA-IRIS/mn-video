@@ -20,8 +20,9 @@
 		<!--#include virtual="/video/ssi/vlc_image_map.html"-->
 </td>
 <td width='705px'>
-<TABLE>
-<TR><TD align="center" colspan="2">
+<table>
+<tr>
+<td align="center" colspan="2">
 <OBJECT classid="clsid:9BE31822-FDAD-461B-AD51-BE1D1C159921"
         codebase="http://downloads.videolan.org/pub/videolan/vlc/latest/win32/axvlc.cab#Version=0,8,6,0"
         width="704"
@@ -41,13 +42,22 @@
        name="vlc">
 </EMBED>
 </OBJECT>
-</TD></TR>
-<TR><TD>
+</td>
+</tr>
+<tr>
+<td>
 <INPUT type=button id="PlayOrPause" value=" Play " onClick='doPlayOrPause();'>
 <INPUT type=button id="Stop" value="Stop" onClick='doStop();'>
-</TD>
-</TR>
-</TABLE>
+</td>
+</tr>
+<tr>
+<td>
+Enter camera number:
+<INPUT size="10" id="targetTextField" value="">
+<INPUT type=submit value="Go" onClick='setCam(document.getElementById("targetTextField").value);'></table>
+</td>
+</tr>
+</table>
 </td>
 </tr>
 </table>
