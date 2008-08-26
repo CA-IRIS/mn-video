@@ -47,7 +47,6 @@ public abstract class VideoThread extends Thread{
 
 	public final void halt(){
 		done = true;
-		System.out.println("Halt has been called.");
 	}
 
 	/** Get the age of this thread (in seconds) */
