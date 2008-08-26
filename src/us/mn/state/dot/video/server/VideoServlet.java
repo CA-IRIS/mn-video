@@ -188,7 +188,7 @@ public abstract class VideoServlet extends HttpServlet {
 			}
 		}
 		catch(Throwable th) {
-			logger.warning(th.getMessage());
+			logger.warning(c.getCameraId() + ": " + th.getMessage());
 		}
 		finally {
 			try {

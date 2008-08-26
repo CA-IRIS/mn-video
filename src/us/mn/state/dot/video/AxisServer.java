@@ -228,7 +228,7 @@ public final class AxisServer extends AbstractEncoder {
 			int response = stillsCon.getResponseCode();
 			if(response == 503){
 				//reboot();
-				throw new Exception(c.getCameraId() + ": HTTP 503");
+				throw new Exception("HTTP 503");
 			}
 			in = stillsCon.getInputStream();
 			int length = Integer.parseInt(
