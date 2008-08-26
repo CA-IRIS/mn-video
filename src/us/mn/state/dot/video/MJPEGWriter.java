@@ -33,12 +33,15 @@ import java.util.logging.Logger;
 public class MJPEGWriter implements DataSink {
 
 	/** The maximum time a stream can run (in seconds) */
-	private static final long MAX_DURATION = 10 * 1000 * 1; // 5 minutes
+	private static final long MAX_DURATION = 60 * 1000 * 60 * 24; // 1 day
 	
 	/** The maximum time to wait for more data before terminating (in seconds) */
 	private static final long DATA_TIMEOUT = 5 * 1000 ; // 5 seconds
 
 	protected boolean done = false;
+	
+	/** A counter for figuring out frame rate */
+	protected int frameCount = 0;
 	
 	private static final String CONTENT_TYPE =
 		"Content-Type: image/jpeg";
@@ -55,6 +58,9 @@ public class MJPEGWriter implements DataSink {
 	/** The time (in milliseconds) of the last data packet */
 	private long lastPacket = startTime;
 	
+	/** The time (in milliseconds) of the last frame rate calculation */
+	private long lastRateCalc = startTime;
+
 	private Logger logger = null;
 	
 	/** The time to sleep, in milliseconds, between sending images to the client */
@@ -124,6 +130,12 @@ public class MJPEGWriter implements DataSink {
 		if((now-lastPacket) > DATA_TIMEOUT){
 			halt("Time out receiving data.");
 		}
+		if((now-lastRateCalc) > 1000){
+			logger.info(client.getHost() + ": " + client.getCameraId() +
+					" at " + frameCount + " fps.");
+			frameCount = 0;
+			lastRateCalc = now;
+		}
 		return done;
 	}
 	
@@ -143,6 +155,7 @@ public class MJPEGWriter implements DataSink {
 		out.flush();
 		data = null;
 		lastPacket = Calendar.getInstance().getTimeInMillis();
+		frameCount++;
 	}
 	
 	private void writeBoundary() throws IOException {

@@ -74,7 +74,7 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 		// if the sink tries to remove itself during the flush call
 		DataSink[] tempSinks = sinks.toArray(new DataSink[0]);
 		for(DataSink sink : tempSinks) {
-			logger.fine(this.getClass().getSimpleName() +
+			logger.finest(this.getClass().getSimpleName() +
 					" is Notifying " + sink.toString() +
 					": image size is " + data.length);
 			sink.flush(data);
