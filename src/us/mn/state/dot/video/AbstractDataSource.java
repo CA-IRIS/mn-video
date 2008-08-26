@@ -84,17 +84,17 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 	/** Add a DataSink to this Image Factory. */
 	public final void connectSink(DataSink sink) {
 		if(sink != null){
-			logger.info("Adding DataSink: " + sink.toString());
+			logger.fine("Adding DataSink: " + sink.toString());
 			sinks.add(sink);
 		}
 	}
 
 	/** Remove a DataSink from this DataSource. */
 	public final void disconnectSink(DataSink sink) {
-		logger.info("Removing DataSink: " + sink.getClass().getSimpleName());
+		logger.fine("Removing DataSink: " + sink.getClass().getSimpleName());
 		sinks.remove(sink);
 		if(sinks.size()==0){
-			logger.info(this.toString() + " has no sinks, stopping now.");
+			logger.fine(this.toString() + " has no sinks, stopping now.");
 			halt();
 		}
 	}

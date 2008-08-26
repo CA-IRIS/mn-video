@@ -225,17 +225,17 @@ public final class AxisServer extends AbstractEncoder {
 		try {
 			stillsCon = ConnectionFactory.createConnection(url);
 			prepareConnection(stillsCon);
-//			int response = stillsCon.getResponseCode();
-//			if(response == 503){
-//				reboot();
-//				return null;
-//			}
+			int response = stillsCon.getResponseCode();
+			if(response == 503){
+				//reboot();
+				throw new Exception(c.getCameraId() + ": HTTP 503");
+			}
 			in = stillsCon.getInputStream();
 			int length = Integer.parseInt(
 					stillsCon.getHeaderField("Content-Length"));
 			return readImage(in, length);
 		}catch(Exception e){
-			throw new VideoException("Encoder fetch error: " + e.getMessage());
+			throw new VideoException(e.getMessage());
 		}finally{
 			try{
 				stillsCon.disconnect();

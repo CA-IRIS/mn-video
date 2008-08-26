@@ -130,9 +130,9 @@ public class MJPEGWriter implements DataSink {
 		if((now-lastPacket) > DATA_TIMEOUT){
 			halt("Time out receiving data.");
 		}
-		if((now-lastRateCalc) > 1000){
+		if((now-lastRateCalc) > 5000){
 			logger.info(client.getHost() + ": " + client.getCameraId() +
-					" at " + frameCount + " fps.");
+					" at " + (int)(frameCount/5) + " fps.");
 			frameCount = 0;
 			lastRateCalc = now;
 		}
