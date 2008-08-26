@@ -33,8 +33,11 @@ import java.util.logging.Logger;
 public class MJPEGWriter implements DataSink {
 
 	/** The maximum time a stream can run (in seconds) */
-	private static final long MAX_DURATION = 60 * 1000 * 5; // 5 minutes
+	private static final long MAX_DURATION = 10 * 1000 * 1; // 5 minutes
 	
+	/** The maximum time to wait for more data before terminating (in seconds) */
+	private static final long DATA_TIMEOUT = 5 * 1000 ; // 5 seconds
+
 	protected boolean done = false;
 	
 	private static final String CONTENT_TYPE =
@@ -48,6 +51,9 @@ public class MJPEGWriter implements DataSink {
 	private Client client = null;
 	
 	private long startTime = Calendar.getInstance().getTimeInMillis();
+	
+	/** The time (in milliseconds) of the last data packet */
+	private long lastPacket = startTime;
 	
 	private Logger logger = null;
 	
@@ -89,15 +95,10 @@ public class MJPEGWriter implements DataSink {
 	 * images have been sent. */
 	public void sendImages() {
 		String termReason = "completed";
-		long now = 0;
 		try{
 			while(!isDone()) {
 				writeBodyPart();
 				Thread.sleep(sleepDuration);
-				now = Calendar.getInstance().getTimeInMillis();
-				if((now-startTime) > MAX_DURATION){
-					halt("Stream is too old.");
-				}
 			}
 		}catch(IOException ioe){
 			termReason = "IOE:";
@@ -115,11 +116,18 @@ public class MJPEGWriter implements DataSink {
 		}
 	}
 
-	public synchronized boolean isDone(){
+	public boolean isDone(){
+		long now = Calendar.getInstance().getTimeInMillis();
+		if((now-startTime) > MAX_DURATION){
+			halt("Stream is too old.");
+		}
+		if((now-lastPacket) > DATA_TIMEOUT){
+			halt("Time out receiving data.");
+		}
 		return done;
 	}
 	
-	public synchronized void halt(String reason){
+	public void halt(String reason){
 		logger.info(this.toString() + " terminated: " + reason);
 		done = true;
 	}
@@ -134,6 +142,7 @@ public class MJPEGWriter implements DataSink {
 		writeBodyArea();
 		out.flush();
 		data = null;
+		lastPacket = Calendar.getInstance().getTimeInMillis();
 	}
 	
 	private void writeBoundary() throws IOException {
