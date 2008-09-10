@@ -416,36 +416,6 @@
 			</fileset>
 		</copy>
 
-		<copy todir="${build.repeater.dir}/cameras">
-	       		<fileset dir="${build.web.dir}/cameras"/>
-		</copy>
-
-		<copy todir="${build.repeater.dir}/client">
-	       		<fileset dir="${build.web.dir}/html" >
-				<include name="*.jnlp" />
-	           	</fileset>
-	       		<fileset dir="${lib.dir}" >
-				<include name="video-client.properties" />
-	           	</fileset>
-	       		<fileset dir="${build.lib.dir}" >
-				<include name="${name}-client-${version}.jar" />
-	           	</fileset>
-			<fileset dir="${lib.dir}" >
-				<include name="tms-log-${tms-log.version}.jar" />
-			</fileset>
-			<fileset dir="${build.web.dir}/template" >
-				<include name="*.vm" />
-			</fileset>
-		</copy>
-
-		<signjar keystore="${sign.store}" storepass="${sign.store.pass}"
-		         alias="${sign.alias}" keypass="${sign.alias.pass}"
-		         lazy="true">
-			<fileset dir="${build.repeater.dir}/client">
-				<include name="*.jar" />
-			</fileset>
-		</signjar>
-
 		<copy todir="${build.repeater.dir}/css">
 			<fileset dir="${build.web.dir}/css">
 				<include name="*.css"/>
