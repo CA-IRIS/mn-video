@@ -54,12 +54,20 @@ public class HttpDataSource extends AbstractDataSource {
 				logger.fine("Starting: " + this);
 				byte[] img;
 				while(!done && this.isAlive()){
-					if(stream==null) break;
+					if(stream==null) {
+						System.out.println("SMD HttpDataSource.run stream is null");
+						break;
+					}
 					img = stream.getImage();
 					if(img != null && img.length > 0){
+						System.out.println("SMD HttpDataSource.run notify sinks");
 						notifySinks(img);
 					}else{
-						break;
+						if (img == null)
+							System.out.println("SMD HttpDataSource.run img is null");
+						if (img.length == 0)
+							System.out.println("SMD HttpDataSource.run img is empty");
+						System.out.println("SMD HttpDataSource.run break");
 					}
 				}
 			}catch(IOException ioe){
@@ -71,10 +79,12 @@ public class HttpDataSource extends AbstractDataSource {
 				try{
 					conn.disconnect();
 				}catch(Exception e2){}
+				System.out.println("SMD HttpDataSource.run remove sinks");
 				removeSinks();
 			}
 		}else{
 			logger.fine("No encoder defined for this source.");
 		}
+		System.out.println("SMD HttpDataSource.run leaving run()");
 	}
 }

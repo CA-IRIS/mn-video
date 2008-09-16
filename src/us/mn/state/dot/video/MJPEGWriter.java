@@ -66,6 +66,7 @@ public class MJPEGWriter implements DataSink {
 		sleepDuration = 1000 / Math.min(maxRate, client.getRate());
 		this.out = new DataOutputStream(out);
 		this.source = source;
+		System.out.println("SMD MJPEGWriter.MJPEGWriter connect sink");
 		source.connectSink(this);
 	}
 
@@ -106,6 +107,7 @@ public class MJPEGWriter implements DataSink {
 			termReason = e.getClass().getSimpleName();
 			logger.info("Error sending images to " + client.getUser());
 		}finally{
+			System.out.println("SMD MJPEGWriter.sendImages disconnect sink");
 			source.disconnectSink(this);
 			try{
 				halt(termReason);

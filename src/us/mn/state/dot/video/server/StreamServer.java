@@ -112,7 +112,7 @@ public class StreamServer extends VideoServlet {
 			new MJPEGWriter(c, response.getOutputStream(),
 				source, logger, maxFrameRate);
 		logger.fine(c.getCameraId() + " registering stream...");
-		registerStream(c, w);
+		//registerStream(c, w);
 		logger.fine(c.getCameraId() + " sending images...");
 		try{
 			((Thread)source).start();

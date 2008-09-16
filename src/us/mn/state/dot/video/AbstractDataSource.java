@@ -24,6 +24,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Logger;
+import java.util.Iterator;
 
 import us.mn.state.dot.log.TmsLogFactory;
 
@@ -35,8 +36,7 @@ import us.mn.state.dot.log.TmsLogFactory;
 public abstract class AbstractDataSource extends VideoThread implements DataSource {
 
 	/** List of DataSinks for this stream. */
-	private ArrayList<DataSink> sinks =
-		new ArrayList<DataSink>();
+	private ArrayList<DataSink> sinks = new ArrayList<DataSink>();
 
 	/** A byte array used to store the image.*/
 	private byte[] image;
@@ -67,12 +67,12 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 		return sinks.size() + " listeners.";
 	}
 
-	public final synchronized DataSink[] getListeners(){
+	public synchronized DataSink[] getListeners(){
 		return (DataSink[])sinks.toArray(new DataSink[0]);
 	}
 	
 	/** Notify listeners that an image was created */
-	protected final synchronized void notifySinks(byte[] data) {
+	protected synchronized void notifySinks(byte[] data) {
 		image = data;
 		for(DataSink sink : sinks) {
 			logger.fine(this.getClass().getSimpleName() +
@@ -83,7 +83,7 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 	}
 
 	/** Add a DataSink to this Image Factory. */
-	public synchronized final void connectSink(DataSink sink) {
+	public synchronized void connectSink(DataSink sink) {
 		if(sink != null){
 			logger.info("Adding DataSink: " + sink.toString());
 			sinks.add(sink);
@@ -91,7 +91,7 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 	}
 
 	/** Remove a DataSink from this DataSource. */
-	public synchronized final void disconnectSink(DataSink sink) {
+	public synchronized void disconnectSink(DataSink sink) {
 		logger.info("Removing DataSink: " + sink.getClass().getSimpleName());
 		sinks.remove(sink);
 		if(sinks.size()==0){
@@ -101,9 +101,17 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 	}
 
 	protected synchronized void removeSinks(){
-		for(DataSink sink : sinks){
-			disconnectSink(sink);
-		}
+	//	for(DataSink sink : sinks){
+	//		disconnectSink(sink);
+	//	}
+
+	// SMD: added iterator to avoid comodification error	
+	//	for (Iterator i = sinks.listIterator(0); i.hasNext();) {
+	//		i.remove();
+	//	}
+
+	 	sinks.clear();
+		halt();	
 	}
 	
 	public final Client getClient() {

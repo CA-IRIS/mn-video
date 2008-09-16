@@ -122,11 +122,13 @@ public class VideoMonitor extends JPanel
 
 	public void setDataSource(DataSource src, int totalFrames){
 		if(source != null ){
+			System.out.println("SMD VideoMonitor.setDataSource disconnect sink");
 			source.disconnectSink(this);
 		}
 		imagesRendered = 0;
 		this.imagesRequested = totalFrames;
 		if(src != null){
+			System.out.println("SMD VideoMonitor.setDataSource connect sink");
 			src.connectSink(this);
 			images.clear();
 			status.setText(CONNECTING);
@@ -151,6 +153,7 @@ public class VideoMonitor extends JPanel
 		progress.setValue(imagesRendered);
 		imagesRendered++;
 		if(imagesRendered >= imagesRequested){
+			System.out.println("SMD VideoMonitor.flush disconnect sink");
 			source.disconnectSink(this);
 			clear();
 		}

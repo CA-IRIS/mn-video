@@ -188,7 +188,7 @@ public abstract class VideoServlet extends HttpServlet {
 			}
 		}
 		catch(Throwable th) {
-			logger.warning(th.getMessage());
+			logger.warning("VideoServlet.doGet: " + th.getMessage());
 		}
 		finally {
 			try {
@@ -260,7 +260,7 @@ public abstract class VideoServlet extends HttpServlet {
 				l = reader.readLine();
 			}
 		}catch(Exception e){
-			logger.warning(e.getMessage());
+			logger.warning("VideoServlet.isValidSSID: " + e.getMessage());
 		}
 		return false;
 	}

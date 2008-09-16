@@ -66,6 +66,7 @@ public class MJPEGReader implements VideoStream {
 	public byte[] getImage(){
 		try{
 			int imageSize = getImageSize();
+			System.out.println("SMD MJPEGReader.getImage size = " + imageSize);
 			byte[] image = new byte[imageSize];
 			int bytesRead = 0;
 			int currentRead = 0;
@@ -80,6 +81,7 @@ public class MJPEGReader implements VideoStream {
 			}
 			return image;
 		}catch(Exception e){
+			System.out.println("SMD MJPEGReader.getImage exception");
 			return new byte[0];
 		}
 	}
@@ -97,6 +99,7 @@ public class MJPEGReader implements VideoStream {
 			}
 			s = readLine();
 		}
+		System.out.println("SMD MJPEGReader.getImageSize return 0");
 		return 0;
 	}
 }

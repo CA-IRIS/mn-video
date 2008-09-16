@@ -61,7 +61,7 @@ public class AbstractStreamControl extends JPanel{
 		threadMonitor = new ThreadMonitor("IncidentControl", 10000, logger);
 	}
 
-    public final void stop(){
+	public final void stop(){
 		monitor.setDataSource(null, 0);
 	}
 	
