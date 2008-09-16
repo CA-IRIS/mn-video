@@ -28,7 +28,6 @@ import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.DataSource;
 import us.mn.state.dot.video.DataSourceFactory;
 import us.mn.state.dot.video.HttpDataSource;
-import us.mn.state.dot.video.ThreadMonitor;
 import us.mn.state.dot.video.VideoException;
 
 /**
@@ -40,7 +39,6 @@ import us.mn.state.dot.video.VideoException;
 public class AbstractStreamControl extends JPanel{
 
 	protected Logger logger = null;
-	private ThreadMonitor threadMonitor = null;
 	private DataSource source = null;
 	private String cameraId = null;
 	private int rate = 30;
@@ -58,7 +56,6 @@ public class AbstractStreamControl extends JPanel{
 		port = p.getProperty("video.port");
 		baseUrl = "http://" +
 			server + ":" + port + "/@@NAME@@/stream";
-		threadMonitor = new ThreadMonitor("IncidentControl", 10000, logger);
 	}
 
 	public final void stop(){
@@ -77,7 +74,7 @@ public class AbstractStreamControl extends JPanel{
 		c.setRate(rate);
 		try{
 			URL url = DataSourceFactory.createURL(c, baseUrl);
-			source = new HttpDataSource(c, logger, threadMonitor, url);
+			source = new HttpDataSource(c, logger, null, url);
 		}catch(VideoException ve){
 			logger.warning(ve.getMessage());
 		}
