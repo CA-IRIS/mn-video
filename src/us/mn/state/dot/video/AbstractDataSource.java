@@ -42,12 +42,16 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 	
 	protected final Client client;
 	
+	/** Timestamp for creation of this thread */
+	private final Long timeStamp;
+	
 	/** Constructor for the ImageFactory. */
 	protected AbstractDataSource(Client c,
 			Logger l, ThreadMonitor m) {
 		super(m);
 		client = c;
 		logger = l==null ? TmsLogFactory.createLogger("video"): l;
+		timeStamp = System.currentTimeMillis();
 	}
 
 	/** Get the string representation of this factory */
@@ -57,7 +61,8 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 		}
 		return "DataSource for" +
 			" " + client.getCameraId() + " " +
-			"size " + client.getSize();
+			"size " + client.getSize() +
+			" timestamp " + timeStamp;
 	}
 
 	public final String getStatus(){
@@ -70,7 +75,6 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 	
 	/** Notify listeners that an image was created */
 	protected synchronized void notifySinks(byte[] data) {
-		image = data;
 		for(DataSink sink : sinks) {
 			logger.fine(this.getClass().getSimpleName() +
 					" is Notifying " + sink.toString() +
@@ -102,12 +106,14 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 	//		disconnectSink(sink);
 	//	}
 
-	// SMD: added iterator to avoid comodification error	
+		// added iterator to avoid comodification error	
 	//	for (Iterator i = sinks.listIterator(0); i.hasNext();) {
 	//		i.remove();
 	//	}
 
+		// better yet
 	 	sinks.clear();
+
 		halt();	
 	}
 	
