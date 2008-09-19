@@ -260,7 +260,7 @@ public abstract class VideoServlet extends HttpServlet {
 				l = reader.readLine();
 			}
 		}catch(Exception e){
-			logger.warning(e.getMessage());
+			logger.warning("VideoServlet.isValidSSID: " + e.getMessage());
 		}
 		return false;
 	}

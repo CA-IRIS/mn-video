@@ -19,6 +19,7 @@
 package us.mn.state.dot.video;
 
 import java.util.TreeSet;
+import java.util.Iterator;
 import java.util.logging.Logger;
 
 /**
@@ -46,7 +47,7 @@ public class ThreadMonitor extends Thread {
 		start();
 	}
 		
-	public void addThread(VideoThread t){
+	public synchronized void addThread(VideoThread t){
 		threads.add(t);
 	}
 	
@@ -62,13 +63,14 @@ public class ThreadMonitor extends Thread {
 		}
 	}
 
-	private void printThreads(){
-		for(VideoThread vt : threads){
-			if(!vt.isAlive()){
-				threads.remove(vt);
-			}else{
-				logger.fine(vt + " " + vt.getStatus());
+	private synchronized void printThreads(){
+		for (Iterator i = threads.iterator(); i.hasNext();) {
+			if (!((VideoThread) i.next()).isAlive()) {
+				i.remove();
+			} else {
+				logger.fine((VideoThread) i.next() + " " + ((VideoThread) i.next()).getStatus());
 			}
+
 		}
 	}
 }

@@ -50,11 +50,13 @@ public class HttpDataSource extends AbstractDataSource {
 		if(url != null){
 			try{
 				conn = ConnectionFactory.createConnection(url); 
-				MJPEGReader stream = new MJPEGReader(conn.getInputStream());
+				final MJPEGReader stream = new MJPEGReader(conn.getInputStream());
 				logger.fine("Starting: " + this);
 				byte[] img;
 				while(!done && this.isAlive()){
-					if(stream==null) break;
+					if(stream==null) {
+						break;
+					}
 					img = stream.getImage();
 					if(img != null && img.length > 0){
 						notifySinks(img);
@@ -70,7 +72,8 @@ public class HttpDataSource extends AbstractDataSource {
 				logger.fine("Stopping: " + this);
 				try{
 					conn.disconnect();
-				}catch(Exception e2){}
+				}catch(Exception e2){
+				}
 				removeSinks();
 			}
 		}else{

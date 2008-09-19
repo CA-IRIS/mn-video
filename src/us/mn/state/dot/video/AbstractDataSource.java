@@ -24,6 +24,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Logger;
+import java.util.Iterator;
 
 import us.mn.state.dot.log.TmsLogFactory;
 
@@ -35,12 +36,14 @@ import us.mn.state.dot.log.TmsLogFactory;
 public abstract class AbstractDataSource extends VideoThread implements DataSource {
 
 	/** List of DataSinks for this stream. */
-	private ArrayList<DataSink> sinks =
-		new ArrayList<DataSink>();
+	private ArrayList<DataSink> sinks = new ArrayList<DataSink>();
 
 	protected final Logger logger;
 	
 	protected final Client client;
+	
+	/** Timestamp for creation of this thread */
+	private final Long timeStamp;
 	
 	/** Constructor for the ImageFactory. */
 	protected AbstractDataSource(Client c,
@@ -48,6 +51,7 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 		super(m);
 		client = c;
 		logger = l==null ? TmsLogFactory.createLogger("video"): l;
+		timeStamp = System.currentTimeMillis();
 	}
 
 	/** Get the string representation of this factory */
@@ -57,24 +61,22 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 		}
 		return "DataSource for" +
 			" " + client.getCameraId() + " " +
-			"size " + client.getSize();
+			"size " + client.getSize() +
+			" timestamp " + timeStamp;
 	}
 
 	public final String getStatus(){
 		return sinks.size() + " listeners.";
 	}
 
-	public final synchronized DataSink[] getListeners(){
+	public synchronized DataSink[] getListeners(){
 		return (DataSink[])sinks.toArray(new DataSink[0]);
 	}
 	
 	/** Notify listeners that an image was created */
-	protected final synchronized void notifySinks(byte[] data) {
-		//take a copy of the sinks to avoid concurrent modification exception
-		// if the sink tries to remove itself during the flush call
-		DataSink[] tempSinks = sinks.toArray(new DataSink[0]);
-		for(DataSink sink : tempSinks) {
-			logger.finest(this.getClass().getSimpleName() +
+	protected synchronized void notifySinks(byte[] data) {
+		for(DataSink sink : sinks) {
+			logger.fine(this.getClass().getSimpleName() +
 					" is Notifying " + sink.toString() +
 					": image size is " + data.length);
 			sink.flush(data);
@@ -82,7 +84,7 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 	}
 
 	/** Add a DataSink to this Image Factory. */
-	public final void connectSink(DataSink sink) {
+	public synchronized void connectSink(DataSink sink) {
 		if(sink != null){
 			logger.fine("Adding DataSink: " + sink.toString());
 			sinks.add(sink);
@@ -90,8 +92,8 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 	}
 
 	/** Remove a DataSink from this DataSource. */
-	public final void disconnectSink(DataSink sink) {
-		logger.fine("Removing DataSink: " + sink.getClass().getSimpleName());
+	public synchronized void disconnectSink(DataSink sink) {
+		logger.info("Removing DataSink: " + sink.getClass().getSimpleName());
 		sinks.remove(sink);
 		if(sinks.size()==0){
 			logger.fine(this.toString() + " has no sinks, stopping now.");
@@ -100,10 +102,8 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 	}
 
 	protected synchronized void removeSinks(){
-		DataSink[] tempSinks = sinks.toArray(new DataSink[0]);
-		for(DataSink sink : tempSinks){
-			disconnectSink(sink);
-		}
+	 	sinks.clear();
+		halt();	
 	}
 	
 	public final Client getClient() {

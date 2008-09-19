@@ -58,7 +58,7 @@ public class AbstractStreamControl extends JPanel{
 			server + ":" + port + "/@@NAME@@/stream";
 	}
 
-    public final void stop(){
+	public final void stop(){
 		monitor.setDataSource(null, 0);
 	}
 	

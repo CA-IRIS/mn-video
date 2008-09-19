@@ -35,12 +35,21 @@ public abstract class VideoThread extends Thread{
 	/** Default timeout for proxied URL Connections */
 	public final static int TIMEOUT_PROXY = 2 * 1000;
 	
+<<<<<<< /var/www/cgi-hg/src/d10iris/iris/video/src/us/mn/state/dot/video/VideoThread.java
 	/** Default timeout for HttpUrlConnection connect */
 	public final static int TIMEOUT_CONNECT = 1 * 1000;
 	
 	/** Default timeout for HttpUrlConnection read */
 	public final static int TIMEOUT_READ = 6 * 1000;
 	
+=======
+	/** Default timeout for HttpUrlConnection connect */
+	public final static int TIMEOUT_CONNECT = 5 * 1000;
+	
+	/** Default timeout for HttpUrlConnection read */
+	public final static int TIMEOUT_READ = 6 * 1000;
+	
+>>>>>>> /tmp/VideoThread.java~other.l9HsD2
 	public VideoThread(ThreadMonitor m){
 		if(m != null) m.addThread(this);
 	}

@@ -373,14 +373,14 @@
 				<include name="tms-log-${tms-log.version}.jar" />
 			</fileset>
 		</copy>
-		<signjar keystore="${sign.store}" storepass="${sign.store.pass}"
+	<!--	<signjar keystore="${sign.store}" storepass="${sign.store.pass}"
 		         alias="${sign.alias}" keypass="${sign.alias.pass}"
 			 lazy="true">
 			<fileset dir="${build.backend.dir}/nvr/lib">
 				<include name="*.jar"/>
 			</fileset>
-		</signjar>
-		<copy todir="${build.backend.dir}/images">
+		</signjar>	
+	-->	<copy todir="${build.backend.dir}/images">
 			<fileset dir="${images.dir}" >
 				<include name="*" />
 			</fileset>
