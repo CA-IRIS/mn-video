@@ -102,18 +102,7 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 	}
 
 	protected synchronized void removeSinks(){
-	//	for(DataSink sink : sinks){
-	//		disconnectSink(sink);
-	//	}
-
-		// added iterator to avoid comodification error	
-	//	for (Iterator i = sinks.listIterator(0); i.hasNext();) {
-	//		i.remove();
-	//	}
-
-		// better yet
 	 	sinks.clear();
-
 		halt();	
 	}
 	
