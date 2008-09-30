@@ -148,15 +148,6 @@ public final class AxisServer extends AbstractEncoder {
 		}
 	}
 
-	private URL getRestartURL() {
-		try{
-			return new URL("http://" + host + ":" +
-				getPort() + BASE_RESTART_URI);
-		}catch(Exception e){
-			return null;
-		}
-	}
-
 	private String createSizeParam(int size){
 		String sizeValue = "";
 		switch(size){
@@ -217,7 +208,6 @@ public final class AxisServer extends AbstractEncoder {
 			prepareConnection(stillsCon);
 			int response = stillsCon.getResponseCode();
 			if(response == 503){
-				//reboot();
 				throw new Exception("HTTP 503");
 			}
 			in = stillsCon.getInputStream();
