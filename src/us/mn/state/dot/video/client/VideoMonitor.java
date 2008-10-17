@@ -151,7 +151,7 @@ public class VideoMonitor extends JPanel
 		progress.setValue(imagesRendered);
 		imagesRendered++;
 		if(imagesRendered >= imagesRequested){
-			source.disconnectSink(this);
+			//fixme: source.disconnectSink(this);
 			clear();
 		}
 	}
