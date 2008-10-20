@@ -151,7 +151,16 @@ public class VideoMonitor extends JPanel
 		progress.setValue(imagesRendered);
 		imagesRendered++;
 		if(imagesRendered >= imagesRequested){
-			source.disconnectSink(this);
+			//FIXME: This is a thread safety violation since this
+			//call to a synchronized method disconnectSink is 
+			//called from another synchronized method notifySinks.
+			//Both method calls are running in different threads
+			//and operating on the same ArrayList.   
+
+			//Note: We actually prefer continuous video so the fix
+			//for us is to remove the following call.
+
+			//source.disconnectSink(this);
 			clear();
 		}
 	}
