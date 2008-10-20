@@ -61,7 +61,11 @@ public class HttpDataSource extends AbstractDataSource {
 					if(img != null && img.length > 0){
 						notifySinks(img);
 					}else{
-						break;
+						//FIXME: Continue trying to get images even if null or empty.
+						//Pehaps a counter can keep track of contiguous failures and
+						//then break.
+
+						//break;
 					}
 				}
 			}catch(IOException ioe){

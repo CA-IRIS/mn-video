@@ -75,7 +75,9 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 	
 	/** Notify listeners that an image was created */
 	protected synchronized void notifySinks(byte[] data) {
-		for(DataSink sink : sinks) {
+		DataSink sink;
+		for (Iterator i = sinks.listIterator(); i.hasNext();) {
+			sink = (DataSink) i.next();
 			logger.fine(this.getClass().getSimpleName() +
 					" is Notifying " + sink.toString() +
 					": image size is " + data.length);

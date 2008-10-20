@@ -30,7 +30,7 @@ public abstract class VideoThread extends Thread{
 	protected boolean done = false;
 
 	/** Default timeout for direct URL Connections */
-	public final static int TIMEOUT_DIRECT = 1 * 1000;
+	public final static int TIMEOUT_DIRECT = 5 * 1000;
 
 	/** Default timeout for proxied URL Connections */
 	public final static int TIMEOUT_PROXY = 2 * 1000;
@@ -39,7 +39,7 @@ public abstract class VideoThread extends Thread{
 	public final static int TIMEOUT_CONNECT = 5 * 1000;
 	
 	/** Default timeout for HttpUrlConnection read */
-	public final static int TIMEOUT_READ = 6 * 1000;
+	public final static int TIMEOUT_READ = 5 * 1000;
 	
 	public VideoThread(ThreadMonitor m){
 		if(m != null) m.addThread(this);
