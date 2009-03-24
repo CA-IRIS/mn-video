@@ -1,8 +1,18 @@
 <?xml version="1.0"?>
 
-<!-- =================================================== -->
-<!-- VideoServer build file                              -->
-<!-- =================================================== -->
+<!-- ant build file for video project
+     Copyright (C) 2007-2009  Minnesota Department of Transportation
+
+     This program is free software; you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+     the Free Software Foundation; either version 2 of the License, or
+     (at your option) any later version.
+
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.  -->
+
 <project name="video" default="client" basedir=".">
 	<property file="project.properties"/>
 	<property file="${user.home}/.ant.properties"/>
@@ -75,9 +85,7 @@
 			message="${prop.name} has not been defined."/>
 	</target>
 		
-	<!-- ===================================================== -->
 	<!-- Check to see if required build properties are defined -->
-	<!-- ===================================================== -->
 	<target name="check-properties">
 		<antcall target="check-prop">
 			<param name="prop.name" value="video.backend.host"/>
@@ -93,9 +101,7 @@
 		</antcall>
 	</target>
 
-	<!-- =================================================== -->
-	<!-- Prepares the directory structure-->
-	<!-- =================================================== -->
+	<!-- Prepares the directory structure -->
 	<target name="prepare"
 			depends="check-properties"
 	        description="Prepare the build directory">
@@ -179,9 +185,7 @@
 		       includes="**/*.sh"/>		
 	</target>
 
-	<!-- =================================================== -->
 	<!-- Compile the client source code                      -->
-	<!-- =================================================== -->
 	<target name="compile-client"
 		depends="check, prepare"
 		description="Compile the client source files for the project">
@@ -197,9 +201,7 @@
 		</javac>
 	</target>
 
-	<!-- =================================================== -->
 	<!-- Compile the source code                             -->
-	<!-- =================================================== -->
 	<target name="compile"
 		depends="check, prepare"
 		description="Compiles all of the source files for the project.">
@@ -214,9 +216,7 @@
 		</javac>
 	</target>
 
-	<!-- ================================================== -->
 	<!-- Compile all code including the test classes        -->
-	<!-- ================================================== -->
 	<target name="compile-test"
 		depends="prepare"
 		description="Compile all classes">
@@ -230,9 +230,7 @@
 		</javac>
 	</target>
 
-	<!-- ================================================== -->
 	<!-- Create the client jar                              -->
-	<!-- ================================================== -->
 	<target name="client"
 		depends="compile-client"
 		description="Creates the client jar file.">
@@ -249,9 +247,7 @@
 		</jar>
 	</target>
 
-	<!-- ================================================== -->
 	<!-- Create the client distribution                     -->
-	<!-- ================================================== -->
 	<target name="dist"
 		depends="client"
 		description="Creates the client distribution.">
@@ -279,9 +275,7 @@
 	<!-- Jar target for iris buildall target -->
 	<target name="jar" depends="client" />
 
-	<!-- ================================================== -->
 	<!-- Create the nvr server war                      -->
-	<!-- ================================================== -->
 	<target name="nvr"
 		depends="check-server, compile"
 		description="Creates the war file to be run on the NVR servers.">
@@ -304,9 +298,7 @@
 		</war>
 	</target>
 
-	<!-- ================================================== -->
 	<!-- Create a test war file                             -->
-	<!-- ================================================== -->
 	<target name="test"
 		depends="check-server, compile-test"
 		description="Creates the test war file.">
@@ -328,9 +320,7 @@
 		</war>
 	</target>
 
-	<!-- ================================================== -->
 	<!-- Create the backend server war                      -->
-	<!-- ================================================== -->
 	<target name="backend"
 		depends="check-server, compile, client"
 		description="Creates the backend war file.">
@@ -398,9 +388,7 @@
 		</war>
 	</target>
 
-	<!-- ================================================== -->
 	<!-- Create the repeater server war                     -->
-	<!-- ================================================== -->
 	<target name="repeater"
 		depends="check-server, compile, client"
 		description="Creates the repeater war file.">
@@ -450,9 +438,7 @@
 		</war>
 	</target>
 
-	<!-- =================================================== -->
 	<!-- Create the API documentation                        -->
-	<!-- =================================================== -->
 	<target name="javadocs"
 		depends="prepare"
 		description="Creates the javadocs for the project.">
@@ -468,9 +454,7 @@
 			Transportation. All Rights Reserved."/>
 	</target>
 
-	<!-- ================================================== -->
 	<!-- Clean up generated stuff                           -->
-	<!-- ================================================== -->
 	<target name="clean"
 		description="deletes build directory.">
 		<delete dir="${build.dir}"/>
