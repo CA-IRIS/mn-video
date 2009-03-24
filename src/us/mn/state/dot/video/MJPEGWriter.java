@@ -152,7 +152,11 @@ public class MJPEGWriter implements DataSink {
 		out.write('\r');
 		out.write('\n');
 		writeBodyArea();
-		out.flush();
+		//FIXME: When a client is behind a router and closes a stream, 
+		//but the router fails to close the socket to the server, the
+		//stream server thread blocks until the output is written. 
+		
+		//out.flush();
 		data = null;
 		lastPacket = Calendar.getInstance().getTimeInMillis();
 		frameCount++;

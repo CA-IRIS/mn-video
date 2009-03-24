@@ -44,11 +44,9 @@ public final class AxisServer extends AbstractEncoder {
 	private HttpURLConnection stillsCon;
 	
 	/** The base URI for a request for an image */
-	private final String BASE_IMAGE_URI = "/axis-cgi/jpg/image.cgi?" +
-		"showlength=1&";
+	private final String BASE_IMAGE_URI = "/axis-cgi/jpg/image.cgi?";
 	
-	private final String BASE_STREAM_URI = "/axis-cgi/mjpg/video.cgi?" +
-		"showlength=1&";
+	private final String BASE_STREAM_URI = "/axis-cgi/mjpg/video.cgi?";
 	
 	/** URI for restarting the server */
 	private final String BASE_RESTART_URI = "/axis-cgi/admin/restart.cgi?";
@@ -150,15 +148,6 @@ public final class AxisServer extends AbstractEncoder {
 		}
 	}
 
-	private URL getRestartURL() {
-		try{
-			return new URL("http://" + host + ":" +
-				getPort() + BASE_RESTART_URI);
-		}catch(Exception e){
-			return null;
-		}
-	}
-
 	private String createSizeParam(int size){
 		String sizeValue = "";
 		switch(size){
@@ -191,11 +180,15 @@ public final class AxisServer extends AbstractEncoder {
 		try{
 			URLConnection con = ConnectionFactory.createConnection(url);
 			prepareConnection(con);
+			int response = stillsCon.getResponseCode();
+			if(response == 503){
+				throw new Exception("HTTP 503");
+			}
 			InputStream s = con.getInputStream();
 			MJPEGReader videoStream = new MJPEGReader(s);
 			return videoStream;
 		}catch(Exception e){
-			throw new VideoException(e.getMessage() + ": " + url.toString());
+			throw new VideoException(e.getMessage());
 		}
 	}
 
@@ -208,18 +201,6 @@ public final class AxisServer extends AbstractEncoder {
 		}
 	}
 	
-	private final void reboot() throws VideoException{
-		System.out.println("Rebooting " + getHost());
-		try {
-			URL url = getRestartURL();
-			HttpURLConnection conn = ConnectionFactory.createConnection(url);
-			prepareConnection(conn);
-			conn.connect();
-		}catch(Exception e){
-			throw new VideoException("Fetch error: " + e.getMessage());
-		}
-	}
-
 	private synchronized final byte[] fetchImage(Client c, URL url) throws VideoException{
 		InputStream in = null;
 		try {
@@ -227,7 +208,6 @@ public final class AxisServer extends AbstractEncoder {
 			prepareConnection(stillsCon);
 			int response = stillsCon.getResponseCode();
 			if(response == 503){
-				//reboot();
 				throw new Exception("HTTP 503");
 			}
 			in = stillsCon.getInputStream();
