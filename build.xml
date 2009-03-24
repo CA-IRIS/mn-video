@@ -22,6 +22,7 @@
 	<property name="lib.dir" value="lib" />
 	<property name="bin.dir" value="bin" />
 	<property name="images.dir" value="web/images" />
+ 	<property name="spbase.dir" value="deps"/>
 	<property name="build.dir" value="build" />
 	<property name="build.repeater.dir" value="${build.dir}/repeater" />
 	<property name="build.backend.dir" value="${build.dir}/backend" />
@@ -44,22 +45,49 @@
 	<path id="classpath">
 		<fileset dir = "${lib.dir}" includes="**/*.jar"/>
 	</path>
-
-	<!-- Check for one jar dependancy -->
-	<target name="check-jar">
-		<available property="jar.exists"
-			   file="${lib.dir}/${file.jar}"/>
-		<echo message="Checking for ${lib.dir}/${file.jar}"/>
-		<fail unless="jar.exists"
-		      message="Missing dependency: ${lib.dir}/${file.jar}"/>
-	</target>
+	<property name="tms-log.jar" value="tms-log-${tms-log.version}.jar"/>
 
 	<!-- Check for dependancies -->
 	<target name="check">
-		<antcall target="check-jar">
-			<param name="file.jar"
-				value="tms-log-${tms-log.version}.jar"/>
+		<mkdir dir="${spbase.dir}"/>
+		<antcall target="check-subproject">
+			<param name="file.jar" value="${tms-log.jar}"/>
+			<param name="repo.name" value="log"/>
+			<param name="repo.version" value="${tms-log.version}"/>
 		</antcall>
+	</target>
+
+	<!-- Check for one subproject dependancy -->
+	<target name="check-subproject">
+		<available property="file.exists"
+			   file="${lib.dir}/${file.dep}"/>
+		<antcall target="build-subproject"/>
+	</target>
+
+	<!-- Build a subproject -->
+	<target name="build-subproject" unless="file.exists">
+		<antcall target="hg-check"/>
+		<ant dir="${spbase.dir}/${repo.name}"
+		     target="jar" inheritAll="false"/>
+		<copy todir="${lib.dir}">
+			<fileset dir="${spbase.dir}/${repo.name}/build/lib/"/>
+		</copy>
+	</target>
+
+	<!-- Clone a mercurial subproject -->
+	<target name="hg-check" unless="file.exists">
+		<available property="dir.exists"
+		           file="${spbase.dir}/${repo.name}"/>
+		<antcall target="hg-clone"/>
+	</target>
+
+	<!-- Clone a mercurial subproject -->
+	<target name="hg-clone" unless="dir.exists">
+		<exec executable="hg" dir="${spbase.dir}" failonerror="true">
+			<arg value="clone"/>
+			<arg value="-r${repo.version}"/>
+			<arg value="${hgbase.url}${repo.name}"/>
+		</exec>
 	</target>
 
 	<!-- Check for server dependancies -->
@@ -73,6 +101,15 @@
 		<antcall target="check-jar">
 			<param name="file.jar" value="velocity-dep-1.3.1.jar"/>
 		</antcall>
+	</target>
+
+	<!-- Check for one jar dependancy -->
+	<target name="check-jar">
+		<available property="jar.exists"
+			   file="${lib.dir}/${file.jar}"/>
+		<echo message="Checking for ${lib.dir}/${file.jar}"/>
+		<fail unless="jar.exists"
+		      message="Missing dependency: ${lib.dir}/${file.jar}"/>
 	</target>
 
 
