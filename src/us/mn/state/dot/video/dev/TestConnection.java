@@ -47,7 +47,7 @@ public class TestConnection extends HttpServlet {
 	}
 
 	public void init( ServletConfig config ) throws ServletException {
-		File f = new File("/etc/tms/video.properties");
+		File f = new File("/etc/iris/video.properties");
 		try{
 			props.load(new FileInputStream(f));
 		}catch(Exception e){

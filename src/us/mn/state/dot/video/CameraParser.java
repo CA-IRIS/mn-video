@@ -85,7 +85,7 @@ public class CameraParser extends XmlParser {
 
 	public static void main(String[] args){
 		try{
-			File f = new File("/etc/tms/video.properties");
+			File f = new File("/etc/iris/video.properties");
 			Properties p = new Properties();
 			p.load(new FileInputStream(f));
 			ProxySelector.setDefault(new HTTPProxySelector(p)); 

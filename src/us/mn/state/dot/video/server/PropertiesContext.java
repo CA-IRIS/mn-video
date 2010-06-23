@@ -46,7 +46,7 @@ public class PropertiesContext extends HttpServlet{
 	private Logger logger;
 
 	/** Properties file */
-	protected final File propsFile = new File("/etc/tms/video.properties");
+	protected final File propsFile = new File("/etc/iris/video.properties");
 
 	/** The default time to live for DNS cache within JRE */
 	public static final String DNS_TTL = "3600"; // 1 hour
@@ -83,7 +83,7 @@ public class PropertiesContext extends HttpServlet{
 		// for TOMCAT applications.  This will do nothing here!
 		java.security.Security.setProperty(PROP_DNS_TTL, dnsTTL);
 		String appName = props.getProperty(PROP_APP_NAME, "defaultAppName");
-		File logDir = new File("/var/log/tms");
+		File logDir = new File("/var/log/iris");
 		logger = TmsLogFactory.createLogger(appName,
 				Level.parse(props.getProperty(PROP_LOG_LEVEL, "all")),
 				logDir);
