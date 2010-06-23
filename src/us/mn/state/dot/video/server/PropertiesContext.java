@@ -85,7 +85,7 @@ public class PropertiesContext extends HttpServlet{
 		String appName = props.getProperty(PROP_APP_NAME, "defaultAppName");
 		File logDir = new File("/var/log/iris");
 		logger = TmsLogFactory.createLogger(appName,
-				Level.parse(props.getProperty(PROP_LOG_LEVEL, "all")),
+				Level.parse(props.getProperty(PROP_LOG_LEVEL, "ALL")),
 				logDir);
 //		ProxySelector.setDefault(new HTTPProxySelector(props));
 		try{
