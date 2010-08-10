@@ -100,7 +100,9 @@ abstract public class ConnectionFactory {
 			try{
 				in.close();
 			}catch(IOException ioe2){
+				System.err.println(ioe2.getStackTrace());
 			}catch(NullPointerException npe){
+				System.err.println(npe.getStackTrace());
 			}
 		}
 	}
