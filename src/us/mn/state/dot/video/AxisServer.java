@@ -44,9 +44,11 @@ public final class AxisServer extends AbstractEncoder {
 	private HttpURLConnection stillsCon;
 	
 	/** The base URI for a request for an image */
-	private final String BASE_IMAGE_URI = "/axis-cgi/jpg/image.cgi?";
+	private final String BASE_IMAGE_URI = "/axis-cgi/jpg/image.cgi?" +
+		"showlength=1&";
 	
-	private final String BASE_STREAM_URI = "/axis-cgi/mjpg/video.cgi?";
+	private final String BASE_STREAM_URI = "/axis-cgi/mjpg/video.cgi?" +
+	"showlength=1&";
 	
 	/** URI for restarting the server */
 	private final String BASE_RESTART_URI = "/axis-cgi/admin/restart.cgi?";
