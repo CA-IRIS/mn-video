@@ -388,8 +388,8 @@
 		</copy>
 		<copy file="${web.dir}/html/nvr-client.html"
 			tofile="${build.backend.dir}/nvr/index.html"/>
-		<copy file="${web.dir}/html/ie.html"
-			tofile="${build.backend.dir}/ie.html"/>
+		<copy file="${web.dir}/html/index.html"
+			tofile="${build.backend.dir}/index.html"/>
 		<copy file="${build.etc.dir}/nvr.jnlp"
 			tofile="${build.backend.dir}/nvr/nvr.jnlp"/>
 		<copy todir="${build.backend.dir}/nvr/lib">
