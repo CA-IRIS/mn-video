@@ -1,2 +1,2 @@
-Class-Path: tms-log-@@TMS-LOG.VERSION@@.jar
+Class-Path: tms-log-1.14.0.jar
 Main-Class: us.mn.state.dot.video.client.VideoPlayer

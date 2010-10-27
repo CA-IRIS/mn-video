@@ -1,5 +1,5 @@
 function setCam(id){
-	var camUrl = 'http://172.23.0.251:8080/video/stream?id=' + id + '&size=3';
+	var camUrl = 'http://tms-streamer:8080/video/stream?id=' + id + '&size=3';
 	doGo(camUrl);
 }
 

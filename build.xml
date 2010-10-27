@@ -383,7 +383,7 @@
 		</copy>
 		<copy todir="${build.backend.dir}/html">
 			<fileset dir="${web.dir}" >
-				<include name="ie.html" />
+				<include name="index.html" />
 			</fileset>
 		</copy>
 		<copy file="${web.dir}/html/nvr-client.html"
@@ -421,6 +421,7 @@
 		<war
 			destfile="${build.lib.dir}/${name}-backend.war-${version}"
 			webxml="${backend.webxml}"
+			manifest="${manifest}"
 			basedir="${build.backend.dir}">
 		</war>
 	</target>
