@@ -26,7 +26,6 @@
 	<property name="build.dir" value="build" />
 	<property name="build.repeater.dir" value="${build.dir}/repeater" />
 	<property name="build.backend.dir" value="${build.dir}/backend" />
-	<property name="build.nvr.dir" value="${build.dir}/nvr" />
 	<property name="build.src.dir" value="${build.dir}/src" />
 	<property name="build.etc.dir" value="${build.dir}/etc" />
 	<property name="build.web.dir" value="${build.dir}/web" />
@@ -38,7 +37,6 @@
 	<property name="repeater.webxml" value="${web.dir}/web-inf/repeater_web.xml"/>
 	<property name="backend.webxml" value="${web.dir}/web-inf/backend_web.xml"/>
 	<property name="test.webxml" value="${web.dir}/web-inf/test_web.xml"/>
-	<property name="nvr.webxml" value="${web.dir}/web-inf/nvr_web.xml"/>
 	<property name="userdocs.dir" value="${name}" />
 	<property name="manifest" value="etc/manifest.mf" />
 	<property name="build.compiler.pedantic" value="true"/>
@@ -279,7 +277,6 @@
 			</fileset>
 			<fileset dir="${lib.dir}">
 				<include name="video-client.properties"/>
-				<include name="nvr-client.properties"/>
 			</fileset>
 		</jar>
 	</target>
@@ -359,54 +356,13 @@
 
 	<!-- Create the backend server war                      -->
 	<target name="backend"
-		depends="check-server, compile, client"
+		depends="check-server, compile"
 		description="Creates the backend war file.">
 		<copy todir="${build.backend.dir}/WEB-INF/lib">
 			<fileset dir="${lib.dir}" >
 				<exclude name="servlet*" />
 			</fileset>
 		</copy>
-		<copy todir="${build.backend.dir}">
-			<fileset dir="${etc.dir}" >
-				<include name="*.keystore" />
-			</fileset>
-		</copy>
-		<copy todir="${build.backend.dir}/js">
-			<fileset dir="${web.dir}/js" >
-				<include name="*.*" />
-			</fileset>
-		</copy>
-		<copy todir="${build.backend.dir}/ssi">
-			<fileset dir="${web.dir}/ssi" >
-				<include name="*.*" />
-			</fileset>
-		</copy>
-		<copy todir="${build.backend.dir}/html">
-			<fileset dir="${web.dir}" >
-				<include name="index.html" />
-			</fileset>
-		</copy>
-		<copy file="${web.dir}/html/nvr-client.html"
-			tofile="${build.backend.dir}/nvr/index.html"/>
-		<copy file="${web.dir}/html/index.html"
-			tofile="${build.backend.dir}/index.html"/>
-		<copy file="${build.etc.dir}/nvr.jnlp"
-			tofile="${build.backend.dir}/nvr/nvr.jnlp"/>
-		<copy todir="${build.backend.dir}/nvr/lib">
-			<fileset dir="${build.lib.dir}" >
-				<include name="${name}-client-${version}.jar" />
-			</fileset>
-			<fileset dir="${lib.dir}" >
-				<include name="tms-log-${tms-log.version}.jar" />
-			</fileset>
-		</copy>
-		<signjar keystore="${sign.store}" storepass="${sign.store.pass}"
-		         alias="${sign.alias}" keypass="${sign.alias.pass}"
-			 lazy="true">
-			<fileset dir="${build.backend.dir}/nvr/lib">
-				<include name="*.jar"/>
-			</fileset>
-		</signjar>	
 		<copy todir="${build.backend.dir}/images">
 			<fileset dir="${images.dir}" >
 				<include name="*" />
@@ -434,24 +390,13 @@
 	       		<fileset dir="${build.web.dir}/html" >
 				<include name="*.html" />
         	   	</fileset>
-	       		<fileset dir="${build.web.dir}/ssi" >
-				<include name="*.html" />
-           		</fileset>
 			<fileset dir="${lib.dir}" >
 				<include name="tms-log-${log.version}.jar" />
 			</fileset>
 		</copy>
-
-		<copy todir="${build.repeater.dir}/css">
-			<fileset dir="${build.web.dir}/css">
-				<include name="*.css"/>
-			</fileset>
-		</copy>
-
 		<copy todir="${build.repeater.dir}/images">
 			<fileset dir="${images.dir}" >
 				<include name="*.jpg" />
-				<include name="*.gif" />
 			</fileset>
 		</copy>
 			
@@ -466,6 +411,7 @@
 				<include name="*.jar" />
 			</fileset>
 		</copy>
+
 		<copy todir="${build.repeater.dir}/WEB-INF/classes">
 			<fileset dir="${build.classes.dir}" />
 		</copy>
