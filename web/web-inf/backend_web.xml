@@ -28,26 +28,4 @@
 		<servlet-name>ImageServer</servlet-name>
 		<url-pattern>/image</url-pattern>
 	</servlet-mapping>
-
-	<servlet>
-		<servlet-name>ArchiveManager</servlet-name>
-		<servlet-class>us.mn.state.dot.video.server.ArchiveServer</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>ArchiveManager</servlet-name>
-		<url-pattern>/clip</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>ArchiveManager</servlet-name>
-		<url-pattern>/range</url-pattern>
-	</servlet-mapping>
-
-	<servlet>
-		<servlet-name>NvrConfig</servlet-name>
-		<servlet-class>us.mn.state.dot.video.server.NvrConfigServer</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>NvrConfig</servlet-name>
-		<url-pattern>/nvrconfig</url-pattern>
-	</servlet-mapping>
 </web-app>
