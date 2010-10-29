@@ -20,11 +20,9 @@ package us.mn.state.dot.video.server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -43,7 +41,6 @@ import us.mn.state.dot.video.AxisServer;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.ConnectionFactory;
 import us.mn.state.dot.video.Constants;
-import us.mn.state.dot.video.VideoClip;
 import us.mn.state.dot.video.VideoThread;
 
 
@@ -169,15 +166,12 @@ public abstract class VideoServlet extends HttpServlet {
 		Thread t = Thread.currentThread();
 		Calendar cal = Calendar.getInstance();
 		Client c = new Client();
-		VideoClip clip = new VideoClip();
-		c.setClip(clip);
 		this.request = request; 
 		requestURI = request.getRequestURI();
 		queryString = request.getQueryString();
 		requestPort = request.getLocalPort();
 		try {
 			configureClient(c, request);
-			configureClip(clip, request);
 			t.setName("VIDEO " + servletName + " " +
 				Constants.DATE_FORMAT.format(cal.getTime()) +
 				" Camera " + c.getCameraId());
@@ -198,20 +192,6 @@ public abstract class VideoServlet extends HttpServlet {
 			catch(Exception e) {
 			}
 		}
-	}
-
-	protected void configureClip(VideoClip clip, HttpServletRequest req)
-			throws ParseException {
-		String start = req.getParameter("start");
-		if(start != null){
-			Calendar c = Calendar.getInstance();
-			c.setTime(Constants.DATE_FORMAT.parse(start));
-			clip.setStart(c);
-		}
-		if(req.getParameter("id") != null)
-			clip.setCameraId(req.getParameter("id"));
-		if(req.getParameter("duration") != null)
-			clip.setDuration(getIntRequest(req, "duration"));
 	}
 
 	public abstract void processRequest(HttpServletResponse response,
