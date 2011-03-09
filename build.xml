@@ -15,7 +15,7 @@
 
 <project name="video" default="client" basedir=".">
 	<property file="project.properties"/>
-	<property file="${user.home}/.ant.properties"/>
+<!--	<property file="${user.home}/.ant.properties"/>-->
 	<property name="src.dir" value="src" />
 	<property name="etc.dir" value="etc" />
 	<property name="web.dir" value="web" />
