@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!-- ant build file for video project
-     Copyright (C) 2007-2009  Minnesota Department of Transportation
+     Copyright (C) 2007-2011  Minnesota Department of Transportation
 
      This program is free software; you can redistribute it and/or modify
      it under the terms of the GNU General Public License as published by
@@ -13,19 +13,18 @@
      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
      GNU General Public License for more details.  -->
 
-<project name="video" default="client" basedir=".">
+<project name="video" default="war" basedir=".">
 	<property file="project.properties"/>
-<!--	<property file="${user.home}/.ant.properties"/>-->
+	<property file="${user.home}/.ant.properties"/>
 	<property name="src.dir" value="src" />
 	<property name="etc.dir" value="etc" />
 	<property name="web.dir" value="web" />
 	<property name="lib.dir" value="lib" />
 	<property name="bin.dir" value="bin" />
 	<property name="images.dir" value="web/images" />
- 	<property name="spbase.dir" value="deps"/>
 	<property name="build.dir" value="build" />
-	<property name="build.repeater.dir" value="${build.dir}/repeater" />
-	<property name="build.backend.dir" value="${build.dir}/backend" />
+ 	<property name="build.spbase.dir" value="%{build.dir}/deps"/>
+	<property name="build.war.dir" value="${build.dir}/war" />
 	<property name="build.src.dir" value="${build.dir}/src" />
 	<property name="build.etc.dir" value="${build.dir}/etc" />
 	<property name="build.web.dir" value="${build.dir}/web" />
@@ -33,10 +32,7 @@
 	<property name="build.dist.dir" value="${build.dir}/dist" />
 	<property name="build.classes.dir" value="${build.dir}/classes" />
 	<property name="build.javadocs.dir" value="${build.dir}/javadocs" />
-
-	<property name="repeater.webxml" value="${web.dir}/web-inf/repeater_web.xml"/>
-	<property name="backend.webxml" value="${web.dir}/web-inf/backend_web.xml"/>
-	<property name="test.webxml" value="${web.dir}/web-inf/test_web.xml"/>
+	<property name="webxml" value="${web.dir}/web-inf/web.xml"/>
 	<property name="userdocs.dir" value="${name}" />
 	<property name="manifest" value="etc/manifest.mf" />
 	<property name="build.compiler.pedantic" value="true"/>
@@ -44,16 +40,6 @@
 		<fileset dir = "${lib.dir}" includes="**/*.jar"/>
 	</path>
 	<property name="tms-log.jar" value="tms-log-${tms-log.version}.jar"/>
-
-	<!-- Check for dependancies -->
-	<target name="check">
-		<mkdir dir="${spbase.dir}"/>
-		<antcall target="check-subproject">
-			<param name="file.jar" value="${tms-log.jar}"/>
-			<param name="repo.name" value="log"/>
-			<param name="repo.version" value="${tms-log.version}"/>
-		</antcall>
-	</target>
 
 	<!-- Check for one subproject dependancy -->
 	<target name="check-subproject">
@@ -65,31 +51,31 @@
 	<!-- Build a subproject -->
 	<target name="build-subproject" unless="file.exists">
 		<antcall target="hg-check"/>
-		<ant dir="${spbase.dir}/${repo.name}"
+		<ant dir="${build.spbase.dir}/${repo.name}"
 		     target="jar" inheritAll="false"/>
 		<copy todir="${lib.dir}">
-			<fileset dir="${spbase.dir}/${repo.name}/build/lib/"/>
+			<fileset dir="${build.spbase.dir}/${repo.name}/build/lib/"/>
 		</copy>
 	</target>
 
 	<!-- Clone a mercurial subproject -->
 	<target name="hg-check" unless="file.exists">
 		<available property="dir.exists"
-		           file="${spbase.dir}/${repo.name}"/>
+		           file="${build.spbase.dir}/${repo.name}"/>
 		<antcall target="hg-clone"/>
 	</target>
 
 	<!-- Clone a mercurial subproject -->
 	<target name="hg-clone" unless="dir.exists">
-		<exec executable="hg" dir="${spbase.dir}" failonerror="true">
+		<exec executable="hg" dir="${build.spbase.dir}" failonerror="true">
 			<arg value="clone"/>
 			<arg value="-r${repo.version}"/>
 			<arg value="${hgbase.url}${repo.name}"/>
 		</exec>
 	</target>
 
-	<!-- Check for server dependancies -->
-	<target name="check-server">
+	<!-- Check for dependancies -->
+	<target name="check-deps">
 		<antcall target="check-jar">
 			<param name="file.jar" value="jdbc7.0-1.2.jar"/>
 		</antcall>
@@ -98,6 +84,12 @@
 		</antcall>
 		<antcall target="check-jar">
 			<param name="file.jar" value="velocity-dep-1.3.1.jar"/>
+		</antcall>
+		<mkdir dir="${build.spbase.dir}"/>
+		<antcall target="check-subproject">
+			<param name="file.jar" value="${tms-log.jar}"/>
+			<param name="repo.name" value="log"/>
+			<param name="repo.version" value="${tms-log.version}"/>
 		</antcall>
 	</target>
 
@@ -110,135 +102,32 @@
 		      message="Missing dependency: ${lib.dir}/${file.jar}"/>
 	</target>
 
-
-	<!-- Check to see if a property has been defined.  Fail if not -->
-	<target name="check-prop">
-		<condition property="prop.defined">
-			<isset property="${prop.name}"/>
-		</condition>
-		<fail unless="prop.defined"
-			message="${prop.name} has not been defined."/>
-	</target>
-		
-	<!-- Check to see if required build properties are defined -->
-	<target name="check-properties">
-		<antcall target="check-prop">
-			<param name="prop.name" value="video.backend.host"/>
-		</antcall>
-		<antcall target="check-prop">
-			<param name="prop.name" value="video.backend.port"/>
-		</antcall>
-		<antcall target="check-prop">
-			<param name="prop.name" value="video.repeater.host"/>
-		</antcall>
-		<antcall target="check-prop">
-			<param name="prop.name" value="video.repeater.port"/>
-		</antcall>
-	</target>
-
 	<!-- Prepares the directory structure -->
 	<target name="prepare"
-			depends="check-properties"
 	        description="Prepare the build directory">
 
 		<mkdir dir="${build.src.dir}" />
 		<mkdir dir="${build.classes.dir}" />
 		<mkdir dir="${build.lib.dir}" />
 
-		<copy todir="${build.src.dir}" filtering="true">
+		<copy todir="${build.src.dir}">
 			<fileset dir="${src.dir}"/>
-			<filterset begintoken="@@" endtoken="@@">
-				<filter token="VERSION" value="${version}"/>
-				<filter token="NAME" value="${name}"/>
-			</filterset>
 		</copy>
 
-		<copy todir="${build.web.dir}" filtering="true">
+		<copy todir="${build.web.dir}">
 			<fileset dir="${web.dir}" />
-			<filterset begintoken="@@" endtoken="@@">
-				<filter token="TMS-LOG.VERSION"
-					value="${tms-log.version}"/>
-				<filter token="BUILD.ID"
-					value="${DSTAMP}:${TSTAMP}"/>
-				<filter token="VIDEO.REPEATER.HOST"
-					value="${video.repeater.host}"/>
-				<filter token="VIDEO.REPEATER.PORT"
-					value="${video.repeater.port}"/>
-				<filter token="NAME"
-					value="${name}"/>
-				<filter token="VERSION"
-					value="${version}"/>
-			</filterset>
 		</copy>
 
-		<copy todir="${build.etc.dir}" filtering="true">
+		<copy todir="${build.etc.dir}">
 			<fileset dir="${etc.dir}" />
-			<filterset begintoken="@@" endtoken="@@">
-				<filter token="TMS-LOG.VERSION"
-					value="${tms-log.version}"/>
-				<filter token="BUILD.ID"
-					value="${DSTAMP}:${TSTAMP}"/>
-				<filter token="VIDEO.REPEATER.HOST"
-					value="${video.repeater.host}"/>
-				<filter token="VIDEO.REPEATER.PORT"
-					value="${video.repeater.port}"/>
-				<filter token="VIDEO.BACKEND.HOST"
-					value="${video.backend.host}"/>
-				<filter token="VIDEO.BACKEND.PORT"
-					value="${video.backend.port}"/>
-				<filter token="VIDEO.WEBSTART.HOST"
-					value="${video.webstart.host}"/>
-				<filter token="CONNECTION.NAME"
-					value="${video.db.connection.name}"/>
-				<filter token="CONNECTION.PASSWORD"
-					value="${video.db.connection.password}"/>
-				<filter token="CONNECTION.URL"
-					value="${video.db.connection.url}"/>
-				<filter token="ROLE.NAME.COL"
-					value="${video.db.role.name.col}"/>
-				<filter token="USER.CRED.COL"
-					value="${video.db.user.cred.col}"/>
-				<filter token="USER.NAME.COL"
-					value="${video.db.user.name.col}"/>
-				<filter token="USER.ROLE.TABLE"
-					value="${video.db.user.role.table}"/>
-				<filter token="USER.TABLE"
-					value="${video.db.user.table}"/>
-				<filter token="PROXY.HOST"
-					value="${proxy.host}"/>
-				<filter token="PROXY.PORT"
-					value="${proxy.port}"/>
-				<filter token="NO.PROXY.HOSTS"
-					value="${no.proxy.hosts}"/>
-				<filter token="NAME"
-					value="${name}"/>
-				<filter token="VERSION"
-					value="${version}"/>
-			</filterset>
 		</copy>
 		<chmod dir="${build.etc.dir}" perm="ugo+rx" 
 		       includes="**/*.sh"/>		
 	</target>
 
-	<!-- Compile the client source code                      -->
-	<target name="compile-client"
-		depends="check, prepare"
-		description="Compile the client source files for the project">
-		<javac srcdir="${build.src.dir}" 
-			excludes="us/mn/state/dot/video/server/**,
-				us/mn/state/dot/video/dev/**"
-			destdir="${build.classes.dir}"
-			debug="on"
-			deprecation="on"
-			optimize="on"
-			target="1.5">
-			<classpath refid="classpath" />
-		</javac>
-	</target>
-
-	<!-- Compile the source code                             -->
+	<!-- Compile the source cod -->
 	<target name="compile"
-		depends="check, prepare"
+		depends="check-deps, prepare"
 		description="Compiles all of the source files for the project.">
 		<javac destdir="${build.classes.dir}"
 			excludes="us/mn/state/dot/video/dev/**"
@@ -251,178 +140,35 @@
 		</javac>
 	</target>
 
-	<!-- Compile all code including the test classes        -->
-	<target name="compile-test"
-		depends="prepare"
-		description="Compile all classes">
-		<javac destdir="${build.classes.dir}"
-			debug="on"
-			deprecation="on"
-			optimize="on"
-			target="1.5">
-			<src path="${build.src.dir}"/>
-			<classpath refid="classpath" />
-		</javac>
-	</target>
-
-	<!-- Create the client jar                              -->
-	<target name="client"
-		depends="compile-client"
-		description="Creates the client jar file.">
-		<jar jarfile="${build.lib.dir}/${name}-client-${version}.jar"
-		     manifest="${build.etc.dir}/manifest.mf">
-			<fileset dir="${build.classes.dir}">
-				<include name="us/mn/state/dot/video/client/*.*"/>
-				<include name="us/mn/state/dot/video/*.*"/>
-			</fileset>
-			<fileset dir="${lib.dir}">
-				<include name="video-client.properties"/>
-			</fileset>
-		</jar>
-	</target>
-
-	<!-- Create the client distribution                     -->
-	<target name="dist"
-		depends="client"
-		description="Creates the client distribution.">
-		<copy todir="${build.dist.dir}/lib">
-			<fileset dir="${build.lib.dir}" />
-		</copy>
-		<copy todir="${build.dist.dir}/lib">
-			<fileset dir="${lib.dir}" >
-				<include name="tms-log-${tms-log.version}.jar" />
-			</fileset>
-		</copy>
-		<copy todir="${build.dist.dir}" filtering="true">
-			<fileset dir="${bin.dir}" >
-				<include name="*.sh" />
-			</fileset>
-			<filterset begintoken="@@" endtoken="@@">
-				<filter token="VERSION"
-					value="${version}"/>
-			</filterset>
-		</copy>
-		<chmod file="${build.dist.dir}/video.sh" perm="ugo+x"/>
-		<fixcrlf srcDir="${build.dist.dir}" eol="lf" includes="*.sh"/>
-	</target>
-
-	<!-- Jar target for iris buildall target -->
-	<target name="jar" depends="client" />
-
-	<!-- Create the nvr server war                      -->
-	<target name="nvr"
-		depends="check-server, compile"
-		description="Creates the war file to be run on the NVR servers.">
-		<copy todir="${build.nvr.dir}/WEB-INF/lib">
-			<fileset dir="${lib.dir}" >
-				<include name="tms-log-${tms-log.version}.jar" />
-				<include name="jdbc7.0-1.2.jar" />
-			</fileset>
-		</copy>
-		<copy todir="${build.nvr.dir}/WEB-INF/classes">
-			<fileset dir="${build.classes.dir}">
-				<include name="us/mn/state/dot/video/server/**/*"/>
-				<include name="us/mn/state/dot/video/*"/>
-			</fileset>
-		</copy>
-		<war
-			destfile="${build.lib.dir}/${name}-nvr.war-${version}"
-			webxml="${nvr.webxml}"
-			basedir="${build.nvr.dir}">
-		</war>
-	</target>
-
-	<!-- Create a test war file                             -->
-	<target name="test"
-		depends="check-server, compile-test"
-		description="Creates the test war file.">
-		<copy todir="${build.dir}/test/WEB-INF/lib">
-			<fileset dir="${lib.dir}" >
-				<include name="tms-log-${tms-log.version}.jar" />
-				<include name="jdbc7.0-1.2.jar" />
-			</fileset>
-		</copy>
-		<copy todir="${build.dir}/test/WEB-INF/classes">
-			<fileset dir="${build.classes.dir}">
-				<include name="us/mn/state/dot/video/server/TestConnection.*"/>
-			</fileset>
-		</copy>
-		<war
-			destfile="${build.lib.dir}/${name}-test.war-${version}"
-			webxml="${test.webxml}"
-			basedir="${build.dir}/test">
-		</war>
-	</target>
-
-	<!-- Create the backend server war                      -->
-	<target name="backend"
-		depends="check-server, compile"
-		description="Creates the backend war file.">
-		<copy todir="${build.backend.dir}/WEB-INF/lib">
+	<!-- Create the war -->
+	<target name="war"
+		depends="compile"
+		description="Creates the war file. Can be used as backend or repeater">
+		<copy todir="${build.war.dir}/WEB-INF/lib">
 			<fileset dir="${lib.dir}" >
 				<exclude name="servlet*" />
 			</fileset>
 		</copy>
-		<copy todir="${build.backend.dir}/images">
+		<copy todir="${build.war.dir}/images">
 			<fileset dir="${images.dir}" >
 				<include name="*" />
 			</fileset>
 		</copy>
-		<copy todir="${build.backend.dir}/WEB-INF/classes">
+		<copy todir="${build.war.dir}/WEB-INF/classes">
 			<fileset dir="${build.classes.dir}">
 				<include name="us/mn/state/dot/video/*.*"/>
 				<include name="us/mn/state/dot/video/server/*.*"/>
 			</fileset>
 		</copy>
 		<war
-			destfile="${build.lib.dir}/${name}-backend.war-${version}"
-			webxml="${backend.webxml}"
+			destfile="${build.lib.dir}/${name}.war-${version}"
+			webxml="${webxml}"
 			manifest="${manifest}"
-			basedir="${build.backend.dir}">
+			basedir="${build.war.dir}">
 		</war>
 	</target>
 
-	<!-- Create the repeater server war                     -->
-	<target name="repeater"
-		depends="check-server, compile, client"
-		description="Creates the repeater war file.">
-		<copy todir="${build.repeater.dir}">
-	       		<fileset dir="${build.web.dir}/html" >
-				<include name="*.html" />
-        	   	</fileset>
-			<fileset dir="${lib.dir}" >
-				<include name="tms-log-${log.version}.jar" />
-			</fileset>
-		</copy>
-		<copy todir="${build.repeater.dir}/images">
-			<fileset dir="${images.dir}" >
-				<include name="*.jpg" />
-			</fileset>
-		</copy>
-			
-		<copy todir="${build.repeater.dir}/META-INF">
-			<fileset dir="${build.etc.dir}" >
-				<include name="context.xml" />
-			</fileset>
-		</copy>
-
-		<copy todir="${build.repeater.dir}/WEB-INF/lib">
-			<fileset dir="${lib.dir}" >
-				<include name="*.jar" />
-			</fileset>
-		</copy>
-
-		<copy todir="${build.repeater.dir}/WEB-INF/classes">
-			<fileset dir="${build.classes.dir}" />
-		</copy>
-
-		<war destfile="${build.lib.dir}/${name}-repeater.war-${version}"
-			webxml="${repeater.webxml}"
-			basedir="${build.repeater.dir}">
-		</war>
-	</target>
-
-	<!-- Create the API documentation                        -->
+	<!-- Create the API documentation -->
 	<target name="javadocs"
 		depends="prepare"
 		description="Creates the javadocs for the project.">
@@ -438,7 +184,7 @@
 			Transportation. All Rights Reserved."/>
 	</target>
 
-	<!-- Clean up generated stuff                           -->
+	<!-- Clean up generated stuff -->
 	<target name="clean"
 		description="deletes build directory.">
 		<delete dir="${build.dir}"/>
