@@ -18,6 +18,8 @@
 */
 package us.mn.state.dot.video;
 
+import java.net.URL;
+
 /**
  * The <code>Encoder</code> interface defines the attributes of a digital video encoder.
  * @author Timothy Johnson
@@ -75,4 +77,6 @@ public interface Encoder {
 	public void setUsername(String name);
 
 	public void setCamera(String id, int channel);
+	
+	public URL getStreamURL(Client c);
 }

@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 import us.mn.state.dot.video.AxisServer;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.ConnectionFactory;
+import us.mn.state.dot.video.Encoder;
 import us.mn.state.dot.video.VideoException;
 
 /**
@@ -41,7 +42,7 @@ public class CacheEntry {
 	protected String[] backendUrls = null;
 	protected byte[] imageData = null;
 	protected Logger logger = null;
-	protected AxisServer encoder = null;
+	protected Encoder encoder = null;
 	
 	/** Length of time that an image should be cached */
 	protected long expirationAge = 10000; // 10 seconds
@@ -52,8 +53,8 @@ public class CacheEntry {
 		this.logger = l;
 	}
 
-	public CacheEntry(AxisServer s, Client c, Logger l){
-		this.encoder = s;
+	public CacheEntry(Encoder e, Client c, Logger l){
+		this.encoder = e;
 		this.client = c;
 		this.logger = l;
 	}

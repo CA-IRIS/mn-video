@@ -1,6 +1,6 @@
 /*
-* VideoServer
-* Copyright (C) 2003-2007  Minnesota Department of Transportation
+* ImageServer
+* Copyright (C) 2003-2011  Minnesota Department of Transportation
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ public final class ImageServer extends VideoServlet{
 	
 	protected String[] backendUrls = null;
 	
-	protected ServerFactory serverFactory = null;
+	protected EncoderFactory encoderFactory = null;
 	
 	/** Constructor for the ImageServer */
     public void init(ServletConfig config) throws ServletException {
@@ -60,7 +60,7 @@ public final class ImageServer extends VideoServlet{
 			if(proxy){
 				backendUrls = AbstractDataSource.createBackendUrls(p, 2);
 			}else{
-				serverFactory = new ServerFactory(p);
+				encoderFactory = new EncoderFactory(p);
 			}
 			cacheDuration = Long.parseLong(
 					p.getProperty("video.cache.duration",
@@ -103,7 +103,7 @@ public final class ImageServer extends VideoServlet{
     	CacheEntry entry = cache.get(key);
     	if(entry != null) return entry;
     	if(!proxy){
-			entry = new CacheEntry(serverFactory.getServer(c.getCameraId()),
+			entry = new CacheEntry(encoderFactory.getEncoder(c.getCameraId()),
 					c, logger);
 		}else{
 			entry = new CacheEntry(backendUrls, c, logger);
