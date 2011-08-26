@@ -73,7 +73,7 @@ public abstract class AbstractEncoder implements Encoder {
 
 	/** Location of the no_video image */
 	private static String noVideoFile = 
-		"/usr/local/tomcat/current/webapps/@@NAME@@/images/novideo.jpg";
+		"/usr/share/tomcat6/webapps/video/images/novideo.jpg";
 
 	private static byte[] noVideo = createNoVideoImage();
 	
