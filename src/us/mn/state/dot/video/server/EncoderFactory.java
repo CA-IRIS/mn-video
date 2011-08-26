@@ -24,14 +24,15 @@ import java.util.Properties;
 import us.mn.state.dot.util.db.TmsConnection;
 import us.mn.state.dot.video.AxisServer;
 import us.mn.state.dot.video.Camera;
+import us.mn.state.dot.video.Encoder;
 
 /**
  * @author john3tim
  *
- * The ServerFactory is responsible for creating AxisServer objects and
+ * The ServerFactory is responsible for creating Encoder objects and
  * making sure that they are in sync with the database.
  */
-public class ServerFactory {
+public class EncoderFactory {
 
 	protected TmsConnection tms = null;
 
@@ -39,24 +40,24 @@ public class ServerFactory {
 	
 	protected String encoderPass = null;
 
-	/** Hashtable of all axis servers indexed by camera id */
-	protected final Hashtable<String, AxisServer> servers =
-		new Hashtable<String, AxisServer>();
+	/** Hashtable of all encoders indexed by camera id */
+	protected final Hashtable<String, Encoder> encoders =
+		new Hashtable<String, Encoder>();
 
-	public ServerFactory(Properties props){
+	public EncoderFactory(Properties props){
 		tms = new TmsConnection(props);
 		encoderUser = props.getProperty("video.encoder.user");
 		encoderPass = props.getProperty("video.encoder.pwd");
-		updateServers();
+		updateEncoders();
 	}
 
-	public AxisServer getServer(String cameraId){
-		return servers.get(cameraId);
+	public Encoder getEncoder(String cameraId){
+		return encoders.get(cameraId);
 	}
 	
-	/** Update the hashtable of servers with information from the database */
-	protected void updateServers() {
-		servers.clear();
+	/** Update the hashtable of encoders with information from the database */
+	protected void updateEncoders() {
+		encoders.clear();
 		for(String host_port : tms.getEncoderHosts()){
 			createEncoder(host_port);
 		}
@@ -67,22 +68,22 @@ public class ServerFactory {
 		if(host_port.indexOf(":")>-1){
 			host = host_port.substring(0,host_port.indexOf(":"));
 		}
-		AxisServer s = AxisServer.getServer(host);
+		Encoder enc = AxisServer.getServer(host);
 		if(host_port.indexOf(":")>-1){
 			try{
 				int port = Integer.parseInt(host_port.substring(host_port.indexOf(":")+1));
-				s.setPort(port);
-			}catch(NumberFormatException e){
+				enc.setPort(port);
+			}catch(NumberFormatException nfe){
 				//host port parsing error... use default http port
 			}
 		}
 		for(String camId : tms.getCameraIdsByEncoder(host)){
 			int ch = tms.getEncoderChannel(camId);
 			String standardId = Camera.createStandardId(camId);
-			s.setCamera(standardId, ch);
-			s.setUsername(encoderUser);
-			s.setPassword(encoderPass);
-			servers.put(standardId, s);
+			enc.setCamera(standardId, ch);
+			enc.setUsername(encoderUser);
+			enc.setPassword(encoderPass);
+			encoders.put(standardId, enc);
 		}
 	}
 }

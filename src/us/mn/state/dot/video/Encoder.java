@@ -74,4 +74,5 @@ public interface Encoder {
 	 */
 	public void setUsername(String name);
 
+	public void setCamera(String id, int channel);
 }
