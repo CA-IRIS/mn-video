@@ -23,7 +23,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Logger;
 
-import us.mn.state.dot.video.AxisServer;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.ConnectionFactory;
 import us.mn.state.dot.video.Encoder;

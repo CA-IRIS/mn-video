@@ -22,9 +22,10 @@ import java.util.Hashtable;
 import java.util.Properties;
 
 import us.mn.state.dot.util.db.TmsConnection;
-import us.mn.state.dot.video.AxisServer;
+import us.mn.state.dot.video.AxisEncoder;
 import us.mn.state.dot.video.Camera;
 import us.mn.state.dot.video.Encoder;
+import us.mn.state.dot.video.InfinovaEncoder;
 
 /**
  * @author john3tim

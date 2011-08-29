@@ -27,7 +27,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
 import us.mn.state.dot.video.AbstractDataSource;
-import us.mn.state.dot.video.AxisServer;
+import us.mn.state.dot.video.AbstractEncoder;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.VideoException;
 
@@ -82,7 +82,7 @@ public final class ImageServer extends VideoServlet{
     	long start = System.currentTimeMillis();
    		CacheEntry entry = getCacheEntry(c);
     	byte[] image = entry.getImage();
-		if(image == null) image = AxisServer.getNoVideoImage();
+		if(image == null) image = AbstractEncoder.getNoVideoImage();
 		try{
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("image/jpeg\r\n");

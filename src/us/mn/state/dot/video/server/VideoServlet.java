@@ -37,7 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.velocity.VelocityContext;
 
 import us.mn.state.dot.util.db.TmsConnection;
-import us.mn.state.dot.video.AxisServer;
+import us.mn.state.dot.video.AbstractEncoder;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.ConnectionFactory;
 import us.mn.state.dot.video.Constants;
@@ -205,7 +205,7 @@ public abstract class VideoServlet extends HttpServlet {
 
 	protected final void sendNoVideo(HttpServletResponse response, Client c)
 			throws IOException {
-		byte[] image = AxisServer.getNoVideoImage();
+		byte[] image = AbstractEncoder.getNoVideoImage();
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.setContentType("image/jpeg");
 		response.setContentLength(image.length);

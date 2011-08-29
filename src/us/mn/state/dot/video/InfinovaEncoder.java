@@ -1,6 +1,6 @@
 /*
 * VideoServer
-* Copyright (C) 2003-2007  Minnesota Department of Transportation
+* Copyright (C) 2011  Minnesota Department of Transportation
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -27,27 +27,24 @@ import java.util.Hashtable;
 
 
 /**
- * The AxisEncoder class encapsulates information about an axis video
+ * The InfinovaEncoder class encapsulates information about an Infinova video
  * capture device
  *
  * @author    Timothy Johnson
- * @created   July 2, 2003
  */
 
-public final class AxisEncoder extends AbstractEncoder {
+public final class InfinovaEncoder extends AbstractEncoder {
 
 	/** The HttpURLConnection used for getting stills */
 	private HttpURLConnection stillsCon;
 	
 	/** The base URI for a request for an image */
-	private final String BASE_IMAGE_URI = "/axis-cgi/jpg/image.cgi?" +
-		"showlength=1&";
+	private final String BASE_IMAGE_URI = "/jpgimage/1/image.jpg";
 	
-	private final String BASE_STREAM_URI = "/axis-cgi/mjpg/video.cgi?" +
-	"showlength=1&";
+	private final String BASE_STREAM_URI = "";
 	
 	/** URI for restarting the server */
-	private final String BASE_RESTART_URI = "/axis-cgi/admin/restart.cgi?";
+	private final String BASE_RESTART_URI = "";
 	
 	/** The compression request parameter */
 	private static final String PARAM_COMPRESSION = "compression";
@@ -76,13 +73,13 @@ public final class AxisEncoder extends AbstractEncoder {
 	/** The parameter value for off */
 	private static final String VALUE_OFF = "0";
 	
-	/** Constructor for the axis encoder object */
-	public AxisEncoder(String host) {
+	/** Constructor for the Infinova encoder object */
+	public InfinovaEncoder(String host) {
 		super(host);
 	}
 	
 	/**
-	 * Get a URL for connecting to the MJPEG stream of an Axis Server.
+	 * Get a URL for connecting to the MJPEG stream of an Infinova Server.
 	 * @param c The client object containing request parameters.
 	 * @return
 	 */
