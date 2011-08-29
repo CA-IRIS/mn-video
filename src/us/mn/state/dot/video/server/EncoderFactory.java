@@ -58,17 +58,24 @@ public class EncoderFactory {
 	/** Update the hashtable of encoders with information from the database */
 	protected void updateEncoders() {
 		encoders.clear();
+		//Fixme: this is just to get things to build, need to get protocol from db. 
+		String protocol = "Axis MJPG";
 		for(String host_port : tms.getEncoderHosts()){
-			createEncoder(host_port);
+			createEncoder(host_port, protocol);
 		}
 	}
-	
-	protected void createEncoder(String host_port){
+
+	protected void createEncoder(String host_port, String protocol){
 		String host = host_port;
 		if(host_port.indexOf(":")>-1){
 			host = host_port.substring(0,host_port.indexOf(":"));
 		}
-		Encoder enc = AxisServer.getServer(host);
+		Encoder enc = null;
+		if(protocol.toLowerCase().startsWith("Axis")){
+			enc = new AxisEncoder(host);
+		}else if(protocol.toLowerCase().startsWith("Infinova")){
+			enc = new InfinovaEncoder(host);
+		}
 		if(host_port.indexOf(":")>-1){
 			try{
 				int port = Integer.parseInt(host_port.substring(host_port.indexOf(":")+1));
