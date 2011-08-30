@@ -46,7 +46,7 @@ public class EncoderFactory {
 		new Hashtable<String, Encoder>();
 
 	public EncoderFactory(Properties props){
-		tms = new TmsConnection(props);
+		tms = TmsConnection.create(props);
 		encoderUser = props.getProperty("video.encoder.user");
 		encoderPass = props.getProperty("video.encoder.pwd");
 		updateEncoders();
@@ -59,24 +59,28 @@ public class EncoderFactory {
 	/** Update the hashtable of encoders with information from the database */
 	protected void updateEncoders() {
 		encoders.clear();
-		//Fixme: this is just to get things to build, need to get protocol from db. 
-		String protocol = "Infinova MJPG";
 		for(String host_port : tms.getEncoderHosts()){
-			createEncoder(host_port, protocol);
+			createEncoder(host_port);
 		}
 	}
 
-	protected void createEncoder(String host_port, String protocol){
+	protected void createEncoder(String host_port){
 		String host = host_port;
 		if(host_port.indexOf(":")>-1){
 			host = host_port.substring(0,host_port.indexOf(":"));
 		}
 		Encoder enc = null;
-		if(protocol.contains("Infinova")){
+		String encType = tms.getEncoderType(host);
+		if(encType == null){
+			System.out.println("No driver found for encoder "  + host_port);
+			return;
+		}
+		if(encType.contains("Infinova")){
 			enc = new InfinovaEncoder(host);
-		}else if(protocol.contains("Axis")){
+		}else if(encType.contains("Axis")){
 			enc = new AxisEncoder(host);
 		}else{
+			System.out.println("Unsupported encoder driver: "  + encType);
 			return; //Unsupported encoder manufacturer
 		}
 		if(host_port.indexOf(":")>-1){

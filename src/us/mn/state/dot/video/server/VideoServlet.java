@@ -104,7 +104,7 @@ public abstract class VideoServlet extends HttpServlet {
 		Properties props =(Properties)ctx.getAttribute("properties");
 		proxy = new Boolean(props.getProperty("proxy", "false")).booleanValue();
 		if(!proxy){
-			tms = new TmsConnection(props);
+			tms = TmsConnection.create(props);
 		}else{
 			try{
 				ssidURL = new URL(props.getProperty("ssid.url"));
