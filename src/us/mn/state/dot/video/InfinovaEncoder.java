@@ -111,10 +111,10 @@ public final class InfinovaEncoder extends AbstractEncoder {
 		try{
 			String url = 
 				"http://" + host + ":" +
-				getPort() + BASE_IMAGE_URI +
-				createCameraParam(c) + "&" +
-				createSizeParam(c.getSize()) + "&" +
-				createCompressionParam(c.getCompression());
+				getPort() + BASE_IMAGE_URI ;
+				//createCameraParam(c) + "&" +
+				//createSizeParam(c.getSize()) + "&" +
+				//createCompressionParam(c.getCompression());
 /*			if(size==SMALL){
 				url = url +
 					"&" + PARAM_CLOCK + "=" + VALUE_OFF +

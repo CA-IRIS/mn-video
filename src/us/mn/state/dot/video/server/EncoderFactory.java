@@ -60,7 +60,7 @@ public class EncoderFactory {
 	protected void updateEncoders() {
 		encoders.clear();
 		//Fixme: this is just to get things to build, need to get protocol from db. 
-		String protocol = "Axis MJPG";
+		String protocol = "Infinova MJPG";
 		for(String host_port : tms.getEncoderHosts()){
 			createEncoder(host_port, protocol);
 		}
@@ -72,10 +72,12 @@ public class EncoderFactory {
 			host = host_port.substring(0,host_port.indexOf(":"));
 		}
 		Encoder enc = null;
-		if(protocol.toLowerCase().startsWith("Axis")){
-			enc = new AxisEncoder(host);
-		}else if(protocol.toLowerCase().startsWith("Infinova")){
+		if(protocol.contains("Infinova")){
 			enc = new InfinovaEncoder(host);
+		}else if(protocol.contains("Axis")){
+			enc = new AxisEncoder(host);
+		}else{
+			return; //Unsupported encoder manufacturer
 		}
 		if(host_port.indexOf(":")>-1){
 			try{
