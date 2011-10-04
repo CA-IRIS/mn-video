@@ -40,8 +40,8 @@ public class DataSourceFactory {
 	private ThreadMonitor monitor = null;
 	
 	/** Table of video streams that are active. */
-	static final protected Hashtable<String, HttpDataSource>
-		sourceTable = new Hashtable<String, HttpDataSource>();
+	static final protected Hashtable<String, AbstractDataSource>
+		sourceTable = new Hashtable<String, AbstractDataSource>();
 
 	private final Logger logger;
 	
@@ -67,9 +67,9 @@ public class DataSourceFactory {
 		Thread t = new Thread(){
 			public void run(){
 				while(true){
-					Enumeration<HttpDataSource> e = sourceTable.elements();
+					Enumeration<AbstractDataSource> e = sourceTable.elements();
 					while(e.hasMoreElements()){
-						HttpDataSource src = e.nextElement();
+						AbstractDataSource src = e.nextElement();
 						if(!src.isAlive()){
 							Client c = src.getClient();
 							logger.info("Purging " + src);
@@ -89,19 +89,22 @@ public class DataSourceFactory {
 	private DataSource createDataSource(Client c)
 			throws VideoException {
 		URL url = null;
+		Encoder encoder = null;
 		try{
 			if(proxy){
 				url = createURL(c, backendUrls[c.getArea()]);
 			}else{
-				Encoder encoder = encoderFactory.getEncoder(c.getCameraId());
+				encoder = encoderFactory.getEncoder(c.getCameraId());
 				if(encoder == null){
 					throw new VideoException("No encoder for " + c.getCameraId());
 				}else{
 					url = encoder.getStreamURL(c);
 				}
 			}
-			HttpDataSource src = new HttpDataSource(c, logger, monitor, url);
-			return src;
+			if((encoder != null) && (encoder instanceof InfinovaEncoder)){
+				return new MultiRequestDataSource(c, logger, monitor, url);
+			}
+			return new HttpDataSource(c, logger, monitor, url);
 		}catch(Exception e){
 			throw new VideoException(e.getMessage());
 		}
@@ -130,7 +133,7 @@ public class DataSourceFactory {
 				"Invalid camera: " + c.getCameraId());
 		String name = c.getCameraId() + ":" + c.getSize();
 		logger.fine("There are currently " + sourceTable.size() + " datasources.");
-		HttpDataSource src = sourceTable.get(name);
+		AbstractDataSource src = sourceTable.get(name);
 		if(src != null){
 			if(src.isAlive()){
 				return src;
@@ -138,7 +141,7 @@ public class DataSourceFactory {
 				sourceTable.remove(name);
 			}
 		}
-		src = (HttpDataSource)createDataSource(c);
+		src = (AbstractDataSource)createDataSource(c);
 		sourceTable.put(name, src);
 		return src;
 	}

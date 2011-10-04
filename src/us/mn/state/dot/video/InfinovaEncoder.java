@@ -41,7 +41,7 @@ public final class InfinovaEncoder extends AbstractEncoder {
 	/** The base URI for a request for an image */
 	private final String BASE_IMAGE_URI = "/jpgimage/1/image.jpg";
 	
-	private final String BASE_STREAM_URI = "";
+	private final String BASE_STREAM_URI = "/jpgimage/1/image.jpg";
 	
 	/** URI for restarting the server */
 	private final String BASE_RESTART_URI = "";
@@ -88,10 +88,11 @@ public final class InfinovaEncoder extends AbstractEncoder {
 		if(channel == NO_CAMERA_CONNECTED) return null;
 		try{
 			return new URL( "http://" + host + ":" +
-					getPort() + BASE_STREAM_URI +
-					createCameraParam(c) + "&" +
-					createSizeParam(c.getSize()) + "&" +
-					createCompressionParam(c.getCompression()));
+					getPort() + BASE_STREAM_URI
+//					createCameraParam(c) + "&" +
+//					createSizeParam(c.getSize()) + "&" +
+//					createCompressionParam(c.getCompression())
+					);
 		}catch(Exception e){
 		}
 		return null;
