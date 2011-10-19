@@ -18,6 +18,7 @@
 */
 package us.mn.state.dot.video.server;
 
+import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Properties;
 
@@ -54,18 +55,21 @@ public final class ImageServer extends VideoServlet{
 	/** Constructor for the ImageServer */
     public void init(ServletConfig config) throws ServletException {
 		super.init( config );
+		Calendar begin = Calendar.getInstance();
 		try{
 			ServletContext ctx = config.getServletContext();
 			Properties p = (Properties)ctx.getAttribute("properties");
 			if(proxy){
 				backendUrls = AbstractDataSource.createBackendUrls(p, 2);
 			}else{
-				serverFactory = new ServerFactory(p);
+				serverFactory = ServerFactory.getInstance(p);
 			}
 			cacheDuration = Long.parseLong(
 					p.getProperty("video.cache.duration",
 					Long.toString(DEFAULT_CACHE_DURATION)));
-			logger.info( "ImageServer initialized successfully." );
+			Calendar end = Calendar.getInstance();
+			float seconds = (end.getTimeInMillis()-begin.getTimeInMillis())/1000.0f;
+			logger.info("ImageServer initialization took " + seconds + " seconds.");
 		}catch(Exception e){
 			logger.severe(e.getMessage() + " --see error log for details.");
 			e.printStackTrace();

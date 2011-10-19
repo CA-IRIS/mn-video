@@ -20,6 +20,7 @@
 package us.mn.state.dot.video.server;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Properties;
 
@@ -61,6 +62,7 @@ public class StreamServer extends VideoServlet {
 	/** Initializes the servlet. */
 	public void init( ServletConfig config ) throws ServletException {
 		super.init( config );
+		Calendar begin = Calendar.getInstance();
 		monitor = new ThreadMonitor("ThreadMonitor", 10000, logger);
 		ServletContext ctx = config.getServletContext();
 		Properties props =(Properties)ctx.getAttribute("properties");
@@ -70,7 +72,9 @@ public class StreamServer extends VideoServlet {
 		}catch(Exception e){
 			logger.info("Max frame rate not defined, using default...");
 		}
-		logger.info("StreamServer initialized successfully.");
+		Calendar end = Calendar.getInstance();
+		float seconds = (end.getTimeInMillis()-begin.getTimeInMillis())/1000.0f;
+		logger.info("StreamServer initialization took " + seconds + " seconds.");
 	}
 
 	/**

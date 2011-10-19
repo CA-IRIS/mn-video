@@ -39,11 +39,19 @@ public class ServerFactory {
 	
 	protected String encoderPass = null;
 
+	private static ServerFactory serverFactory = null;
+	
 	/** Hashtable of all axis servers indexed by camera id */
 	protected final Hashtable<String, AxisServer> servers =
 		new Hashtable<String, AxisServer>();
 
-	public ServerFactory(Properties props){
+	public synchronized static ServerFactory getInstance(Properties p){
+		if( serverFactory != null ) return serverFactory;
+		serverFactory = new ServerFactory(p);
+		return serverFactory;
+	}
+	
+	private ServerFactory(Properties props){
 		tms = new TmsConnection(props);
 		encoderUser = props.getProperty("video.encoder.user");
 		encoderPass = props.getProperty("video.encoder.pwd");
