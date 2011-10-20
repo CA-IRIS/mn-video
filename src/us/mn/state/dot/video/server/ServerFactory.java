@@ -52,7 +52,7 @@ public class ServerFactory {
 	}
 	
 	private ServerFactory(Properties props){
-		tms = new TmsConnection(props);
+		tms = TmsConnection.create(props);
 		encoderUser = props.getProperty("video.encoder.user");
 		encoderPass = props.getProperty("video.encoder.pwd");
 		updateServers();
