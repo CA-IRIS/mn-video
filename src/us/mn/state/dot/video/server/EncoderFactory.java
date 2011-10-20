@@ -80,7 +80,11 @@ public class EncoderFactory {
 		Hashtable<String,List> info = tms.getEncoderInfo();
 		for(String name : info.keySet()){
 			List l = info.get(name);
-			createEncoder(name, l);
+			try{
+				createEncoder(name, l);
+			}catch(Exception e){
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -93,7 +97,11 @@ public class EncoderFactory {
 		}
 		Encoder e = null;
 		String mfr = (String)l.get(2);
-		if(mfr != null && mfr.equalsIgnoreCase(INFINOVA)) e = Infinova.getServer(host);
+		if(mfr != null && mfr.indexOf(INFINOVA) > -1){
+			System.out.println("Creating Infinova encoder.");
+			e = Infinova.getServer(host);
+			System.out.println(e);
+		}
 		else e = AxisServer.getServer(host);
 		if(host_port.indexOf(":")>-1){
 			try{
