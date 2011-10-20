@@ -442,5 +442,6 @@
 	<target name="clean"
 		description="deletes build directory.">
 		<delete dir="${build.dir}"/>
+		<delete dir="${spbase.dir}"/>
 	</target>
 </project>

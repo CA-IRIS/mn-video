@@ -61,7 +61,11 @@ public class ServerFactory {
 	public AxisServer getServer(String cameraId){
 		return servers.get(cameraId);
 	}
-	
+
+	public int getServerCount(){
+		return servers.size();
+	}
+
 	/** Update the hashtable of servers with information from the database */
 	protected void updateServers() {
 		servers.clear();
