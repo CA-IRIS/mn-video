@@ -50,7 +50,7 @@ public final class ImageServer extends VideoServlet{
 	
 	protected String[] backendUrls = null;
 	
-	protected ServerFactory serverFactory = null;
+	protected EncoderFactory encoderFactory = null;
 	
 	/** Constructor for the ImageServer */
     public void init(ServletConfig config) throws ServletException {
@@ -62,7 +62,7 @@ public final class ImageServer extends VideoServlet{
 			if(proxy){
 				backendUrls = AbstractDataSource.createBackendUrls(p, 2);
 			}else{
-				serverFactory = ServerFactory.getInstance(p);
+				encoderFactory = EncoderFactory.getInstance(p);
 			}
 			cacheDuration = Long.parseLong(
 					p.getProperty("video.cache.duration",
@@ -107,7 +107,7 @@ public final class ImageServer extends VideoServlet{
     	CacheEntry entry = cache.get(key);
     	if(entry != null) return entry;
     	if(!proxy){
-			entry = new CacheEntry(serverFactory.getServer(c.getCameraId()),
+			entry = new CacheEntry(encoderFactory.getEncoder(c.getCameraId()),
 					c, logger);
 		}else{
 			entry = new CacheEntry(backendUrls, c, logger);

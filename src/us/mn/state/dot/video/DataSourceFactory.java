@@ -25,7 +25,7 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import us.mn.state.dot.video.server.ServerFactory;
+import us.mn.state.dot.video.server.EncoderFactory;
 
 /**
  * The DataSourceFactory creates and maintains DataSources.
@@ -51,7 +51,7 @@ public class DataSourceFactory {
 
 	protected String[] backendUrls = null;
 	
-	protected ServerFactory serverFactory;
+	protected EncoderFactory encoderFactory;
 	
 	/** Constructor for the DataSourceFactory. */
 	public DataSourceFactory(Properties p,
@@ -62,7 +62,7 @@ public class DataSourceFactory {
 		if(proxy) {
 			backendUrls = AbstractDataSource.createBackendUrls(p, 1);
 		}else{
-			serverFactory = ServerFactory.getInstance(p);
+			encoderFactory = EncoderFactory.getInstance(p);
 		}
 		Thread t = new Thread(){
 			public void run(){
@@ -93,11 +93,11 @@ public class DataSourceFactory {
 			if(proxy){
 				url = createURL(c, backendUrls[c.getArea()]);
 			}else{
-				AxisServer server = serverFactory.getServer(c.getCameraId());
-				if(server == null){
+				Encoder e = encoderFactory.getEncoder(c.getCameraId());
+				if(e == null){
 					throw new VideoException("No encoder for " + c.getCameraId());
 				}else{
-					url = server.getStreamURL(c);
+					url = e.getStreamURL(c);
 				}
 			}
 			HttpDataSource src = new HttpDataSource(c, logger, monitor, url);
