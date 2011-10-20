@@ -91,7 +91,7 @@
 	<!-- Check for server dependancies -->
 	<target name="check-server">
 		<antcall target="check-jar">
-			<param name="file.jar" value="jdbc7.0-1.2.jar"/>
+			<param name="file.jar" value="postgresql-8.4-702.jdbc3.jar"/>
 		</antcall>
 		<antcall target="check-jar">
 			<param name="file.jar" value="servlet-api.jar"/>
