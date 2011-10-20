@@ -19,7 +19,9 @@
 package us.mn.state.dot.video.server;
 
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import us.mn.state.dot.util.db.TmsConnection;
 import us.mn.state.dot.video.AxisServer;
@@ -75,18 +77,22 @@ public class EncoderFactory {
 	/** Update the hashtable of encoders with information from the database */
 	protected void updateEncoders() {
 		encoders.clear();
-		for(String host_port : tms.getEncoderHosts()){
-			createEncoder(host_port);
+		Hashtable<String,List> info = tms.getEncoderInfo();
+		for(String name : info.keySet()){
+			List l = info.get(name);
+			createEncoder(name, l);
 		}
 	}
 	
-	protected void createEncoder(String host_port){
+	
+	protected void createEncoder(String name, List l){
+		String host_port = (String)l.get(0);
 		String host = host_port;
 		if(host_port.indexOf(":")>-1){
 			host = host_port.substring(0,host_port.indexOf(":"));
 		}
 		Encoder e = null;
-		String mfr = tms.getEncoderType(host);
+		String mfr = (String)l.get(2);
 		if(mfr != null && mfr.equalsIgnoreCase(INFINOVA)) e = Infinova.getServer(host);
 		else e = AxisServer.getServer(host);
 		if(host_port.indexOf(":")>-1){
@@ -98,7 +104,7 @@ public class EncoderFactory {
 			}
 		}
 		for(String camId : tms.getCameraIdsByEncoder(host)){
-			int ch = tms.getEncoderChannel(camId);
+			int ch = Integer.parseInt((String)l.get(1));
 			String standardId = Camera.createStandardId(camId);
 			e.setCamera(standardId, ch);
 			e.setUsername(encoderUser);
