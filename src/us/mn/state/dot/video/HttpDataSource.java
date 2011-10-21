@@ -22,7 +22,6 @@ package us.mn.state.dot.video;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.logging.Logger;
 /**
  * The HttpDataSource gets it's data via the HTTP protocol
