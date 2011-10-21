@@ -70,6 +70,8 @@ public abstract class AbstractEncoder implements Encoder {
 
 	/** Get the number of video channels. */
 	public final int getChannels(){ return channels; }
+
+	protected abstract URL getImageURL(Client c);
 	
 	/** The ids of the cameras that are connected. */
 	private Hashtable<String, Integer> ids =
@@ -204,5 +206,15 @@ public abstract class AbstractEncoder implements Encoder {
 			String encoded = Base64.encodeBytes(userPass.getBytes());
 			c.addRequestProperty("Authorization", "Basic " + encoded.toString());
 		}
+	}
+	
+	public byte[] getImage(Client c) throws VideoException{
+		URL url = getImageURL(c);
+		if(url == null){
+			throw new VideoException("No URL for camera " + c.getCameraId());
+		}
+		byte[] image = fetchImage(c, url);
+		if(image != null) return image;
+		return getNoVideoImage();
 	}
 }

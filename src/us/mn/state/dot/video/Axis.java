@@ -105,7 +105,7 @@ public final class Axis extends AbstractEncoder {
 		return PARAM_CAMERA + "=" + getChannel(c.getCameraId());	
 	}
 
-	private URL getImageURL(Client c) {
+	protected URL getImageURL(Client c) {
 		int channel = getChannel(c.getCameraId());
 		if(channel == NO_CAMERA_CONNECTED) return null;
 		try{
@@ -142,16 +142,6 @@ public final class Axis extends AbstractEncoder {
 		return PARAM_SIZE + "=" + sizeValue;
 	}
 	
-	public byte[] getImage(Client c) throws VideoException{
-		URL url = getImageURL(c);
-		if(url == null){
-			throw new VideoException("No URL for camera " + c.getCameraId());
-		}
-		byte[] image = fetchImage(c, url);
-		if(image != null) return image;
-		return getNoVideoImage();
-	}
-
 	public DataSource getDataSource(Client c) throws VideoException{
 		URL url = getStreamURL(c);
 		if(url == null) return null;
