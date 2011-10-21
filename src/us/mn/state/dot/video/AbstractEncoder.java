@@ -21,7 +21,10 @@ package us.mn.state.dot.video;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.InetAddress;
+import java.net.URL;
+import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.util.Hashtable;
 
@@ -34,6 +37,9 @@ import javax.imageio.stream.FileImageInputStream;
  */
 public abstract class AbstractEncoder implements Encoder {
 
+	/** The HttpURLConnection used for getting stills */
+	private HttpURLConnection stillsCon;
+	
 	/** The username used to connect to this server.  Only required when
 	 * the encoder does not allow anonymous connections.
 	 */
@@ -169,4 +175,34 @@ public abstract class AbstractEncoder implements Encoder {
 		return image;
 	}
 
+	protected synchronized final byte[] fetchImage(Client c, URL url) throws VideoException{
+		InputStream in = null;
+		try {
+			stillsCon = ConnectionFactory.createConnection(url);
+			prepareConnection(stillsCon);
+			int response = stillsCon.getResponseCode();
+			if(response == 503){
+				throw new Exception("HTTP 503");
+			}
+			in = stillsCon.getInputStream();
+			int length = Integer.parseInt(
+					stillsCon.getHeaderField("Content-Length"));
+			return readImage(in, length);
+		}catch(Exception e){
+			throw new VideoException(e.getMessage());
+		}finally{
+			try{
+				stillsCon.disconnect();
+			}catch(Exception e){}
+		}
+	}
+
+	/** Prepare a connection by setting necessary properties and timeouts */
+	protected void prepareConnection(URLConnection c) throws VideoException {
+		if(username!=null && password!=null){
+			String userPass = username + ":" + password;
+			String encoded = Base64.encodeBytes(userPass.getBytes());
+			c.addRequestProperty("Authorization", "Basic " + encoded.toString());
+		}
+	}
 }

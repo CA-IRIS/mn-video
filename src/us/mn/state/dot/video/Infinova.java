@@ -35,9 +35,6 @@ import java.util.Hashtable;
 
 public final class Infinova extends AbstractEncoder {
 
-	/** The HttpURLConnection used for getting stills */
-	private HttpURLConnection stillsCon;
-	
 	/** The base URI for a request for an image */
 	private final String BASE_IMAGE_URI = "/jpgimage/1/image.jpg";
 	
@@ -166,37 +163,6 @@ public final class Infinova extends AbstractEncoder {
 			return new MultiRequestDataSource(c, con);
 		}catch(Exception e){
 			throw new VideoException(e.getMessage());
-		}
-	}
-
-	/** Prepare a connection by setting necessary properties and timeouts */
-	private void prepareConnection(URLConnection c) throws VideoException {
-		if(username!=null && password!=null){
-			String userPass = username + ":" + password;
-			String encoded = Base64.encodeBytes(userPass.getBytes());
-			c.addRequestProperty("Authorization", "Basic " + encoded.toString());
-		}
-	}
-	
-	private synchronized final byte[] fetchImage(Client c, URL url) throws VideoException{
-		InputStream in = null;
-		try {
-			stillsCon = ConnectionFactory.createConnection(url);
-			prepareConnection(stillsCon);
-			int response = stillsCon.getResponseCode();
-			if(response == 503){
-				throw new Exception("HTTP 503");
-			}
-			in = stillsCon.getInputStream();
-			int length = Integer.parseInt(
-					stillsCon.getHeaderField("Content-Length"));
-			return readImage(in, length);
-		}catch(Exception e){
-			throw new VideoException(e.getMessage());
-		}finally{
-			try{
-				stillsCon.disconnect();
-			}catch(Exception e){}
 		}
 	}
 }
