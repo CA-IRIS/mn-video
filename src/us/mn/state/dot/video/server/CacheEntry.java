@@ -18,7 +18,6 @@
  */
 package us.mn.state.dot.video.server;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Logger;

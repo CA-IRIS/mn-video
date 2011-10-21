@@ -18,7 +18,6 @@
 */
 package us.mn.state.dot.video;
 
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 

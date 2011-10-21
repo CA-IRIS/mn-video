@@ -19,7 +19,6 @@
 
 package us.mn.state.dot.video;
 
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Hashtable;

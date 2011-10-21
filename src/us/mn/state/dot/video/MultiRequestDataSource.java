@@ -20,7 +20,6 @@
 package us.mn.state.dot.video;
 
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
