@@ -155,19 +155,17 @@ public final class Axis extends AbstractEncoder {
 		return getNoVideoImage();
 	}
 
-	public VideoStream getStream(Client c) throws VideoException{
+	public DataSource getDataSource(Client c) throws VideoException{
 		URL url = getStreamURL(c);
 		if(url == null) return null;
 		try{
-			URLConnection con = ConnectionFactory.createConnection(url);
+			HttpURLConnection con = ConnectionFactory.createConnection(url);
 			prepareConnection(con);
-			int response = stillsCon.getResponseCode();
-			if(response == 503){
-				throw new Exception("HTTP 503");
+			int response = con.getResponseCode();
+			if(response != 200){
+				throw new Exception("HTTP " + response);
 			}
-			InputStream s = con.getInputStream();
-			MJPEGReader videoStream = new MJPEGReader(s);
-			return videoStream;
+			return new HttpDataSource(c, con);
 		}catch(Exception e){
 			throw new VideoException(e.getMessage());
 		}

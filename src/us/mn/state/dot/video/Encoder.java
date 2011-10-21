@@ -62,7 +62,7 @@ public interface Encoder {
 	 * @return A VideoStream
 	 * @throws VideoException
 	 */
-	public VideoStream getStream(Client c) throws VideoException;
+	public DataSource getDataSource(Client c) throws VideoException;
 
 	/**
 	 * Set the authentication password.

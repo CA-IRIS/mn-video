@@ -31,26 +31,25 @@ import java.util.logging.Logger;
  */
 public class HttpDataSource extends AbstractDataSource {
 
-	protected final URL url;
+	protected final HttpURLConnection connection;
 
 	/** Constructor for the HttpDataSource. */
-	public HttpDataSource(Client c, URL url) {
-		this(c, null, null, url);
+	public HttpDataSource(Client c, HttpURLConnection conn) {
+		this(c, null, null, conn);
 	}
 
 	/** Constructor for the HttpDataSource. */
-	public HttpDataSource(Client c, Logger l, ThreadMonitor m, URL url) {
+	public HttpDataSource(Client c, Logger l, ThreadMonitor m, HttpURLConnection conn) {
 		super(c, l, m);
-		this.url = url;
+		this.connection = conn;
 	}
 	
 	/** Start the stream. */
 	public void run() {
 		HttpURLConnection conn = null;
-		if(url != null){
+		if(connection != null){
 			try{
-				conn = ConnectionFactory.createConnection(url); 
-				final MJPEGReader stream = new MJPEGReader(conn.getInputStream());
+				final MJPEGReader stream = new MJPEGReader(connection.getInputStream());
 				logger.fine("Starting: " + this);
 				byte[] img;
 				while(!done && this.isAlive()){

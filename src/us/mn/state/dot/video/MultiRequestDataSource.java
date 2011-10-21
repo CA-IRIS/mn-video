@@ -33,17 +33,17 @@ import java.util.logging.Logger;
  */
 public class MultiRequestDataSource extends AbstractDataSource {
 
-	protected final URL url;
+	protected final HttpURLConnection connection;
 
 	/** Constructor for the MultiRequestDataSource. */
-	public MultiRequestDataSource(Client c, URL url) {
-		this(c, null, null, url);
+	public MultiRequestDataSource(Client c, HttpURLConnection conn) {
+		this(c, null, null, conn);
 	}
 
 	/** Constructor for the MultiRequestDataSource. */
-	public MultiRequestDataSource(Client c, Logger l, ThreadMonitor m, URL url) {
+	public MultiRequestDataSource(Client c, Logger l, ThreadMonitor m, HttpURLConnection conn) {
 		super(c, l, m);
-		this.url = url;
+		this.connection = conn;
 	}
 	
 	private byte[] readImage(InputStream in, int imageSize)
@@ -64,20 +64,13 @@ public class MultiRequestDataSource extends AbstractDataSource {
 
 	/** Start the stream. */
 	public void run() {
-		HttpURLConnection conn = null;
 		InputStream in = null;
-		if(url != null){
+		if(connection != null){
 			try{
 				while(!done && this.isAlive()){
-					conn = ConnectionFactory.createConnection(url); 
-					int response = conn.getResponseCode();
-					if(response == 503){
-						logger.info("503 response.");
-						break;
-					}
-					in = conn.getInputStream();
+					in = connection.getInputStream();
 					int length = Integer.parseInt(
-							conn.getHeaderField("Content-Length"));
+							connection.getHeaderField("Content-Length"));
 					logger.fine("Starting: " + this);
 					byte[] img = readImage(in, length);
 					if(img != null && img.length > 0){
@@ -95,7 +88,7 @@ public class MultiRequestDataSource extends AbstractDataSource {
 			}finally{
 				logger.fine("Stopping: " + this);
 				try{
-					conn.disconnect();
+					connection.disconnect();
 				}catch(Exception e2){
 				}
 				removeSinks();

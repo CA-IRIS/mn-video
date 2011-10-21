@@ -153,19 +153,17 @@ public final class Infinova extends AbstractEncoder {
 		return getNoVideoImage();
 	}
 
-	public VideoStream getStream(Client c) throws VideoException{
+	public DataSource getDataSource(Client c) throws VideoException{
 		URL url = getStreamURL(c);
 		if(url == null) return null;
 		try{
-			URLConnection con = ConnectionFactory.createConnection(url);
+			HttpURLConnection con = ConnectionFactory.createConnection(url);
 			prepareConnection(con);
-			int response = stillsCon.getResponseCode();
-			if(response == 503){
-				throw new Exception("HTTP 503");
-			}
-			InputStream s = con.getInputStream();
-			MJPEGReader videoStream = new MJPEGReader(s);
-			return videoStream;
+			int response = con.getResponseCode();
+			//if(response != 200){
+			//	throw new Exception("HTTP " + response);
+			//}
+			return new MultiRequestDataSource(c, con);
 		}catch(Exception e){
 			throw new VideoException(e.getMessage());
 		}

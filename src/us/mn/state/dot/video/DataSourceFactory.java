@@ -19,6 +19,7 @@
 
 package us.mn.state.dot.video;
 
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -88,23 +89,18 @@ public class DataSourceFactory {
 	
 	private DataSource createDataSource(Client c)
 			throws VideoException {
-		URL url = null;
-		Encoder encoder = null;
 		try{
 			if(proxy){
-				url = createURL(c, backendUrls[c.getArea()]);
+				URL url = createURL(c, backendUrls[c.getArea()]);
+				HttpURLConnection conn = ConnectionFactory.createConnection(url);
+				return new HttpDataSource(c, logger, monitor, conn);
 			}else{
-				encoder = encoderFactory.getEncoder(c.getCameraId());
+				Encoder encoder = encoderFactory.getEncoder(c.getCameraId());
 				if(encoder == null){
 					throw new VideoException("No encoder for " + c.getCameraId());
-				}else{
-					url = encoder.getStreamURL(c);
 				}
+				return encoder.getDataSource(c);
 			}
-			if((encoder != null) && (encoder instanceof Infinova)){
-				return new MultiRequestDataSource(c, logger, monitor, url);
-			}
-			return new HttpDataSource(c, logger, monitor, url);
 		}catch(Exception e){
 			throw new VideoException(e.getMessage());
 		}
