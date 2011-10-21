@@ -160,7 +160,7 @@ public abstract class AbstractEncoder implements Encoder {
 	 *  in which the Content-Length header is present
 	 * @return
 	 */
-	protected byte[] readImage(InputStream in, int imageSize)
+	public static byte[] readImage(InputStream in, int imageSize)
 			throws IOException{
 		byte[] image = new byte[imageSize];
 		int bytesRead = 0;

@@ -45,22 +45,6 @@ public class MultiRequestDataSource extends AbstractDataSource {
 		this.connection = conn;
 	}
 	
-	private byte[] readImage(InputStream in, int imageSize)
-			throws IOException{
-		byte[] image = new byte[imageSize];
-		int bytesRead = 0;
-		int currentRead = 0;
-		while(bytesRead < imageSize){
-			currentRead = in.read(image, bytesRead, imageSize - bytesRead);
-			if(currentRead==-1){
-				break;
-			}else{
-				bytesRead = bytesRead + currentRead;
-			}
-		}
-		return image;
-	}
-
 	/** Start the stream. */
 	public void run() {
 		InputStream in = null;
@@ -76,7 +60,7 @@ public class MultiRequestDataSource extends AbstractDataSource {
 					int length = Integer.parseInt(
 							connection.getHeaderField("Content-Length"));
 					logger.fine("Starting: " + this);
-					byte[] img = readImage(in, length);
+					byte[] img = AbstractEncoder.readImage(in, length);
 					if(img != null && img.length > 0){
 						notifySinks(img);
 					}else{
