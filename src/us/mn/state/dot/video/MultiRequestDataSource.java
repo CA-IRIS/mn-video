@@ -46,8 +46,8 @@ public class MultiRequestDataSource extends AbstractDataSource {
 				while(!done && this.isAlive()){
 					conn = ConnectionFactory.createConnection(url, user, password);
 					int response = conn.getResponseCode();
-					if(response == 503){
-						logger.info("503 response.");
+					if(response != 200){
+						logger.info("HTTP response: " + response );
 						break;
 					}
 					in = conn.getInputStream();
