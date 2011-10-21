@@ -43,6 +43,7 @@ public class MultiRequestDataSource extends AbstractDataSource {
 		InputStream in = null;
 		if(url != null){
 			try{
+				logger.fine("Starting: " + this);
 				while(!done && this.isAlive()){
 					conn = ConnectionFactory.createConnection(url, user, password);
 					int response = conn.getResponseCode();
@@ -53,7 +54,6 @@ public class MultiRequestDataSource extends AbstractDataSource {
 					in = conn.getInputStream();
 					int length = Integer.parseInt(
 							conn.getHeaderField("Content-Length"));
-					logger.fine("Starting: " + this);
 					byte[] img = AbstractEncoder.readImage(in, length);
 					if(img != null && img.length > 0){
 						notifySinks(img);
