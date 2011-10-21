@@ -1,6 +1,6 @@
 /*
 * VideoServer
-* Copyright (C) 2003-2007  Minnesota Department of Transportation
+* Copyright (C) 2011  Minnesota Department of Transportation
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -27,30 +27,24 @@ import java.util.Hashtable;
 
 
 /**
- * The Infinova class represents an Infinova camera.
+ * The InfinovaEncoder class encapsulates information about an Infinova video
+ * capture device
  *
  * @author    Timothy Johnson
- * @created   March 7, 2011
  */
 
 public final class Infinova extends AbstractEncoder {
 
-	public static final String PROBE_URI = "jpgimage/1/image.jpg";
-	
-	/** Collection of all Infinova servers */
-	private static final Hashtable<String, Infinova> servers =
-		new Hashtable<String, Infinova>();
-		
 	/** The HttpURLConnection used for getting stills */
 	private HttpURLConnection stillsCon;
 	
 	/** The base URI for a request for an image */
-	private static final String BASE_IMAGE_URI = "/jpgimage";
+	private final String BASE_IMAGE_URI = "/jpgimage/1/image.jpg";
 	
-	private static final String BASE_STREAM_URI = "/mjpg/video.cgi";
+	private final String BASE_STREAM_URI = "/jpgimage/1/image.jpg";
 	
 	/** URI for restarting the server */
-	private final String BASE_RESTART_URI = "/admin/restart.cgi?";
+	private final String BASE_RESTART_URI = "";
 	
 	/** The compression request parameter */
 	private static final String PARAM_COMPRESSION = "compression";
@@ -79,30 +73,13 @@ public final class Infinova extends AbstractEncoder {
 	/** The parameter value for off */
 	private static final String VALUE_OFF = "0";
 	
-	/** Get an Infinova host (name or IP) */
-	public static Infinova getServer(String host){
-		Infinova s = servers.get(host);
-		if(s==null){
-			s = new Infinova(host);
-			servers.put(host, s);
-		}
-		return s;
-	}
-	
-	public static void printServers(){
-		for(Infinova s: servers.values()) {
-			System.out.println(s);
-		}
-
-	}
-	
-	/** Constructor for the Infinova object */
-	protected Infinova(String host) {
+	/** Constructor for the Infinova encoder object */
+	public Infinova(String host) {
 		super(host);
 	}
 	
 	/**
-	 * Get a URL for connecting to the MJPEG stream of an Infinova camera.
+	 * Get a URL for connecting to the MJPEG stream of an Infinova Server.
 	 * @param c The client object containing request parameters.
 	 * @return
 	 */
@@ -110,9 +87,12 @@ public final class Infinova extends AbstractEncoder {
 		int channel = getChannel(c.getCameraId());
 		if(channel == NO_CAMERA_CONNECTED) return null;
 		try{
-			return new URL(
-					"http://" + host + ":" + getPort() +
-					BASE_STREAM_URI + "/" + channel + "/image.jpg");
+			return new URL( "http://" + host + ":" +
+					getPort() + BASE_STREAM_URI
+//					createCameraParam(c) + "&" +
+//					createSizeParam(c.getSize()) + "&" +
+//					createCompressionParam(c.getCompression())
+					);
 		}catch(Exception e){
 		}
 		return null;
@@ -132,8 +112,15 @@ public final class Infinova extends AbstractEncoder {
 		try{
 			String url = 
 				"http://" + host + ":" +
-				getPort() + BASE_IMAGE_URI +
-				"/" + channel + "/image.jpg";
+				getPort() + BASE_IMAGE_URI ;
+				//createCameraParam(c) + "&" +
+				//createSizeParam(c.getSize()) + "&" +
+				//createCompressionParam(c.getCompression());
+/*			if(size==SMALL){
+				url = url +
+					"&" + PARAM_CLOCK + "=" + VALUE_OFF +
+					"&" + PARAM_DATE + "=" + VALUE_OFF;
+			}*/
 			return new URL(url);
 		}catch(Exception e){
 			return null;
@@ -234,15 +221,5 @@ public final class Infinova extends AbstractEncoder {
 			}
 		}
 		return image;
-	}
-
-	public static URL getProbeURL(final String host){
-		System.out.println("Getting Infinova probe url for " + host);
-		try{
-			return new URL("http://" + host + "/" + BASE_IMAGE_URI + "/1/image.jpg");
-		}catch(Exception e){
-			System.out.println(host + ":" + e.getMessage());
-			return null;
-		}
 	}
 }
