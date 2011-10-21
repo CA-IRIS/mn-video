@@ -68,6 +68,11 @@ public class MultiRequestDataSource extends AbstractDataSource {
 		if(connection != null){
 			try{
 				while(!done && this.isAlive()){
+					int response = connection.getResponseCode();
+					if(response == 503){
+						logger.info("503 response.");
+						break;
+					}
 					in = connection.getInputStream();
 					int length = Integer.parseInt(
 							connection.getHeaderField("Content-Length"));

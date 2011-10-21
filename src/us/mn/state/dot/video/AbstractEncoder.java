@@ -20,6 +20,7 @@ package us.mn.state.dot.video;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Hashtable;
@@ -96,7 +97,7 @@ public abstract class AbstractEncoder implements Encoder {
 	}
 
 	/** Create a no-video image */
-	protected static byte[] createNoVideoImage(){
+	protected final static byte[] createNoVideoImage(){
 		try{
 			FileImageInputStream in = null;
 			in = new FileImageInputStream(new File(noVideoFile));
@@ -146,4 +147,26 @@ public abstract class AbstractEncoder implements Encoder {
 	public void setPassword(String pwd){
 		password = pwd;
 	}
+	
+	/** Get the next image in the mjpeg stream 
+	 *  in which the Content-Length header is present
+	 * @return
+	 */
+	protected byte[] readImage(InputStream in, int imageSize)
+			throws IOException{
+		byte[] image = new byte[imageSize];
+		int bytesRead = 0;
+		int currentRead = 0;
+		while(bytesRead < imageSize){
+			currentRead = in.read(image, bytesRead,
+					imageSize - bytesRead);
+			if(currentRead==-1){
+				break;
+			}else{
+				bytesRead = bytesRead + currentRead;
+			}
+		}
+		return image;
+	}
+
 }

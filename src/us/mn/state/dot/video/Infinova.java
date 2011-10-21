@@ -199,25 +199,4 @@ public final class Infinova extends AbstractEncoder {
 			}catch(Exception e){}
 		}
 	}
-
-	/** Get the next image in the mjpeg stream 
-	 *  in which the Content-Length header is present
-	 * @return
-	 */
-	private byte[] readImage(InputStream in, int imageSize)
-			throws IOException{
-		byte[] image = new byte[imageSize];
-		int bytesRead = 0;
-		int currentRead = 0;
-		while(bytesRead < imageSize){
-			currentRead = in.read(image, bytesRead,
-					imageSize - bytesRead);
-			if(currentRead==-1){
-				break;
-			}else{
-				bytesRead = bytesRead + currentRead;
-			}
-		}
-		return image;
-	}
 }
