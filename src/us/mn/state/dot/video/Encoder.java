@@ -79,5 +79,4 @@ public interface Encoder {
 	public void setCamera(String id, int channel);
 	
 	public URL getStreamURL(Client c);
-
 }

@@ -27,29 +27,23 @@ import java.util.Hashtable;
 
 
 /**
- * The AxisServer class encapsulates information about an axis video
- * capture server
+ * The AxisEncoder class encapsulates information about an axis video
+ * capture device
  *
  * @author    Timothy Johnson
  * @created   July 2, 2003
  */
 
-public final class AxisServer extends AbstractEncoder {
+public final class Axis extends AbstractEncoder {
 
-	public static final String PROBE_URI = "axis-cgi/jpg/image.cgi";
-
-	/** Collection of all Axis servers */
-	private static final Hashtable<String, AxisServer> servers =
-		new Hashtable<String, AxisServer>();
-		
 	/** The HttpURLConnection used for getting stills */
 	private HttpURLConnection stillsCon;
 	
 	/** The base URI for a request for an image */
-	private static final String BASE_IMAGE_URI = "/axis-cgi/jpg/image.cgi?" +
+	private final String BASE_IMAGE_URI = "/axis-cgi/jpg/image.cgi?" +
 		"showlength=1&";
 	
-	private static final String BASE_STREAM_URI = "/axis-cgi/mjpg/video.cgi?" +
+	private final String BASE_STREAM_URI = "/axis-cgi/mjpg/video.cgi?" +
 	"showlength=1&";
 	
 	/** URI for restarting the server */
@@ -82,25 +76,8 @@ public final class AxisServer extends AbstractEncoder {
 	/** The parameter value for off */
 	private static final String VALUE_OFF = "0";
 	
-	/** Get an AxisServer by host (name or IP) */
-	public static AxisServer getServer(String host){
-		AxisServer s = servers.get(host);
-		if(s==null){
-			s = new AxisServer(host);
-			servers.put(host, s);
-		}
-		return s;
-	}
-	
-	public static void printServers(){
-		for(AxisServer s: servers.values()) {
-			System.out.println(s);
-		}
-
-	}
-	
-	/** Constructor for the axis server object */
-	protected AxisServer(String host) {
+	/** Constructor for the axis encoder object */
+	public Axis(String host) {
 		super(host);
 	}
 	

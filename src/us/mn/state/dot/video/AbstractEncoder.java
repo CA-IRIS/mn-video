@@ -20,9 +20,7 @@ package us.mn.state.dot.video;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.InetAddress;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Hashtable;
 
@@ -34,8 +32,6 @@ import javax.imageio.stream.FileImageInputStream;
  *
  */
 public abstract class AbstractEncoder implements Encoder {
-
-	public String PROBE_URI = null;
 
 	/** The username used to connect to this server.  Only required when
 	 * the encoder does not allow anonymous connections.
@@ -77,13 +73,13 @@ public abstract class AbstractEncoder implements Encoder {
 
 	/** Location of the no_video image */
 	private static String noVideoFile = 
-		"/usr/local/tomcat/current/webapps/@@NAME@@/images/novideo.jpg";
+		"/usr/share/tomcat6/webapps/video/images/novideo.jpg";
 
 	private static byte[] noVideo = createNoVideoImage();
 	
 	public final String getHost(){ return host; }
 	
-	protected final String getIp() throws UnknownHostException{
+	protected String getIp() throws UnknownHostException{
 		return InetAddress.getByName(host).getHostAddress();
 	}
 
@@ -91,7 +87,7 @@ public abstract class AbstractEncoder implements Encoder {
 		this.host = host;
 	}
 	
-	public final String toString(){
+	public String toString(){
 		String ip = "";
 		try{
 			ip = getIp();
@@ -117,7 +113,7 @@ public abstract class AbstractEncoder implements Encoder {
 	}
 
 	/** Get the id of the camera connected to the given channel */
-	public final String getCamera(int channel) {
+	public String getCamera(int channel) {
 		for(String id : ids.keySet()){
 			if(ids.get(id).intValue() == channel) return id;
 		}
@@ -125,7 +121,7 @@ public abstract class AbstractEncoder implements Encoder {
 	}
 
 	/** Get the channel nummber for the given camera id. */
-	public final int getChannel(String id){
+	public int getChannel(String id){
 		if(ids.get(id) != null){
 			return ids.get(id);
 		}
@@ -133,44 +129,21 @@ public abstract class AbstractEncoder implements Encoder {
 	}
 
 	/** Set the camera id for the given channel */
-	public final void setCamera(String id, int channel) {
+	public void setCamera(String id, int channel) {
 		ids.put(id, new Integer(channel));
 	}
 
 	/**
 	 * Set the username for authentication.
 	 */
-	public final void setUsername(String user){
+	public void setUsername(String user){
 		username = user;
 	}
 
 	/**
 	 * Set the password for authentication.
 	 */
-	public final void setPassword(String pwd){
+	public void setPassword(String pwd){
 		password = pwd;
-	}
-	
-	/**
-	 * Probe the host to determine manufacturer.
-	 * @param host
-	 * @return True if it's a model made by this manufacturer. Otherwise, false.
-	 */
-	public static final boolean probe(final URL url){
-		HttpURLConnection con = null;
-		try {
-			if(url == null) return false;
-			con = ConnectionFactory.createConnection(url);
-			int response = con.getResponseCode();
-			if(response == 200) return true;
-			return false;
-		}catch(Exception e){
-			System.out.println(url.getHost() + ":" + e.getMessage());
-			return false;
-		}finally{
-			try{
-				con.disconnect();
-			}catch(Exception e){}
-		}
 	}
 }

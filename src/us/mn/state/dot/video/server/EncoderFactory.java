@@ -21,10 +21,9 @@ package us.mn.state.dot.video.server;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 import us.mn.state.dot.util.db.TmsConnection;
-import us.mn.state.dot.video.AxisServer;
+import us.mn.state.dot.video.Axis;
 import us.mn.state.dot.video.Camera;
 import us.mn.state.dot.video.Encoder;
 import us.mn.state.dot.video.Infinova;
@@ -99,10 +98,10 @@ public class EncoderFactory {
 		String mfr = (String)l.get(2);
 		if(mfr != null && mfr.indexOf(INFINOVA) > -1){
 			System.out.println("Creating Infinova encoder.");
-			e = Infinova.getServer(host);
+			e = new Infinova(host);
 			System.out.println(e);
 		}
-		else e = AxisServer.getServer(host);
+		else e = new Axis(host);
 		if(host_port.indexOf(":")>-1){
 			try{
 				int port = Integer.parseInt(host_port.substring(host_port.indexOf(":")+1));
