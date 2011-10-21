@@ -23,7 +23,7 @@ package us.mn.state.dot.video;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.util.logging.Logger;
+import java.net.URL;
 /**
  * The MultiRequestDataSource gets it's data via the HTTP protocol
  * and a series of requests for single images over a single HTTP connection.
@@ -32,33 +32,27 @@ import java.util.logging.Logger;
  */
 public class MultiRequestDataSource extends AbstractDataSource {
 
-	protected final HttpURLConnection connection;
-
 	/** Constructor for the MultiRequestDataSource. */
-	public MultiRequestDataSource(Client c, HttpURLConnection conn) {
-		this(c, null, null, conn);
+	public MultiRequestDataSource(Client c, URL url, String user, String pwd) {
+		super(c, null, null, url, user, pwd);
 	}
 
-	/** Constructor for the MultiRequestDataSource. */
-	public MultiRequestDataSource(Client c, Logger l, ThreadMonitor m, HttpURLConnection conn) {
-		super(c, l, m);
-		this.connection = conn;
-	}
-	
 	/** Start the stream. */
 	public void run() {
+		HttpURLConnection conn = null;
 		InputStream in = null;
-		if(connection != null){
+		if(url != null){
 			try{
 				while(!done && this.isAlive()){
-					int response = connection.getResponseCode();
+					conn = ConnectionFactory.createConnection(url, user, password);
+					int response = conn.getResponseCode();
 					if(response == 503){
 						logger.info("503 response.");
 						break;
 					}
-					in = connection.getInputStream();
+					in = conn.getInputStream();
 					int length = Integer.parseInt(
-							connection.getHeaderField("Content-Length"));
+							conn.getHeaderField("Content-Length"));
 					logger.fine("Starting: " + this);
 					byte[] img = AbstractEncoder.readImage(in, length);
 					if(img != null && img.length > 0){
@@ -71,12 +65,12 @@ public class MultiRequestDataSource extends AbstractDataSource {
 						//break;
 					}
 				}
-			}catch(IOException ioe){
-				logger.info(ioe.getMessage());
+			}catch(Exception e){
+				logger.info(e.getMessage());
 			}finally{
 				logger.fine("Stopping: " + this);
 				try{
-					connection.disconnect();
+					conn.disconnect();
 				}catch(Exception e2){
 				}
 				removeSinks();

@@ -142,13 +142,7 @@ public final class Axis extends AbstractEncoder {
 		URL url = getStreamURL(c);
 		if(url == null) return null;
 		try{
-			HttpURLConnection con = ConnectionFactory.createConnection(url);
-			prepareConnection(con);
-			int response = con.getResponseCode();
-			if(response != 200){
-				throw new Exception("HTTP " + response);
-			}
-			return new HttpDataSource(c, con);
+			return new HttpDataSource(c, url, username, password);
 		}catch(Exception e){
 			throw new VideoException(e.getMessage());
 		}

@@ -20,11 +20,12 @@
 package us.mn.state.dot.video;
 
 import java.net.InetAddress;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Properties;
 import java.util.logging.Logger;
-import java.util.Iterator;
 
 import us.mn.state.dot.log.TmsLogFactory;
 
@@ -45,13 +46,22 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 	/** Timestamp for creation of this thread */
 	private final Long timeStamp;
 	
+	protected final URL url;
+
+	protected final String user;
+	
+	protected final String password;
+	
 	/** Constructor for the ImageFactory. */
 	protected AbstractDataSource(Client c,
-			Logger l, ThreadMonitor m) {
+			Logger l, ThreadMonitor m, URL url, String user, String pwd) {
 		super(m);
 		client = c;
 		logger = l==null ? TmsLogFactory.createLogger("video"): l;
 		timeStamp = System.currentTimeMillis();
+		this.url = url;
+		this.user = user;
+		this.password = pwd;
 	}
 
 	/** Get the string representation of this factory */

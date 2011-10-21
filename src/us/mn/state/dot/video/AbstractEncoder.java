@@ -180,8 +180,7 @@ public abstract class AbstractEncoder implements Encoder {
 	protected synchronized final byte[] fetchImage(URL url) throws VideoException{
 		InputStream in = null;
 		try {
-			stillsCon = ConnectionFactory.createConnection(url);
-			prepareConnection(stillsCon);
+			stillsCon = ConnectionFactory.createConnection(url, username, password);
 			int response = stillsCon.getResponseCode();
 			if(response == 503){
 				throw new Exception("HTTP 503");
@@ -199,15 +198,6 @@ public abstract class AbstractEncoder implements Encoder {
 		}
 	}
 
-	/** Prepare a connection by setting necessary properties and timeouts */
-	protected void prepareConnection(URLConnection c) throws VideoException {
-		if(username!=null && password!=null){
-			String userPass = username + ":" + password;
-			String encoded = Base64.encodeBytes(userPass.getBytes());
-			c.addRequestProperty("Authorization", "Basic " + encoded.toString());
-		}
-	}
-	
 	public byte[] getImage(Client c) throws VideoException{
 		URL url = getImageURL(c);
 		if(url == null){

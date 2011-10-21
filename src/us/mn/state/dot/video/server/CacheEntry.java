@@ -84,14 +84,10 @@ public class CacheEntry {
     }
 
     protected byte[] retrieveImage() throws VideoException {
-    	try{
-	    	if(encoder != null){
-	    		return encoder.getImage(client);
-	    	}else{
-	    		return ConnectionFactory.getImage(getImageURL());
-	    	}
-    	}catch(IOException ioe){
-    		throw new VideoException(ioe.getMessage());
+    	if(encoder != null){
+    		return encoder.getImage(client);
+    	}else{
+    		return ConnectionFactory.getImage(getImageURL());
     	}
     }
     

@@ -20,8 +20,8 @@
 package us.mn.state.dot.video;
 
 
-import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.logging.Logger;
 /**
  * The HttpDataSource gets it's data via the HTTP protocol
@@ -30,24 +30,23 @@ import java.util.logging.Logger;
  */
 public class HttpDataSource extends AbstractDataSource {
 
-	protected final HttpURLConnection connection;
-
 	/** Constructor for the HttpDataSource. */
-	public HttpDataSource(Client c, HttpURLConnection conn) {
-		this(c, null, null, conn);
+	public HttpDataSource(Client c, URL url, String user, String pwd) {
+		super(c, null, null, url, user, pwd);
 	}
 
 	/** Constructor for the HttpDataSource. */
-	public HttpDataSource(Client c, Logger l, ThreadMonitor m, HttpURLConnection conn) {
-		super(c, l, m);
-		this.connection = conn;
+	public HttpDataSource(Client c, Logger l, ThreadMonitor m, URL url, String user, String pwd) {
+		super(c, l, m, url, user, pwd);
 	}
-	
+
 	/** Start the stream. */
 	public void run() {
-		if(connection != null){
+		HttpURLConnection conn = null;
+		if(url != null){
 			try{
-				final MJPEGReader stream = new MJPEGReader(connection.getInputStream());
+				conn = ConnectionFactory.createConnection(url, user, password);
+				final MJPEGReader stream = new MJPEGReader(conn.getInputStream());
 				logger.fine("Starting: " + this);
 				byte[] img;
 				while(!done && this.isAlive()){
@@ -65,14 +64,12 @@ public class HttpDataSource extends AbstractDataSource {
 						//break;
 					}
 				}
-			}catch(IOException ioe){
-				logger.info(ioe.getMessage());
-			}catch(InstantiationException ie){
-				logger.info(ie.getMessage());
+			}catch(Exception e){
+				logger.info(e.getMessage());
 			}finally{
 				logger.fine("Stopping: " + this);
 				try{
-					connection.disconnect();
+					conn.disconnect();
 				}catch(Exception e2){
 				}
 				removeSinks();

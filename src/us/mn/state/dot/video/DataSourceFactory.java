@@ -92,8 +92,7 @@ public class DataSourceFactory {
 		try{
 			if(proxy){
 				URL url = createURL(c, backendUrls[c.getArea()]);
-				HttpURLConnection conn = ConnectionFactory.createConnection(url);
-				return new HttpDataSource(c, logger, monitor, conn);
+				return new HttpDataSource(c, logger, monitor, url, null, null);
 			}else{
 				Encoder encoder = encoderFactory.getEncoder(c.getCameraId());
 				if(encoder == null){

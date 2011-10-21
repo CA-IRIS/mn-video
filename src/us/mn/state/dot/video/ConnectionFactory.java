@@ -38,13 +38,24 @@ import java.net.URLConnection;
  */
 abstract public class ConnectionFactory {
 
-	public static HttpURLConnection createConnection(URL url)
-			throws IOException {
-		HttpURLConnection c = (HttpURLConnection)url.openConnection();
-		HttpURLConnection.setFollowRedirects(true);
-		c.setConnectTimeout(VideoThread.TIMEOUT_DIRECT);
-		c.setReadTimeout(VideoThread.TIMEOUT_DIRECT);
+	public static HttpURLConnection createConnection(URL url, String user, String pwd)
+			throws VideoException {
+		HttpURLConnection c = ConnectionFactory.createConnection(url);
+		ConnectionFactory.prepareConnection(c, user, pwd);
 		return c;
+	}
+	
+	public static HttpURLConnection createConnection(URL url)
+			throws VideoException {
+		try{
+			HttpURLConnection c = (HttpURLConnection)url.openConnection();
+			HttpURLConnection.setFollowRedirects(true);
+			c.setConnectTimeout(VideoThread.TIMEOUT_DIRECT);
+			c.setReadTimeout(VideoThread.TIMEOUT_DIRECT);
+			return c;
+		}catch(Exception e){
+			throw new VideoException(e.getMessage());
+		}
 	}
 	
 	/** Read data from the URL into a file.
@@ -54,9 +65,10 @@ abstract public class ConnectionFactory {
 	 * @throws IOException
 	 */
 	public static void readData(URL url, File f)
-			throws IOException{
-		FileOutputStream out = new FileOutputStream(f);
+			throws VideoException{
+		FileOutputStream out = null;
 		try{
+			out = new FileOutputStream(f);
 			URLConnection c = createConnection(url);
 			InputStream in = c.getInputStream();
 			byte[] data = new byte[1024];
@@ -66,6 +78,8 @@ abstract public class ConnectionFactory {
 				if(bytesRead==-1) break;
 				out.write(data, 0, bytesRead);
 			}
+		}catch(Exception e){
+			throw new VideoException(e.getMessage());
 		}finally{
 			try{
 				out.flush();
@@ -82,7 +96,7 @@ abstract public class ConnectionFactory {
 	 * @throws IOException
 	 */
 	public static byte[] getImage(URL url)
-			throws IOException{
+			throws VideoException{
 		InputStream in = null;
 		try{
 			URLConnection c = createConnection(url);
@@ -96,6 +110,8 @@ abstract public class ConnectionFactory {
 				bos.write(data, 0, bytesRead);
 			}
 			return bos.toByteArray();
+		}catch(Exception e){
+			throw new VideoException(e.getMessage());
 		}finally{
 			try{
 				in.close();
@@ -104,6 +120,16 @@ abstract public class ConnectionFactory {
 			}catch(NullPointerException npe){
 				System.err.println(npe.getStackTrace());
 			}
+		}
+	}
+
+	/** Prepare a connection by setting necessary properties and timeouts */
+	protected static void prepareConnection(URLConnection c, String user, String pwd)
+			throws VideoException {
+		if(user!=null && pwd!=null){
+			String userPass = user + ":" + pwd;
+			String encoded = Base64.encodeBytes(userPass.getBytes());
+			c.addRequestProperty("Authorization", "Basic " + encoded.toString());
 		}
 	}
 }

@@ -140,13 +140,7 @@ public final class Infinova extends AbstractEncoder {
 		URL url = getStreamURL(c);
 		if(url == null) return null;
 		try{
-			HttpURLConnection con = ConnectionFactory.createConnection(url);
-			prepareConnection(con);
-			int response = con.getResponseCode();
-			//if(response != 200){
-			//	throw new Exception("HTTP " + response);
-			//}
-			return new MultiRequestDataSource(c, con);
+			return new MultiRequestDataSource(c, url, username, password);
 		}catch(Exception e){
 			throw new VideoException(e.getMessage());
 		}
