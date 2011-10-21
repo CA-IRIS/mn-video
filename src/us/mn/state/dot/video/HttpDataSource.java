@@ -46,7 +46,6 @@ public class HttpDataSource extends AbstractDataSource {
 	
 	/** Start the stream. */
 	public void run() {
-		HttpURLConnection conn = null;
 		if(connection != null){
 			try{
 				final MJPEGReader stream = new MJPEGReader(connection.getInputStream());
@@ -74,7 +73,7 @@ public class HttpDataSource extends AbstractDataSource {
 			}finally{
 				logger.fine("Stopping: " + this);
 				try{
-					conn.disconnect();
+					connection.disconnect();
 				}catch(Exception e2){
 				}
 				removeSinks();

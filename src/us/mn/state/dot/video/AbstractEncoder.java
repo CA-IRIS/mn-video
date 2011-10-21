@@ -138,21 +138,21 @@ public abstract class AbstractEncoder implements Encoder {
 	}
 
 	/** Set the camera id for the given channel */
-	public void setCamera(String id, int channel) {
+	public final void setCamera(String id, int channel) {
 		ids.put(id, new Integer(channel));
 	}
 
 	/**
 	 * Set the username for authentication.
 	 */
-	public void setUsername(String user){
+	public final void setUsername(String user){
 		username = user;
 	}
 
 	/**
 	 * Set the password for authentication.
 	 */
-	public void setPassword(String pwd){
+	public final void setPassword(String pwd){
 		password = pwd;
 	}
 	
@@ -177,7 +177,7 @@ public abstract class AbstractEncoder implements Encoder {
 		return image;
 	}
 
-	protected synchronized final byte[] fetchImage(Client c, URL url) throws VideoException{
+	protected synchronized final byte[] fetchImage(URL url) throws VideoException{
 		InputStream in = null;
 		try {
 			stillsCon = ConnectionFactory.createConnection(url);
@@ -213,7 +213,7 @@ public abstract class AbstractEncoder implements Encoder {
 		if(url == null){
 			throw new VideoException("No URL for camera " + c.getCameraId());
 		}
-		byte[] image = fetchImage(c, url);
+		byte[] image = fetchImage(url);
 		if(image != null) return image;
 		return getNoVideoImage();
 	}
