@@ -110,13 +110,12 @@ public class EncoderFactory {
 				//host port parsing error... use default http port
 			}
 		}
-		for(String camId : tms.getCameraIdsByEncoder(host)){
-			int ch = Integer.parseInt((String)l.get(1));
-			String standardId = Camera.createStandardId(camId);
-			e.setCamera(standardId, ch);
-			e.setUsername(encoderUser);
-			e.setPassword(encoderPass);
-			encoders.put(standardId, e);
-		}
+		int ch = Integer.parseInt((String)l.get(1));
+		System.out.println(l);
+		String standardId = Camera.createStandardId(name);
+		e.setCamera(standardId, ch);
+		e.setUsername(encoderUser);
+		e.setPassword(encoderPass);
+		encoders.put(standardId, e);
 	}
 }
