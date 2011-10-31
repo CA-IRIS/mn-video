@@ -71,13 +71,17 @@ public class CacheEntry {
 		return (System.currentTimeMillis() - imageTime);
 	}
 
+    public boolean isExpired(){
+    	return (getAge() > expirationAge || imageData == null);
+    }
+
     public synchronized byte[] getImage() throws VideoException {
-    	if(getAge() > expirationAge || imageData == null){
+    	if(!isExpired()){
+	    	logger.fine(client.getCameraId() + " using cache.");
+	    }else{
     		logger.fine(client.getCameraId() + " fetching image.");
 	    	imageData = retrieveImage();
 	    	imageTime = System.currentTimeMillis();
-	    }else{
-	    	logger.fine(client.getCameraId() + " using cache.");
 	    }
 	    return imageData;
     }

@@ -62,7 +62,7 @@ public final class ImageServer extends VideoServlet{
 			if(proxy){
 				backendUrls = AbstractDataSource.createBackendUrls(p, 2);
 			}else{
-				encoderFactory = EncoderFactory.getInstance(p);
+				encoderFactory = EncoderFactory.getInstance(p, logger);
 			}
 			cacheDuration = Long.parseLong(
 					p.getProperty("video.cache.duration",
@@ -83,10 +83,9 @@ public final class ImageServer extends VideoServlet{
 	public void processRequest(HttpServletResponse response, Client c)
 		throws VideoException
 	{
-    	long start = System.currentTimeMillis();
-   		CacheEntry entry = getCacheEntry(c);
-    	byte[] image = entry.getImage();
-		if(image == null) image = AbstractEncoder.getNoVideoImage();
+		long start = System.currentTimeMillis();
+		CacheEntry entry = getCacheEntry(c);
+		byte[] image = entry.getImage();
 		try{
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("image/jpeg\r\n");
@@ -105,12 +104,12 @@ public final class ImageServer extends VideoServlet{
     private CacheEntry getCacheEntry(Client c) {
    		String key = createCacheKey(c);
     	CacheEntry entry = cache.get(key);
-    	if(entry != null) return entry;
-    	if(!proxy){
+    	if(entry != null && !entry.isExpired()) return entry;
+    	if(proxy){
+			entry = new CacheEntry(backendUrls, c, logger);
+		}else{
 			entry = new CacheEntry(encoderFactory.getEncoder(c.getCameraId()),
 					c, logger);
-		}else{
-			entry = new CacheEntry(backendUrls, c, logger);
 		}
 		entry.setExpiration(cacheDuration);
 		cache.put(key, entry);

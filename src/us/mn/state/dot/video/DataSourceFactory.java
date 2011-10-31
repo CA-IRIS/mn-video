@@ -62,7 +62,7 @@ public class DataSourceFactory {
 		if(proxy) {
 			backendUrls = AbstractDataSource.createBackendUrls(p, 1);
 		}else{
-			encoderFactory = EncoderFactory.getInstance(p);
+			encoderFactory = EncoderFactory.getInstance(p, l);
 		}
 		Thread t = new Thread(){
 			public void run(){

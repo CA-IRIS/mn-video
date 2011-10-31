@@ -36,7 +36,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.velocity.VelocityContext;
 
-import us.mn.state.dot.util.db.TmsConnection;
 import us.mn.state.dot.video.AbstractEncoder;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.ConnectionFactory;
@@ -53,8 +52,6 @@ public abstract class VideoServlet extends HttpServlet {
 	
 	protected URL ssidURL = null;
 
-	protected static TmsConnection tms = null;
-	
 	/**Flag that controls whether this instance is acting as a proxy 
 	 * or a direct video server */
 	protected boolean proxy = false;
@@ -103,9 +100,7 @@ public abstract class VideoServlet extends HttpServlet {
 		ServletContext ctx = config.getServletContext();
 		Properties props =(Properties)ctx.getAttribute("properties");
 		proxy = new Boolean(props.getProperty("proxy", "false")).booleanValue();
-		if(!proxy){
-			tms = TmsConnection.create(props);
-		}else{
+		if(proxy){
 			try{
 				ssidURL = new URL(props.getProperty("ssid.url"));
 			}catch(Exception e){
@@ -175,14 +170,11 @@ public abstract class VideoServlet extends HttpServlet {
 			t.setName("VIDEO " + servletName + " " +
 				Constants.DATE_FORMAT.format(cal.getTime()) +
 				" Camera " + c.getCameraId());
-			if(isPublished(c.getCameraId())){
-				processRequest(response, c);
-			}else{
-				sendNoVideo(response, c);
-			}
+			processRequest(response, c);
 		}
 		catch(Throwable th) {
 			logger.warning(c.getCameraId() + ": " + th.getMessage());
+			//sendNoVideo(response, c);
 		}
 		finally {
 			try {
@@ -196,12 +188,6 @@ public abstract class VideoServlet extends HttpServlet {
 
 	public abstract void processRequest(HttpServletResponse response,
 		Client c) throws Exception;
-
-	/** Check to see if a camera is published (public). */
-	protected boolean isPublished(String camId){
-		if(proxy) return true;
-		return tms.isPublished(camId);
-	}
 
 	protected final void sendNoVideo(HttpServletResponse response, Client c)
 			throws IOException {

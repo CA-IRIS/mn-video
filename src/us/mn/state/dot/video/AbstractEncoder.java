@@ -100,7 +100,7 @@ public abstract class AbstractEncoder implements Encoder {
 		try{
 			ip = getIp();
 		}catch(Exception e){}
-		return "Encoder: " + host + " (" + ip + ")";
+		return this.getClass().getSimpleName() + " " + ip + " ";
 	}
 
 	/** Create a no-video image */
@@ -199,11 +199,10 @@ public abstract class AbstractEncoder implements Encoder {
 
 	public byte[] getImage(Client c) throws VideoException{
 		URL url = getImageURL(c);
-		if(url == null){
-			throw new VideoException("No URL for camera " + c.getCameraId());
+		if(url != null){
+			byte[] image = fetchImage(url);
+			if(image != null) return image;
 		}
-		byte[] image = fetchImage(url);
-		if(image != null) return image;
 		return getNoVideoImage();
 	}
 }

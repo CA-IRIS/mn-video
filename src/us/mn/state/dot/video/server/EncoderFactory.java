@@ -19,8 +19,8 @@
 package us.mn.state.dot.video.server;
 
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import us.mn.state.dot.util.db.TmsConnection;
 import us.mn.state.dot.video.Axis;
@@ -45,63 +45,67 @@ public class EncoderFactory {
 	protected String encoderUser = null;
 	
 	protected String encoderPass = null;
+	
+	protected Properties properties = null;
 
-	/** Hashtable of all encoders indexed by camera id */
+	protected Logger logger = null;
+	
+	/** Hashtable of all encoders indexed by host */
 	protected final Hashtable<String, Encoder> encoders =
 		new Hashtable<String, Encoder>();
 
 	private static EncoderFactory factory = null;
 	
-	public synchronized static EncoderFactory getInstance(Properties p){
+	public synchronized static EncoderFactory getInstance(Properties p, Logger l){
 		if( factory != null ) return factory;
-		factory = new EncoderFactory(p);
+		factory = new EncoderFactory(p, l);
 		return factory;
 	}
 	
-	private EncoderFactory(Properties props){
+	private EncoderFactory(Properties props, Logger l){
+		this.logger = l;
+		this.properties = props;
 		tms = TmsConnection.create(props);
 		encoderUser = props.getProperty("video.encoder.user");
 		encoderPass = props.getProperty("video.encoder.pwd");
-		updateEncoders();
+//		updateEncoders();
 	}
 
 	public Encoder getEncoder(String cameraId){
-		return encoders.get(cameraId);
-	}
-	
-	public int getEncoderCount(){
-		return encoders.size();
-	}
-
-	/** Update the hashtable of encoders with information from the database */
-	protected void updateEncoders() {
-		encoders.clear();
-		Hashtable<String,List> info = tms.getEncoderInfo();
-		for(String name : info.keySet()){
-			List l = info.get(name);
-			try{
-				createEncoder(name, l);
-			}catch(Exception e){
-				e.printStackTrace();
+		try{
+			return createEncoder(cameraId);
+		}catch(Throwable th){
+			if(logger != null){
+				logger.warning("Error creating encoder for camera " +
+						cameraId + ": " + th.getMessage());
 			}
+			tms = TmsConnection.create(properties);
+			return null;
 		}
 	}
 	
-	
-	protected void createEncoder(String name, List l){
-		String host_port = (String)l.get(0);
+	protected Encoder createEncoder(String name){
+		if(name == null) return null;
+		if(!tms.isPublished(name)){
+			logger.fine("camera " + name + " is not published.");
+			return new Axis(null);
+		}
+		String host_port = tms.getEncoderHost(name);
 		String host = host_port;
 		if(host_port.indexOf(":")>-1){
 			host = host_port.substring(0,host_port.indexOf(":"));
 		}
-		Encoder e = null;
-		String mfr = (String)l.get(2);
-		if(mfr != null && mfr.indexOf(INFINOVA) > -1){
-			System.out.println("Creating Infinova encoder.");
-			e = new Infinova(host);
-			System.out.println(e);
+		Encoder e = encoders.get(host);
+		logger.fine("Re-using encoder for camera " + name);
+		if(e == null){
+			logger.fine("Creating new encoder for camera " + name);
+			String mfr = tms.getEncoderType(name);
+			if(mfr != null && mfr.indexOf(INFINOVA) > -1){
+				e = new Infinova(host);
+			}else{
+				e = new Axis(host);
+			}
 		}
-		else e = new Axis(host);
 		if(host_port.indexOf(":")>-1){
 			try{
 				int port = Integer.parseInt(host_port.substring(host_port.indexOf(":")+1));
@@ -110,12 +114,14 @@ public class EncoderFactory {
 				//host port parsing error... use default http port
 			}
 		}
-		int ch = Integer.parseInt((String)l.get(1));
-		System.out.println(l);
+		int ch = tms.getEncoderChannel(name);
 		String standardId = Camera.createStandardId(name);
 		e.setCamera(standardId, ch);
 		e.setUsername(encoderUser);
 		e.setPassword(encoderPass);
-		encoders.put(standardId, e);
+		encoders.put(host, e);
+		logger.fine(name + " " + e);
+		logger.fine(encoders.size() + " encoders.");
+		return e;
 	}
 }
