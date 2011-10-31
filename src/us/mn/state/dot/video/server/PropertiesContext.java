@@ -88,11 +88,7 @@ public class PropertiesContext extends HttpServlet{
 				Level.parse(props.getProperty(PROP_LOG_LEVEL, "ALL")),
 				logDir);
 //		ProxySelector.setDefault(new HTTPProxySelector(props));
-		try{
-			TmsLogFactory.redirectStdStreams(appName, logDir);
-		}catch(FileNotFoundException fnfe){
-			logger.warning(fnfe.getMessage());
-		}
+		//TmsLogFactory.redirectStdStreams(appName, logDir);
 		logger.info("DNS Cache duration set to " +
 				java.security.Security.getProperty(PROP_DNS_TTL) + " seconds.");
 		ctx.setAttribute("properties", props);

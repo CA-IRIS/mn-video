@@ -34,8 +34,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.velocity.VelocityContext;
-
 import us.mn.state.dot.video.AbstractEncoder;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.ConnectionFactory;
@@ -69,7 +67,6 @@ public abstract class VideoServlet extends HttpServlet {
 	
 	protected Calendar start = Calendar.getInstance();
 	protected Calendar end = Calendar.getInstance();
-	protected VelocityContext context= null;
 	protected HttpServletRequest request = null;
 	
 	/** The request parameter name for the SONAR session ID */
