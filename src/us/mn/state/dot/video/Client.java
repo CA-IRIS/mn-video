@@ -53,9 +53,6 @@ public class Client {
 
 	int size = 2;
 
-	/** Value for the jpeg compression level */
-	int compression = 50;
-	
 	public Client(){
 	}
 
@@ -79,9 +76,6 @@ public class Client {
 	}
 	public int getArea() {
 		return area;
-	}
-	public int getCompression() {
-		return compression;
 	}
 	public String toString(){
 		return user + "@" + host + ": C=" + getCameraId() +
@@ -109,9 +103,6 @@ public class Client {
 	public void setSize(int size) {
 		size = Math.min(maxImageSize, size);
 		if(size >= SMALL && size <= LARGE) this.size = size;
-	}
-	public void setCompression(int compression) {
-		this.compression = compression;
 	}
 	public String getCameraId(){
 		return camera.getId();

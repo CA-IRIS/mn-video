@@ -41,9 +41,6 @@ public final class Axis extends AbstractEncoder {
 	/** URI for restarting the server */
 	private final String BASE_RESTART_URI = "/axis-cgi/admin/restart.cgi?";
 	
-	/** The compression request parameter */
-	private static final String PARAM_COMPRESSION = "compression";
-	
 	/** The clock request parameter */
 	private static final String PARAM_CLOCK = "clock";
 
@@ -85,17 +82,12 @@ public final class Axis extends AbstractEncoder {
 			return new URL( "http://" + host + ":" +
 					getPort() + BASE_STREAM_URI +
 					createCameraParam(c) + "&" +
-					createSizeParam(c.getSize()) + "&" +
-					createCompressionParam(c.getCompression()));
+					createSizeParam(c.getSize()));
 		}catch(Exception e){
 		}
 		return null;
 	}
 
-	private String createCompressionParam(int comp){
-		return PARAM_COMPRESSION + "=" + comp;	
-	}
-	
 	private String createCameraParam(Client c){
 		return PARAM_CAMERA + "=" + getChannel(c.getCameraId());	
 	}
@@ -108,8 +100,7 @@ public final class Axis extends AbstractEncoder {
 				"http://" + host + ":" +
 				getPort() + BASE_IMAGE_URI +
 				createCameraParam(c) + "&" +
-				createSizeParam(c.getSize()) + "&" +
-				createCompressionParam(c.getCompression());
+				createSizeParam(c.getSize());
 /*			if(size==SMALL){
 				url = url +
 					"&" + PARAM_CLOCK + "=" + VALUE_OFF +

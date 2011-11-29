@@ -84,9 +84,6 @@ public abstract class VideoServlet extends HttpServlet {
 	/** The request parameter name for the duration of MJPEG streams */
 	public static final String PARAM_DURATION = "duration";
 
-	/** The request parameter name for the compression of JPEG images */
-	public static final String PARAM_COMPRESSION = "compression";
-
 	/** The request parameter name for the user making the request */
 	public static final String PARAM_USER = "user";
 
@@ -131,8 +128,6 @@ public abstract class VideoServlet extends HttpServlet {
 			c.setSize(getIntRequest(req, PARAM_SIZE));
 		if(req.getParameter(PARAM_RATE) != null)
 			c.setRate(getIntRequest(req, PARAM_RATE));
-		if(req.getParameter(PARAM_COMPRESSION) != null)
-			c.setCompression(getIntRequest(req, PARAM_COMPRESSION));
 		if(req.getParameter(PARAM_DURATION) != null)
 			c.setDuration(getIntRequest(req, PARAM_DURATION));
 		if(req.getParameter(PARAM_SSID) != null)
