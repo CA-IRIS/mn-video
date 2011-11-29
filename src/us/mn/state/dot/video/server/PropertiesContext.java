@@ -20,7 +20,6 @@ package us.mn.state.dot.video.server;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Properties;
@@ -32,7 +31,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
-import us.mn.state.dot.log.TmsLogFactory;
 import us.mn.state.dot.video.Constants;
 
 /**
@@ -82,13 +80,8 @@ public class PropertiesContext extends HttpServlet{
 		//networkaddress.cache.ttl must be set within the java properties files
 		// for TOMCAT applications.  This will do nothing here!
 		java.security.Security.setProperty(PROP_DNS_TTL, dnsTTL);
-		String appName = props.getProperty(PROP_APP_NAME, "defaultAppName");
-		File logDir = new File("/var/log/iris");
-		logger = TmsLogFactory.createLogger(appName,
-				Level.parse(props.getProperty(PROP_LOG_LEVEL, "ALL")),
-				logDir);
-//		ProxySelector.setDefault(new HTTPProxySelector(props));
-		//TmsLogFactory.redirectStdStreams(appName, logDir);
+		logger = Logger.getLogger(Constants.LOGGER_NAME);
+		logger.setLevel(Level.INFO);
 		logger.info("DNS Cache duration set to " +
 				java.security.Security.getProperty(PROP_DNS_TTL) + " seconds.");
 		ctx.setAttribute("properties", props);
@@ -98,7 +91,7 @@ public class PropertiesContext extends HttpServlet{
 		ctx.setAttribute(PROP_MAX_FRAME_RATE,
 				new Integer(props.getProperty(PROP_MAX_FRAME_RATE, "1")));
 		Calendar c = Calendar.getInstance();
-		System.out.println(Constants.DATE_FORMAT.format(c.getTime()) + ": Video servlet restarted.");
-		logger.info("Video Server restarted.");
+		System.out.println(Constants.DATE_FORMAT.format(c.getTime()) + ": Video servlet started.");
+		logger.info("Video Server started.");
 	}
 }

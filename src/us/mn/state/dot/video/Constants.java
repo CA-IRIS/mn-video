@@ -35,4 +35,7 @@ public class Constants {
 	public static final SimpleDateFormat DATE_FORMAT =
 		new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
 
+	//public static final String LOGGER_NAME = "us.mn.state.dot.video";
+
+	public static final String LOGGER_NAME = "video";
 }

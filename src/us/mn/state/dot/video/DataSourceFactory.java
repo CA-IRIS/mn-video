@@ -54,15 +54,14 @@ public class DataSourceFactory {
 	protected EncoderFactory encoderFactory;
 	
 	/** Constructor for the DataSourceFactory. */
-	public DataSourceFactory(Properties p,
-			Logger l, ThreadMonitor m) {
-		logger = l;
+	public DataSourceFactory(Properties p, ThreadMonitor m) {
+		logger = Logger.getLogger(Constants.LOGGER_NAME);
 		monitor = m;
 		proxy = new Boolean(p.getProperty("proxy", "false")).booleanValue();
 		if(proxy) {
 			backendUrls = AbstractDataSource.createBackendUrls(p, 1);
 		}else{
-			encoderFactory = EncoderFactory.getInstance(p, l);
+			encoderFactory = EncoderFactory.getInstance(p);
 		}
 		Thread t = new Thread(){
 			public void run(){

@@ -22,9 +22,10 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import us.mn.state.dot.util.db.TmsConnection;
+import us.mn.state.dot.video.server.TmsConnection;
 import us.mn.state.dot.video.Axis;
 import us.mn.state.dot.video.Camera;
+import us.mn.state.dot.video.Constants;
 import us.mn.state.dot.video.Encoder;
 import us.mn.state.dot.video.Infinova;
 
@@ -56,19 +57,18 @@ public class EncoderFactory {
 
 	private static EncoderFactory factory = null;
 	
-	public synchronized static EncoderFactory getInstance(Properties p, Logger l){
+	public synchronized static EncoderFactory getInstance(Properties p){
 		if( factory != null ) return factory;
-		factory = new EncoderFactory(p, l);
+		factory = new EncoderFactory(p);
 		return factory;
 	}
 	
-	private EncoderFactory(Properties props, Logger l){
-		this.logger = l;
+	private EncoderFactory(Properties props){
+		this.logger = Logger.getLogger(Constants.LOGGER_NAME);
 		this.properties = props;
 		tms = TmsConnection.create(props);
 		encoderUser = props.getProperty("video.encoder.user");
 		encoderPass = props.getProperty("video.encoder.pwd");
-//		updateEncoders();
 	}
 
 	public Encoder getEncoder(String cameraId){

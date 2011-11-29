@@ -19,8 +19,10 @@
 package us.mn.state.dot.video.server;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Calendar;
@@ -106,9 +108,7 @@ public abstract class VideoServlet extends HttpServlet {
 		}
 		int max = Integer.parseInt(props.getProperty("max.imagesize", "2"));
 		Client.setMaxImageSize(max);
-		if(logger==null){
-			logger = (Logger)ctx.getAttribute(PropertiesContext.PROP_LOGGER);
-		}
+		if(logger==null) logger = Logger.getLogger(Constants.LOGGER_NAME);
 	}
 
 	/** Get an integer parameter request */
@@ -168,6 +168,10 @@ public abstract class VideoServlet extends HttpServlet {
 				Constants.DATE_FORMAT.format(cal.getTime()) +
 				" Camera " + c.getCameraId());
 			processRequest(response, c);
+			File f = new File("/tmp/video_profile.txt");
+			PrintStream ps = new PrintStream(f);
+			Profile.printMemory(ps);
+			Profile.printThreads(ps);
 		}
 		catch(Throwable th) {
 			logger.warning(c.getCameraId() + ": " + th.getMessage());

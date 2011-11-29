@@ -18,9 +18,12 @@
 */
 package us.mn.state.dot.video.server;
 
+import java.io.File;
+import java.io.PrintStream;
 import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Properties;
+import java.util.logging.Handler;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -28,7 +31,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
 import us.mn.state.dot.video.AbstractDataSource;
-import us.mn.state.dot.video.AbstractEncoder;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.VideoException;
 
@@ -62,7 +64,7 @@ public final class ImageServer extends VideoServlet{
 			if(proxy){
 				backendUrls = AbstractDataSource.createBackendUrls(p, 2);
 			}else{
-				encoderFactory = EncoderFactory.getInstance(p, logger);
+				encoderFactory = EncoderFactory.getInstance(p);
 			}
 			cacheDuration = Long.parseLong(
 					p.getProperty("video.cache.duration",
@@ -96,6 +98,11 @@ public final class ImageServer extends VideoServlet{
 			logger.warning("Error serving image " + c.getCameraId() +
 					" to client " + c.getHost());
 		}finally{
+			Handler[] handlers = logger.getHandlers();
+			System.out.println("Printing handlers...");
+			for(Handler h : handlers){
+				System.out.println("VIDEO HANDLER: " + h.getClass());
+			}
 			logger.fine("Request filled in " + (System.currentTimeMillis()-start) +
 					" milliseconds");
 		}

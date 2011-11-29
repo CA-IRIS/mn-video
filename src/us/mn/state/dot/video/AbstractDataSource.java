@@ -27,8 +27,6 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import us.mn.state.dot.log.TmsLogFactory;
-
 /**
  * An abstract implementation of a DataSource.
  *
@@ -57,7 +55,7 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 			Logger l, ThreadMonitor m, URL url, String user, String pwd) {
 		super(m);
 		client = c;
-		logger = l==null ? TmsLogFactory.createLogger("video"): l;
+		logger = l==null ? Logger.getLogger(Constants.LOGGER_NAME): l;
 		timeStamp = System.currentTimeMillis();
 		this.url = url;
 		this.user = user;
