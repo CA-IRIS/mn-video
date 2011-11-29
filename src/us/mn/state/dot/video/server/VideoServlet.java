@@ -67,8 +67,6 @@ public abstract class VideoServlet extends HttpServlet {
 
 	protected int requestPort = 80;
 	
-	protected Calendar start = Calendar.getInstance();
-	protected Calendar end = Calendar.getInstance();
 	protected HttpServletRequest request = null;
 	
 	/** The request parameter name for the SONAR session ID */
