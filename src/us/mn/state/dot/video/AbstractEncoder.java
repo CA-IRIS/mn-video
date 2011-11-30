@@ -36,6 +36,9 @@ import javax.imageio.stream.FileImageInputStream;
  */
 public abstract class AbstractEncoder implements Encoder {
 
+	/** The size request parameter */
+	private static final String PARAM_SIZE = "resolution";
+	
 	/** The HttpURLConnection used for getting stills */
 	private HttpURLConnection stillsCon;
 	
@@ -204,5 +207,9 @@ public abstract class AbstractEncoder implements Encoder {
 			if(image != null) return image;
 		}
 		return getNoVideoImage();
+	}
+
+	public String createSizeParam(ImageSize size){
+		return PARAM_SIZE + "=" + size.getDimensions();
 	}
 }

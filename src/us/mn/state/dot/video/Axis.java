@@ -47,9 +47,6 @@ public final class Axis extends AbstractEncoder {
 	/** The date request parameter */
 	private static final String PARAM_DATE = "date";
 
-	/** The size request parameter */
-	private static final String PARAM_SIZE = "resolution";
-	
 	/** The camera request parameter */
 	private static final String PARAM_CAMERA = "camera";
 	
@@ -112,22 +109,6 @@ public final class Axis extends AbstractEncoder {
 		}
 	}
 
-	private String createSizeParam(int size){
-		String sizeValue = "";
-		switch(size){
-			case Client.SMALL:
-				sizeValue = VALUE_SMALL;
-				break;
-			case Client.MEDIUM:
-				sizeValue = VALUE_MEDIUM;
-				break;
-			case Client.LARGE:
-				sizeValue = VALUE_LARGE;
-				break;
-		}
-		return PARAM_SIZE + "=" + sizeValue;
-	}
-	
 	public DataSource getDataSource(Client c) throws VideoException{
 		URL url = getStreamURL(c);
 		if(url == null) return null;

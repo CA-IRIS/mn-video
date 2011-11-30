@@ -38,30 +38,15 @@ public final class Infinova extends AbstractEncoder {
 	/** URI for restarting the server */
 	private final String BASE_RESTART_URI = "";
 	
-	/** The compression request parameter */
-	private static final String PARAM_COMPRESSION = "compression";
-	
 	/** The clock request parameter */
 	private static final String PARAM_CLOCK = "clock";
 
 	/** The date request parameter */
 	private static final String PARAM_DATE = "date";
 
-	/** The size request parameter */
-	private static final String PARAM_SIZE = "resolution";
-	
 	/** The camera request parameter */
 	private static final String PARAM_CAMERA = "camera";
 	
-	/** The parameter value for small images */
-	private static final String VALUE_SMALL = "176x144";
-
-	/** The parameter value for medium size images */
-	private static final String VALUE_MEDIUM = "352x240";
-
-	/** The parameter value for large images */
-	private static final String VALUE_LARGE = "704x480";
-
 	/** The parameter value for off */
 	private static final String VALUE_OFF = "0";
 	
@@ -90,10 +75,6 @@ public final class Infinova extends AbstractEncoder {
 		return null;
 	}
 
-	private String createCompressionParam(int comp){
-		return PARAM_COMPRESSION + "=" + comp;	
-	}
-	
 	private String createCameraParam(Client c){
 		return PARAM_CAMERA + "=" + getChannel(c.getCameraId());	
 	}
@@ -119,22 +100,6 @@ public final class Infinova extends AbstractEncoder {
 		}
 	}
 
-	private String createSizeParam(int size){
-		String sizeValue = "";
-		switch(size){
-			case Client.SMALL:
-				sizeValue = VALUE_SMALL;
-				break;
-			case Client.MEDIUM:
-				sizeValue = VALUE_MEDIUM;
-				break;
-			case Client.LARGE:
-				sizeValue = VALUE_LARGE;
-				break;
-		}
-		return PARAM_SIZE + "=" + sizeValue;
-	}
-	
 	public DataSource getDataSource(Client c) throws VideoException{
 		URL url = getStreamURL(c);
 		if(url == null) return null;

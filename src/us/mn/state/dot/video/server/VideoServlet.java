@@ -40,6 +40,7 @@ import us.mn.state.dot.video.AbstractEncoder;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.ConnectionFactory;
 import us.mn.state.dot.video.Constants;
+import us.mn.state.dot.video.ImageSize;
 import us.mn.state.dot.video.VideoThread;
 
 
@@ -50,6 +51,10 @@ import us.mn.state.dot.video.VideoThread;
  */
 public abstract class VideoServlet extends HttpServlet {
 	
+	protected ImageSize maxImageSize = ImageSize.MEDIUM;
+	
+	protected ImageSize defaultImageSize = ImageSize.MEDIUM;
+
 	protected URL ssidURL = null;
 
 	/**Flag that controls whether this instance is acting as a proxy 
@@ -101,8 +106,13 @@ public abstract class VideoServlet extends HttpServlet {
 				e.printStackTrace();
 			}
 		}
-		int max = Integer.parseInt(props.getProperty("max.imagesize", "2"));
-		Client.setMaxImageSize(max);
+		String max = props.getProperty("max.imagesize", "MEDIUM");
+		for(ImageSize size : ImageSize.values()){
+			if(max.equalsIgnoreCase(size.name())){
+				maxImageSize = size;
+				break;
+			}
+		}
 		if(logger==null) logger = Logger.getLogger(Constants.LOGGER_NAME);
 	}
 
@@ -111,6 +121,33 @@ public abstract class VideoServlet extends HttpServlet {
 		return Integer.parseInt(req.getParameter(param));
 	}
 
+	/** Get the requested image size.
+	 * Valid request values are 1,2,3 or s,m,l
+	 */
+	protected ImageSize getRequestedSize(HttpServletRequest req) {
+		String value = req.getParameter(PARAM_SIZE);
+		if(value == null)
+			return defaultImageSize;
+		if(value.length()!=1)
+			return defaultImageSize;
+		value = value.toUpperCase();
+		if(Character.isDigit(value.charAt(0))){
+			//for backward compatibility, subtract 1 from size
+			int i = Integer.parseInt(value);
+			for(ImageSize size : ImageSize.values()){
+				if(size.ordinal() == i)
+					return size;
+			}
+		}else{
+			for(ImageSize size : ImageSize.values()){
+				if(size.name().startsWith(value)){
+					return size;
+				}
+			}
+		}
+		return defaultImageSize;
+	}
+	
 	/** Get a 'long' parameter request */
 	protected long getLongRequest(HttpServletRequest req, String param) {
 		return Long.parseLong(req.getParameter(param));
@@ -125,7 +162,7 @@ public abstract class VideoServlet extends HttpServlet {
 		if(req.getParameter("id") != null)
 			c.setCameraId(req.getParameter("id"));
 		if(req.getParameter(PARAM_SIZE) != null)
-			c.setSize(getIntRequest(req, PARAM_SIZE));
+			c.setSize(getRequestedSize(req));
 		if(req.getParameter(PARAM_RATE) != null)
 			c.setRate(getIntRequest(req, PARAM_RATE));
 		if(req.getParameter(PARAM_DURATION) != null)

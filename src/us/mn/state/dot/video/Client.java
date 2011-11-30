@@ -28,17 +28,6 @@ public class Client {
 	/** Sonar session identifier for authenticating to the video system */
 	private long sonarSessionId = -1;
 	
-	/** Constant for small sized images */
-	public static final int SMALL = 1;
-
-	/** Constant for medium sized images */
-	public static final int MEDIUM = 2;
-
-	/** Constant for large sized images */
-	public static final int LARGE = 3;
-
-	public static int maxImageSize = LARGE;
-	
 	private int area = 0;
 	
 	private int rate = 30;
@@ -51,7 +40,7 @@ public class Client {
 	
 	private Camera camera = null;
 
-	int size = 2;
+	protected ImageSize size = ImageSize.MEDIUM;
 
 	public Client(){
 	}
@@ -71,8 +60,8 @@ public class Client {
 	public int getFramesRequested() {
 		return duration * rate;
 	}
-	public int getSize() {
-		return Math.min(maxImageSize, size);
+	public ImageSize getSize() {
+		return size;
 	}
 	public int getArea() {
 		return area;
@@ -100,9 +89,8 @@ public class Client {
 	public void setRate(int rate) {
 		this.rate = rate;
 	}
-	public void setSize(int size) {
-		size = Math.min(maxImageSize, size);
-		if(size >= SMALL && size <= LARGE) this.size = size;
+	public void setSize(ImageSize size) {
+		this.size = size;
 	}
 	public String getCameraId(){
 		return camera.getId();
@@ -112,16 +100,10 @@ public class Client {
 		if(camera == null) camera = new Camera();
 		camera.setId(Camera.createStandardId(id));
 	}
-	
-	public static void setMaxImageSize(int i){
-		if(i >= SMALL && i <= LARGE) maxImageSize = i;
-	}
-
 	/** Get the SONAR session ID */
 	public long getSonarSessionId() {
 		return sonarSessionId;
 	}
-
 	/** Set the SONAR session ID */
 	public void setSonarSessionId(long sonarSessionId) {
 		this.sonarSessionId = sonarSessionId;
