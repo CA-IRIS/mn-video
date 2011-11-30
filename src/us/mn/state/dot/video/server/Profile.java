@@ -68,9 +68,6 @@ public class Profile {
 			StringBuffer t = new StringBuffer();
 			while(t.length() < 4 + deep) t.insert(0, " ");
 				t.append(thread[i].getName());
-				//if(t.indexOf("VIDEO")==-1){
-				//	continue;
-				//}
 				if(!thread[i].isAlive()) t.append(" (dead)");
 				if(thread[i].isDaemon()) t.append(" (daemon)");
 				while(t.length() < 66) t.append(" ");

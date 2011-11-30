@@ -179,20 +179,11 @@ public abstract class VideoServlet extends HttpServlet {
 	protected final void doGet(HttpServletRequest request,
 		HttpServletResponse response)
 	{
-		Thread t = Thread.currentThread();
-		Calendar cal = Calendar.getInstance();
 		Client c = new Client();
 		this.request = request; 
 		try {
 			configureClient(c, request);
-			t.setName("VIDEO " + servletName + " " +
-				Constants.DATE_FORMAT.format(cal.getTime()) +
-				" Camera " + c.getCameraId());
 			processRequest(response, c);
-			File f = new File("/tmp/video_profile.txt");
-			PrintStream ps = new PrintStream(f);
-			Profile.printMemory(ps);
-			Profile.printThreads(ps);
 		}
 		catch(Throwable th) {
 			logger.warning(c.getCameraId() + ": " + th.getMessage());
@@ -200,7 +191,6 @@ public abstract class VideoServlet extends HttpServlet {
 		}
 		finally {
 			try {
-				t.setName(t.getName() + " done");
 				response.getOutputStream().close();
 			}
 			catch(Exception e) {
