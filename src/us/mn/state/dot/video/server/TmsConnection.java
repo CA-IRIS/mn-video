@@ -173,7 +173,7 @@ public class TmsConnection extends DatabaseConnection {
 			" where " + CAMERA_ID + " = '" + camId + "'";
 		try{
 			ResultSet rs = query(q);
-			if(rs != null && rs.next() && !rs.isClosed()){
+			if(rs != null && rs.next()){
 				return rs.getBoolean(CAMERA_PUBLISH);
 			}
 		}catch(Exception e){
