@@ -70,8 +70,6 @@ public abstract class VideoServlet extends HttpServlet {
 
 	protected String queryString = null;
 
-	protected int requestPort = 80;
-	
 	protected HttpServletRequest request = null;
 	
 	/** The request parameter name for the SONAR session ID */
@@ -191,7 +189,6 @@ public abstract class VideoServlet extends HttpServlet {
 		this.request = request; 
 		requestURI = request.getRequestURI();
 		queryString = request.getQueryString();
-		requestPort = request.getLocalPort();
 		try {
 			configureClient(c, request);
 			t.setName("VIDEO " + servletName + " " +
