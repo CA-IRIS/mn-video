@@ -66,10 +66,6 @@ public abstract class VideoServlet extends HttpServlet {
 
 	protected String servletName = "VideoServlet";
 	
-	protected String requestURI = null;
-
-	protected String queryString = null;
-
 	protected HttpServletRequest request = null;
 	
 	/** The request parameter name for the SONAR session ID */
@@ -187,8 +183,6 @@ public abstract class VideoServlet extends HttpServlet {
 		Calendar cal = Calendar.getInstance();
 		Client c = new Client();
 		this.request = request; 
-		requestURI = request.getRequestURI();
-		queryString = request.getQueryString();
 		try {
 			configureClient(c, request);
 			t.setName("VIDEO " + servletName + " " +
