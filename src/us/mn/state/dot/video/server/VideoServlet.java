@@ -187,7 +187,7 @@ public abstract class VideoServlet extends HttpServlet {
 		}
 		catch(Throwable th) {
 			logger.warning(c.getCameraId() + ": " + th.getMessage());
-			//sendNoVideo(response, c);
+			sendNoVideo(response, c);
 		}
 		finally {
 			try {
@@ -201,14 +201,17 @@ public abstract class VideoServlet extends HttpServlet {
 	public abstract void processRequest(HttpServletResponse response,
 		Client c) throws Exception;
 
-	protected final void sendNoVideo(HttpServletResponse response, Client c)
-			throws IOException {
-		byte[] image = AbstractEncoder.getNoVideoImage();
-		response.setStatus(HttpServletResponse.SC_OK);
-		response.setContentType("image/jpeg");
-		response.setContentLength(image.length);
-		response.getOutputStream().write(image);
-		response.flushBuffer();
+	protected final void sendNoVideo(HttpServletResponse response, Client c){
+		try{
+			byte[] image = AbstractEncoder.getNoVideoImage();
+			response.setStatus(HttpServletResponse.SC_OK);
+			response.setContentType("image/jpeg");
+			response.setContentLength(image.length);
+			response.getOutputStream().write(image);
+			response.flushBuffer();
+		}catch(Exception e){
+			logger.warning(e.getMessage());
+		}
 	}
 	
 	/** Check to see if the client is authenticated through SONAR */
