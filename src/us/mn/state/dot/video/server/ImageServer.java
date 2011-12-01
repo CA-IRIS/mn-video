@@ -18,6 +18,8 @@
 */
 package us.mn.state.dot.video.server;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -31,6 +33,8 @@ import javax.servlet.http.HttpServletResponse;
 import us.mn.state.dot.video.AbstractDataSource;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.District;
+import us.mn.state.dot.video.Encoder;
+import us.mn.state.dot.video.RequestType;
 import us.mn.state.dot.video.VideoException;
 
 /**
@@ -103,21 +107,39 @@ public final class ImageServer extends VideoServlet{
 		}
 	}
 	
-    private CacheEntry getCacheEntry(Client c) {
-   		String key = createCacheKey(c);
-    	CacheEntry entry = cache.get(key);
-    	if(entry != null && !entry.isExpired()) return entry;
-    	if(proxy){
-			entry = new CacheEntry(hostPorts, c, logger);
+	private CacheEntry getCacheEntry(Client c) {
+		String key = createCacheKey(c);
+		CacheEntry entry = cache.get(key);
+		if(entry != null && !entry.isExpired()) return entry;
+		if(proxy){
+			try{
+				entry = new CacheEntry(getImageURL(c), c, logger);
+			}catch(VideoException ve){
+				logger.fine(ve.getMessage());
+			}
 		}else{
-			entry = new CacheEntry(encoderFactory.getEncoder(c.getCameraId()),
-					c, logger);
+			Encoder encoder = encoderFactory.getEncoder(c.getCameraId());
+			entry = new CacheEntry(encoder.getImageURL(c), c, logger);
 		}
 		entry.setExpiration(cacheDuration);
 		cache.put(key, entry);
 		return entry;
-    }
-    
+	}
+
+	/** Get the URL used to retrieve a new image */
+	private URL getImageURL(Client c) throws VideoException {
+		String s = "";
+		try{
+			s = "http://" + hostPorts.get(c.getDistrict().name()) +
+			"/video/" + RequestType.IMAGE.name().toLowerCase() +
+			"?id=" + c.getCameraId() +
+			"&size=" + c.getSize();
+			return new URL(s);
+		}catch(MalformedURLException mue){
+			throw new VideoException("Malformed URL: " + s);
+		}
+	}
+
     private static String createCacheKey(Client c){
     	return c.getDistrict().name() + ":" + c.getCameraId() + ":" + c.getSize();
     }

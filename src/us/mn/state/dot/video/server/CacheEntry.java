@@ -18,16 +18,11 @@
  */
 package us.mn.state.dot.video.server;
 
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.logging.Logger;
 
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.ConnectionFactory;
-import us.mn.state.dot.video.District;
-import us.mn.state.dot.video.Encoder;
-import us.mn.state.dot.video.RequestType;
 import us.mn.state.dot.video.VideoException;
 
 /**
@@ -40,23 +35,15 @@ public class CacheEntry {
 
 	protected long imageTime = System.currentTimeMillis();
 	protected Client client = null;
-	protected HashMap<District, String> hostPorts =
-		new HashMap<District, String>();
 	protected byte[] imageData = null;
 	protected Logger logger = null;
-	protected Encoder encoder = null;
+	protected URL imageUrl = null;
 	
 	/** Length of time that an image should be cached */
 	protected long expirationAge = 10000; // 10 seconds
 	
-	public CacheEntry(HashMap<District, String> hostPorts, Client c, Logger l){
-		this.hostPorts = hostPorts;
-		this.client = c;
-		this.logger = l;
-	}
-
-	public CacheEntry(Encoder e, Client c, Logger l){
-		this.encoder = e;
+	public CacheEntry(URL u, Client c, Logger l){
+		this.imageUrl = u;
 		this.client = c;
 		this.logger = l;
 	}
@@ -84,33 +71,10 @@ public class CacheEntry {
 	    	logger.fine(client.getCameraId() + " using cache.");
 	    }else{
     		logger.fine(client.getCameraId() + " fetching image.");
-	    	imageData = retrieveImage();
+	    	imageData = ConnectionFactory.getImage(imageUrl);
 	    	imageTime = System.currentTimeMillis();
 	    }
 	    return imageData;
     }
-
-    protected byte[] retrieveImage() throws VideoException {
-    	if(encoder != null){
-    		return encoder.getImage(client);
-    	}else{
-    		return ConnectionFactory.getImage(getImageURL());
-    	}
-    }
-    
-    /** Get the URL used to retrieve a new image */
-    protected URL getImageURL() throws VideoException {
-		String s = "";
-    	try{
-			s = "http://" + hostPorts.get(client.getDistrict().name()) +
-				"/video/" + RequestType.IMAGE.name().toLowerCase() +
-				"?id=" + client.getCameraId() +
-				"&size=" + client.getSize();
-			return new URL(s);
-		}catch(MalformedURLException mue){
-			throw new VideoException("Malformed URL: " + s);
-		}
-    }
-
 }
 

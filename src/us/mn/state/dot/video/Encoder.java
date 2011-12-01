@@ -77,6 +77,8 @@ public interface Encoder {
 	public void setUsername(String name);
 
 	public void setCamera(String id, int channel);
-	
+
 	public URL getStreamURL(Client c);
+
+	public URL getImageURL(Client c);
 }

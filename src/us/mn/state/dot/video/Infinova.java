@@ -60,7 +60,7 @@ public final class Infinova extends AbstractEncoder {
 		return null;
 	}
 
-	protected URL getImageURL(Client c) {
+	public URL getImageURL(Client c) {
 		int channel = getChannel(c.getCameraId());
 		if(channel == NO_CAMERA_CONNECTED) return null;
 		try{

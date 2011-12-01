@@ -68,7 +68,7 @@ public final class Axis extends AbstractEncoder {
 		return PARAM_CAMERA + "=" + getChannel(c.getCameraId());	
 	}
 
-	protected URL getImageURL(Client c) {
+	public URL getImageURL(Client c) {
 		int channel = getChannel(c.getCameraId());
 		if(channel == NO_CAMERA_CONNECTED) return null;
 		try{

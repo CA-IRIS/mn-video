@@ -73,7 +73,7 @@ public abstract class AbstractEncoder implements Encoder {
 	/** Get the number of video channels. */
 	public final int getChannels(){ return channels; }
 
-	protected abstract URL getImageURL(Client c);
+	public abstract URL getImageURL(Client c);
 	
 	/** The ids of the cameras that are connected. */
 	private Hashtable<String, Integer> ids =
