@@ -99,7 +99,7 @@ public abstract class VideoServlet extends HttpServlet {
 				e.printStackTrace();
 			}
 		}
-		String max = props.getProperty("max.imagesize", "MEDIUM");
+		String max = props.getProperty("max.imagesize", ImageSize.MEDIUM.name());
 		for(ImageSize size : ImageSize.values()){
 			if(max.equalsIgnoreCase(size.name())){
 				maxImageSize = size;

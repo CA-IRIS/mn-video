@@ -35,21 +35,6 @@ public final class Infinova extends AbstractEncoder {
 	
 	private final String BASE_STREAM_URI = "/jpgimage/1/image.jpg";
 	
-	/** URI for restarting the server */
-	private final String BASE_RESTART_URI = "";
-	
-	/** The clock request parameter */
-	private static final String PARAM_CLOCK = "clock";
-
-	/** The date request parameter */
-	private static final String PARAM_DATE = "date";
-
-	/** The camera request parameter */
-	private static final String PARAM_CAMERA = "camera";
-	
-	/** The parameter value for off */
-	private static final String VALUE_OFF = "0";
-	
 	/** Constructor for the Infinova encoder object */
 	public Infinova(String host) {
 		super(host);
@@ -73,10 +58,6 @@ public final class Infinova extends AbstractEncoder {
 		}catch(Exception e){
 		}
 		return null;
-	}
-
-	private String createCameraParam(Client c){
-		return PARAM_CAMERA + "=" + getChannel(c.getCameraId());	
 	}
 
 	protected URL getImageURL(Client c) {

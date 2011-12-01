@@ -38,29 +38,8 @@ public final class Axis extends AbstractEncoder {
 	private final String BASE_STREAM_URI = "/axis-cgi/mjpg/video.cgi?" +
 	"showlength=1&";
 	
-	/** URI for restarting the server */
-	private final String BASE_RESTART_URI = "/axis-cgi/admin/restart.cgi?";
-	
-	/** The clock request parameter */
-	private static final String PARAM_CLOCK = "clock";
-
-	/** The date request parameter */
-	private static final String PARAM_DATE = "date";
-
 	/** The camera request parameter */
 	private static final String PARAM_CAMERA = "camera";
-	
-	/** The parameter value for small images */
-	private static final String VALUE_SMALL = "176x144";
-
-	/** The parameter value for medium size images */
-	private static final String VALUE_MEDIUM = "352x240";
-
-	/** The parameter value for large images */
-	private static final String VALUE_LARGE = "704x480";
-
-	/** The parameter value for off */
-	private static final String VALUE_OFF = "0";
 	
 	/** Constructor for the axis encoder object */
 	public Axis(String host) {
