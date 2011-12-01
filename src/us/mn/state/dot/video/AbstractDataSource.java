@@ -23,6 +23,7 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -120,39 +121,44 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 		return client;
 	}
 
-	/** Create an array of baseUrls for connecting to the backend
-     *  server.
+	public static boolean isValidHost(String h){
+		if(h==null){
+			return false;
+		}
+		try{
+			h = InetAddress.getByName(h).getHostAddress();
+			return true;
+		}catch(UnknownHostException uhe){
+			return false;
+		}
+	}
+
+	public static boolean isValidPort(String p){
+		if(p==null){
+			return false;
+		}
+		try{
+			Integer.parseInt(p);
+			return true;
+		}catch(Exception e){
+			return false;
+		}
+	}
+	
+	/** Create a HashMap of host:port strings for the district video servers.
      * @param p
      * @param type Stream (1) or Still (2)
      * @return
      */
-    public static String[] createBackendUrls(Properties p, int type){
-	    ArrayList<String> baseUrls = new ArrayList<String>();
-	    int id = 0;
-	    while(true){
-	    	String ip = p.getProperty("video.backend.host" + id);
-	    	if(ip==null) break;
-    		try{
-    			ip = InetAddress.getByName(ip).getHostAddress();
-    		}catch(UnknownHostException uhe){
-    			System.out.println("Invalid backend server " + id +
-    					" " + uhe.getMessage());
-    			break;
-    		}
-    		String port = p.getProperty("video.backend.port" + id,
-    				p.getProperty("video.backend.port" + 0));
-    		String servletName = "";
-    		if(type==1) servletName = "stream";
-    		if(type==2) servletName = "image";
-    		baseUrls.add(
-				"http://" + ip + ":" + port +
-				"/@@NAME@@/" + servletName);
-    		id++;
-	    }
-	    System.out.println("Video server backend URLs:");
-	    for(int i=0; i<baseUrls.size(); i++){
-	    	System.out.println("\t" + baseUrls.get(i));
-	    }
-	    return (String[])baseUrls.toArray(new String[0]);
-    }
+	public static HashMap<District, String> createDistrictHostPorts(Properties p){
+		HashMap<District, String> hostPortMap = new HashMap<District, String>();
+		for(District d : District.values()){
+			String host = p.getProperty(d.name() + ".host");
+			String port = p.getProperty(d.name() + ".port");
+			if(isValidHost(host) && isValidPort(port)){
+				hostPortMap.put(d, host + ":" + port);
+			}
+		}
+		return hostPortMap;
+	}
 }

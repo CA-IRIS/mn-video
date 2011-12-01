@@ -19,13 +19,9 @@
 package us.mn.state.dot.video.server;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Calendar;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -40,6 +36,7 @@ import us.mn.state.dot.video.AbstractEncoder;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.ConnectionFactory;
 import us.mn.state.dot.video.Constants;
+import us.mn.state.dot.video.District;
 import us.mn.state.dot.video.ImageSize;
 import us.mn.state.dot.video.VideoThread;
 
@@ -71,8 +68,8 @@ public abstract class VideoServlet extends HttpServlet {
 	/** The request parameter name for the SONAR session ID */
 	public static final String PARAM_SSID = "ssid";
 	
-	/** The request parameter name for the video area (sub-system) */
-	public static final String PARAM_AREA = "area";
+	/** The request parameter name for the IRIS district */
+	public static final String PARAM_DISTRICT = "area";
 
 	/** The request parameter name for the frame rate of MJPEG stream */
 	public static final String PARAM_RATE = "rate";
@@ -85,6 +82,8 @@ public abstract class VideoServlet extends HttpServlet {
 
 	/** The request parameter name for the user making the request */
 	public static final String PARAM_USER = "user";
+
+	protected static District defaultDistrict = District.METRO;
 
 	/** Initialize the VideoServlet */
 	public void init(ServletConfig config) throws ServletException {
@@ -115,8 +114,29 @@ public abstract class VideoServlet extends HttpServlet {
 		return Integer.parseInt(req.getParameter(param));
 	}
 
+	/** Get the requested district. */
+	protected District getRequestedDistrict(HttpServletRequest req) {
+		String value = req.getParameter(PARAM_DISTRICT);
+		if(value == null)
+			return defaultDistrict;
+		for(District d : District.values()){
+			if(d.name().equalsIgnoreCase(value)){
+				return d;
+			}
+		}
+		//for backward compatibility, support area parameter
+		value = req.getParameter("area");
+		if(value == null){
+			return defaultDistrict;
+		}
+		if(value.equals("0")) return District.METRO;
+		if(value.equals("1")) return District.D6;
+		if(value.equals("2")) return District.D1;
+		return defaultDistrict;
+	}
+	
 	/** Get the requested image size.
-	 * Valid request values are 1,2,3 or s,m,l
+	 * Valid request values are d1,d2,3 or s,m,l
 	 */
 	protected ImageSize getRequestedSize(HttpServletRequest req) {
 		String value = req.getParameter(PARAM_SIZE);
@@ -127,7 +147,7 @@ public abstract class VideoServlet extends HttpServlet {
 		value = value.toUpperCase();
 		if(Character.isDigit(value.charAt(0))){
 			//for backward compatibility, subtract 1 from size
-			int i = Integer.parseInt(value);
+			int i = Integer.parseInt(value) - 1;
 			for(ImageSize size : ImageSize.values()){
 				if(size.ordinal() == i)
 					return size;
@@ -141,7 +161,7 @@ public abstract class VideoServlet extends HttpServlet {
 		}
 		return defaultImageSize;
 	}
-	
+
 	/** Get a 'long' parameter request */
 	protected long getLongRequest(HttpServletRequest req, String param) {
 		return Long.parseLong(req.getParameter(param));
@@ -151,8 +171,7 @@ public abstract class VideoServlet extends HttpServlet {
 	protected void configureClient(Client c, HttpServletRequest req) {
 		if(req.getParameter(PARAM_USER) != null)
 			c.setUser(req.getParameter(PARAM_USER));
-		if(req.getParameter(PARAM_AREA) != null)
-			c.setArea(getIntRequest(req, PARAM_AREA));
+		c.setDistrict(getRequestedDistrict(req));
 		if(req.getParameter("id") != null)
 			c.setCameraId(req.getParameter("id"));
 		if(req.getParameter(PARAM_SIZE) != null)

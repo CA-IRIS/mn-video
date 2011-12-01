@@ -19,6 +19,7 @@
 package us.mn.state.dot.video.server;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Properties;
 
@@ -29,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import us.mn.state.dot.video.AbstractDataSource;
 import us.mn.state.dot.video.Client;
+import us.mn.state.dot.video.District;
 import us.mn.state.dot.video.VideoException;
 
 /**
@@ -47,7 +49,8 @@ public final class ImageServer extends VideoServlet{
 	
 	protected long cacheDuration = DEFAULT_CACHE_DURATION;
 	
-	protected String[] backendUrls = null;
+	protected HashMap<District, String> hostPorts =
+		new HashMap<District, String>();
 	
 	protected EncoderFactory encoderFactory = null;
 	
@@ -59,7 +62,7 @@ public final class ImageServer extends VideoServlet{
 			ServletContext ctx = config.getServletContext();
 			Properties p = (Properties)ctx.getAttribute("properties");
 			if(proxy){
-				backendUrls = AbstractDataSource.createBackendUrls(p, 2);
+				hostPorts = AbstractDataSource.createDistrictHostPorts(p);
 			}else{
 				encoderFactory = EncoderFactory.getInstance(p);
 			}
@@ -105,7 +108,7 @@ public final class ImageServer extends VideoServlet{
     	CacheEntry entry = cache.get(key);
     	if(entry != null && !entry.isExpired()) return entry;
     	if(proxy){
-			entry = new CacheEntry(backendUrls, c, logger);
+			entry = new CacheEntry(hostPorts, c, logger);
 		}else{
 			entry = new CacheEntry(encoderFactory.getEncoder(c.getCameraId()),
 					c, logger);
@@ -116,6 +119,6 @@ public final class ImageServer extends VideoServlet{
     }
     
     private static String createCacheKey(Client c){
-    	return c.getArea() + ":" + c.getCameraId() + ":" + c.getSize();
+    	return c.getDistrict().name() + ":" + c.getCameraId() + ":" + c.getSize();
     }
 }

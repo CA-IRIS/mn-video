@@ -21,6 +21,7 @@ package us.mn.state.dot.video;
 
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -49,7 +50,8 @@ public class DataSourceFactory {
 	 * or a direct video server */
 	private boolean proxy = false;
 
-	protected String[] backendUrls = null;
+	protected HashMap<District, String> hostPorts =
+		new HashMap<District, String>();
 	
 	protected EncoderFactory encoderFactory;
 	
@@ -59,7 +61,7 @@ public class DataSourceFactory {
 		monitor = m;
 		proxy = new Boolean(p.getProperty("proxy", "false")).booleanValue();
 		if(proxy) {
-			backendUrls = AbstractDataSource.createBackendUrls(p, 1);
+			hostPorts = AbstractDataSource.createDistrictHostPorts(p);
 		}else{
 			encoderFactory = EncoderFactory.getInstance(p);
 		}
@@ -85,11 +87,10 @@ public class DataSourceFactory {
 		t.start();
 	}
 	
-	private DataSource createDataSource(Client c)
-			throws VideoException {
+	private DataSource createDataSource(Client c) throws VideoException {
 		try{
 			if(proxy){
-				URL url = createURL(c, backendUrls[c.getArea()]);
+				URL url = createURL(c, hostPorts.get(c.getDistrict()));
 				return new HttpDataSource(c, logger, monitor, url, null, null);
 			}else{
 				Encoder encoder = encoderFactory.getEncoder(c.getCameraId());
@@ -103,16 +104,17 @@ public class DataSourceFactory {
 		}
 	}
 
-	public static URL createURL(Client c, String baseUrl) throws VideoException {
+	public static URL createURL(Client c, String hostPort) throws VideoException {
 		try{
-			String s = 
-				baseUrl +
+			String s =
+				"http://" + hostPort + "/video/" +
+				RequestType.STREAM.name().toLowerCase() +
 				"?id=" + c.getCameraId() +
 				"&size=" + c.getSize() +
 				"&rate=" + c.getRate() +
 				"&duration=" + c.getDuration() +
 				"&user=" + c.getUser() +
-				"&area=" + c.getArea() +
+				"&district=" + c.getDistrict().name() +
 				"&ssid=" + c.getSonarSessionId();
 			return new URL(s);
 		}catch(Exception e){

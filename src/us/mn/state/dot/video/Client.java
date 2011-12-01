@@ -28,7 +28,7 @@ public class Client {
 	/** Sonar session identifier for authenticating to the video system */
 	private long sonarSessionId = -1;
 	
-	private int area = 0;
+	private District district = District.METRO;
 	
 	private int rate = 30;
 
@@ -63,8 +63,8 @@ public class Client {
 	public ImageSize getSize() {
 		return size;
 	}
-	public int getArea() {
-		return area;
+	public District getDistrict() {
+		return district;
 	}
 	public String toString(){
 		return user + "@" + host + ": C=" + getCameraId() +
@@ -77,8 +77,8 @@ public class Client {
 	public void setHost(String host) {
 		this.host = host;
 	}
-	public void setArea(int area) {
-		this.area = area;
+	public void setDistrict(District d) {
+		this.district = d;
 	}
 	public void setCamera(Camera c) {
 		this.camera = c;
