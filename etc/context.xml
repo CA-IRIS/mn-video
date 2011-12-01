@@ -1,5 +1,0 @@
-<Context path="/@@NAME@@"
-		docBase="@@NAME@@.war"
-		debug="99"
-		reloadable="true">
-</Context>
