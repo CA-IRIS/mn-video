@@ -20,7 +20,6 @@ package us.mn.state.dot.video.server;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Properties;
@@ -34,6 +33,7 @@ import us.mn.state.dot.video.AbstractDataSource;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.District;
 import us.mn.state.dot.video.Encoder;
+import us.mn.state.dot.video.ImageFactory;
 import us.mn.state.dot.video.RequestType;
 import us.mn.state.dot.video.VideoException;
 
@@ -61,7 +61,6 @@ public final class ImageServer extends VideoServlet{
 	/** Constructor for the ImageServer */
     public void init(ServletConfig config) throws ServletException {
 		super.init( config );
-		Calendar begin = Calendar.getInstance();
 		try{
 			ServletContext ctx = config.getServletContext();
 			Properties p = (Properties)ctx.getAttribute("properties");
@@ -73,9 +72,6 @@ public final class ImageServer extends VideoServlet{
 			cacheDuration = Long.parseLong(
 					p.getProperty("video.cache.duration",
 					Long.toString(DEFAULT_CACHE_DURATION)));
-			Calendar end = Calendar.getInstance();
-			float seconds = (end.getTimeInMillis()-begin.getTimeInMillis())/1000.0f;
-			logger.info("ImageServer initialization took " + seconds + " seconds.");
 		}catch(Exception e){
 			logger.severe(e.getMessage() + " --see error log for details.");
 			e.printStackTrace();
@@ -90,8 +86,7 @@ public final class ImageServer extends VideoServlet{
 		throws VideoException
 	{
 		long start = System.currentTimeMillis();
-		CacheEntry entry = getCacheEntry(c);
-		byte[] image = entry.getImage();
+		byte[] image = getImage(c);
 		try{
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("image/jpeg\r\n");
@@ -106,28 +101,42 @@ public final class ImageServer extends VideoServlet{
 					" milliseconds");
 		}
 	}
-	
-	private CacheEntry getCacheEntry(Client c) {
+
+	private byte[] getImage(Client c) {
 		String key = createCacheKey(c);
 		CacheEntry entry = cache.get(key);
-		if(entry != null && !entry.isExpired()) return entry;
-		if(proxy){
-			try{
-				entry = new CacheEntry(getImageURL(c), c, logger);
-			}catch(VideoException ve){
-				logger.fine(ve.getMessage());
-			}
-		}else{
-			Encoder encoder = encoderFactory.getEncoder(c.getCameraId());
-			entry = new CacheEntry(encoder.getImageURL(c), c, logger);
+		if(entry != null && !entry.isExpired()) return entry.getImage();
+		byte[] image = fetchImage(c);
+		if(image == null){
+			return ImageFactory.getNoVideoImage();
 		}
-		entry.setExpiration(cacheDuration);
-		cache.put(key, entry);
-		return entry;
+		if(entry == null){
+			entry = new CacheEntry(image, cacheDuration);
+			cache.put(key, entry);
+		}else{
+			entry.setImage(image);
+		}
+		return image;
+	}
+	
+	private byte[] fetchImage(Client c){
+		URL url = null;
+		try{
+			if(proxy){
+				url = getDistrictImageURL(c);
+			}else{
+				Encoder encoder = encoderFactory.getEncoder(c.getCameraId());
+				url = encoder.getImageURL(c);
+			}
+			return ImageFactory.getImage(url);
+		}catch(VideoException ve){
+			logger.fine(ve.getMessage());
+		}
+		return null;
 	}
 
-	/** Get the URL used to retrieve a new image */
-	private URL getImageURL(Client c) throws VideoException {
+	/** Get the URL used to retrieve a new image from a district server */
+	private URL getDistrictImageURL(Client c) throws VideoException {
 		String s = "";
 		try{
 			s = "http://" + hostPorts.get(c.getDistrict().name()) +

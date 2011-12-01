@@ -18,12 +18,6 @@
  */
 package us.mn.state.dot.video.server;
 
-import java.net.URL;
-import java.util.logging.Logger;
-
-import us.mn.state.dot.video.Client;
-import us.mn.state.dot.video.ImageFactory;
-import us.mn.state.dot.video.VideoException;
 
 /**
  * An object that can be placed in the stills cache.  This class
@@ -33,48 +27,41 @@ import us.mn.state.dot.video.VideoException;
  */
 public class CacheEntry {
 
-	protected long imageTime = System.currentTimeMillis();
-	protected Client client = null;
-	protected byte[] imageData = null;
-	protected Logger logger = null;
-	protected URL imageUrl = null;
+	private long imageTime = System.currentTimeMillis();
+	private byte[] image = null;
 	
 	/** Length of time that an image should be cached */
-	protected long expirationAge = 10000; // 10 seconds
+	protected final long expirationAge;
 	
-	public CacheEntry(URL u, Client c, Logger l){
-		this.imageUrl = u;
-		this.client = c;
-		this.logger = l;
+	public CacheEntry(byte[] data, long age){
+		this.image = data;
+		this.expirationAge = age;
 	}
 
-	/** Set the expiration time for the cache */
-	public void setExpiration(long ex){
-		this.expirationAge = ex;
-	}
-	
     /**
      * Get the age of the image data in milliseconds.
      * @param start
      * @return
      */
-    private long getAge(){
+	private long getAge(){
 		return (System.currentTimeMillis() - imageTime);
 	}
 
-    public boolean isExpired(){
-    	return (getAge() > expirationAge || imageData == null);
-    }
+	public boolean isExpired(){
+		return (getAge() > expirationAge || image == null);
+	}
 
-    public synchronized byte[] getImage() throws VideoException {
-    	if(!isExpired()){
-	    	logger.fine(client.getCameraId() + " using cache.");
-	    }else{
-    		logger.fine(client.getCameraId() + " fetching image.");
-	    	imageData = ImageFactory.getImage(imageUrl);
-	    	imageTime = System.currentTimeMillis();
-	    }
-	    return imageData;
-    }
+	public synchronized void setImage(byte[] i){
+		imageTime = System.currentTimeMillis();
+		image = i;
+	}
+	
+	public synchronized byte[] getImage() {
+		if(!isExpired()){
+			return image;
+		}else{
+			return null;
+		}
+	}
 }
 

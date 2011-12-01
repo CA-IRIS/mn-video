@@ -39,7 +39,6 @@ import us.mn.state.dot.video.ImageFactory;
 import us.mn.state.dot.video.ImageSize;
 import us.mn.state.dot.video.VideoThread;
 
-
 /**
  * The VideoServlet is the base class for all servlets in the video package. 
  * @author Timothy Johnson
@@ -68,7 +67,7 @@ public abstract class VideoServlet extends HttpServlet {
 	public static final String PARAM_SSID = "ssid";
 	
 	/** The request parameter name for the IRIS district */
-	public static final String PARAM_DISTRICT = "area";
+	public static final String PARAM_DISTRICT = "district";
 
 	/** The request parameter name for the frame rate of MJPEG stream */
 	public static final String PARAM_RATE = "rate";
