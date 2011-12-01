@@ -32,7 +32,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import us.mn.state.dot.video.AbstractEncoder;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.ConnectionFactory;
 import us.mn.state.dot.video.Constants;
@@ -222,7 +221,7 @@ public abstract class VideoServlet extends HttpServlet {
 
 	protected final void sendNoVideo(HttpServletResponse response, Client c){
 		try{
-			byte[] image = AbstractEncoder.getNoVideoImage();
+			byte[] image = ConnectionFactory.getNoVideoImage();
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("image/jpeg");
 			response.setContentLength(image.length);

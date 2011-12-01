@@ -18,7 +18,6 @@
  */
 package us.mn.state.dot.video;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -26,8 +25,6 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Hashtable;
-
-import javax.imageio.stream.FileImageInputStream;
 
 /**
  * 
@@ -82,12 +79,6 @@ public abstract class AbstractEncoder implements Encoder {
 	/** Set the number of available video channels. */
 	public final void setChannels(int channels){ this.channels = channels; }
 
-	/** Location of the no_video image */
-	private static String noVideoFile = 
-		"/usr/share/tomcat6/webapps/video/images/novideo.jpg";
-
-	private static byte[] noVideo = createNoVideoImage();
-	
 	public final String getHost(){ return host; }
 	
 	protected String getIp() throws UnknownHostException{
@@ -104,23 +95,6 @@ public abstract class AbstractEncoder implements Encoder {
 			ip = getIp();
 		}catch(Exception e){}
 		return this.getClass().getSimpleName() + " " + ip + " ";
-	}
-
-	/** Create a no-video image */
-	protected final static byte[] createNoVideoImage(){
-		try{
-			FileImageInputStream in = null;
-			in = new FileImageInputStream(new File(noVideoFile));
-			byte[] bytes = new byte[(int)in.length()];
-			in.read(bytes, 0, bytes.length);
-			return bytes;
-		}catch(IOException ioe){
-			return null;
-		}
-	}
-
-	public static byte[] getNoVideoImage(){
-		return noVideo;
 	}
 
 	/** Get the id of the camera connected to the given channel */
@@ -198,15 +172,6 @@ public abstract class AbstractEncoder implements Encoder {
 				stillsCon.disconnect();
 			}catch(Exception e){}
 		}
-	}
-
-	public byte[] getImage(Client c) throws VideoException{
-		URL url = getImageURL(c);
-		if(url != null){
-			byte[] image = fetchImage(url);
-			if(image != null) return image;
-		}
-		return getNoVideoImage();
 	}
 
 	public String createSizeParam(ImageSize size){
