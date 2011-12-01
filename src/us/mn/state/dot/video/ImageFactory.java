@@ -31,14 +31,12 @@ import java.net.URLConnection;
 import javax.imageio.stream.FileImageInputStream;
 
 
-/** The ConnectionFactory is a convenience class for setting 
- * up URLConnections with the appropriate parameters including
- * connection timeout.
+/** The ImageFactory is a convenience class for retrieving images.
  * 
  * @author Timothy A. Johnson
  *
  */
-abstract public class ConnectionFactory {
+abstract public class ImageFactory {
 
 	/** Location of the no_video image */
 	private static String noVideoFile = 
@@ -48,8 +46,8 @@ abstract public class ConnectionFactory {
 
 	public static HttpURLConnection createConnection(URL url, String user, String pwd)
 			throws VideoException {
-		HttpURLConnection c = ConnectionFactory.createConnection(url);
-		ConnectionFactory.prepareConnection(c, user, pwd);
+		HttpURLConnection c = createConnection(url);
+		prepareConnection(c, user, pwd);
 		return c;
 	}
 	

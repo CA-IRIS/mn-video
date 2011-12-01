@@ -44,7 +44,7 @@ public class MultiRequestDataSource extends AbstractDataSource {
 			try{
 				logger.fine("Starting: " + this);
 				while(!done && this.isAlive()){
-					conn = ConnectionFactory.createConnection(url, user, password);
+					conn = ImageFactory.createConnection(url, user, password);
 					int response = conn.getResponseCode();
 					if(response != 200){
 						logger.info("HTTP response: " + response );

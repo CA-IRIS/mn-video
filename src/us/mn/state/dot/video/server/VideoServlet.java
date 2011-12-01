@@ -33,9 +33,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import us.mn.state.dot.video.Client;
-import us.mn.state.dot.video.ConnectionFactory;
 import us.mn.state.dot.video.Constants;
 import us.mn.state.dot.video.District;
+import us.mn.state.dot.video.ImageFactory;
 import us.mn.state.dot.video.ImageSize;
 import us.mn.state.dot.video.VideoThread;
 
@@ -221,7 +221,7 @@ public abstract class VideoServlet extends HttpServlet {
 
 	protected final void sendNoVideo(HttpServletResponse response, Client c){
 		try{
-			byte[] image = ConnectionFactory.getNoVideoImage();
+			byte[] image = ImageFactory.getNoVideoImage();
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("image/jpeg");
 			response.setContentLength(image.length);
@@ -242,7 +242,7 @@ public abstract class VideoServlet extends HttpServlet {
 	protected final boolean isValidSSID(long ssid){
 		logger.fine("Validating client " + ssid + "...");
 		try{
-			HttpURLConnection conn = ConnectionFactory.createConnection(ssidURL);
+			HttpURLConnection conn = ImageFactory.createConnection(ssidURL);
 			conn.setConnectTimeout(VideoThread.TIMEOUT_DIRECT);
 			conn.setReadTimeout(VideoThread.TIMEOUT_DIRECT);
 			InputStreamReader in = new InputStreamReader(conn.getInputStream());

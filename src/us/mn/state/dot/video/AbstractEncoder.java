@@ -156,7 +156,7 @@ public abstract class AbstractEncoder implements Encoder {
 	protected synchronized final byte[] fetchImage(URL url) throws VideoException{
 		InputStream in = null;
 		try {
-			stillsCon = ConnectionFactory.createConnection(url, username, password);
+			stillsCon = ImageFactory.createConnection(url, username, password);
 			int response = stillsCon.getResponseCode();
 			if(response == 503){
 				throw new Exception("HTTP 503");

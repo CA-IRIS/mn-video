@@ -22,7 +22,7 @@ import java.net.URL;
 import java.util.logging.Logger;
 
 import us.mn.state.dot.video.Client;
-import us.mn.state.dot.video.ConnectionFactory;
+import us.mn.state.dot.video.ImageFactory;
 import us.mn.state.dot.video.VideoException;
 
 /**
@@ -71,7 +71,7 @@ public class CacheEntry {
 	    	logger.fine(client.getCameraId() + " using cache.");
 	    }else{
     		logger.fine(client.getCameraId() + " fetching image.");
-	    	imageData = ConnectionFactory.getImage(imageUrl);
+	    	imageData = ImageFactory.getImage(imageUrl);
 	    	imageTime = System.currentTimeMillis();
 	    }
 	    return imageData;

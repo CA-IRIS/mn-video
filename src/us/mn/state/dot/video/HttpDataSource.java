@@ -45,7 +45,7 @@ public class HttpDataSource extends AbstractDataSource {
 		HttpURLConnection conn = null;
 		if(url != null){
 			try{
-				conn = ConnectionFactory.createConnection(url, user, password);
+				conn = ImageFactory.createConnection(url, user, password);
 				final MJPEGReader stream = new MJPEGReader(conn.getInputStream());
 				logger.fine("Starting: " + this);
 				byte[] img;
