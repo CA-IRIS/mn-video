@@ -20,7 +20,6 @@ package us.mn.state.dot.video;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -35,9 +34,6 @@ public abstract class AbstractEncoder implements Encoder {
 
 	/** The size request parameter */
 	private static final String PARAM_SIZE = "resolution";
-	
-	/** The HttpURLConnection used for getting stills */
-	private HttpURLConnection stillsCon;
 	
 	/** The username used to connect to this server.  Only required when
 	 * the encoder does not allow anonymous connections.
@@ -105,7 +101,7 @@ public abstract class AbstractEncoder implements Encoder {
 		return null;
 	}
 
-	/** Get the channel nummber for the given camera id. */
+	/** Get the channel number for the given camera id. */
 	public int getChannel(String id){
 		if(ids.get(id) != null){
 			return ids.get(id);
@@ -152,27 +148,6 @@ public abstract class AbstractEncoder implements Encoder {
 		}
 		return image;
 	}
-
-/*	protected synchronized final byte[] fetchImage(URL url) throws VideoException{
-		InputStream in = null;
-		try {
-			stillsCon = ImageFactory.createConnection(url, username, password);
-			int response = stillsCon.getResponseCode();
-			if(response == 503){
-				throw new Exception("HTTP 503");
-			}
-			in = stillsCon.getInputStream();
-			int length = Integer.parseInt(
-					stillsCon.getHeaderField("Content-Length"));
-			return readImage(in, length);
-		}catch(Exception e){
-			throw new VideoException(e.getMessage());
-		}finally{
-			try{
-				stillsCon.disconnect();
-			}catch(Exception e){}
-		}
-	}*/
 
 	public String createSizeParam(ImageSize size){
 		return PARAM_SIZE + "=" + size.getDimensions();
