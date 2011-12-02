@@ -49,6 +49,10 @@ public final class ImageServer extends VideoServlet{
 	private static Hashtable<String, CacheEntry> cache =
 		new Hashtable<String, CacheEntry>();
 
+	private String encoderUser = null;
+	
+	private String encoderPass = null;
+	
 	protected final long DEFAULT_CACHE_DURATION = 10000; //10 seconds
 	
 	protected long cacheDuration = DEFAULT_CACHE_DURATION;
@@ -64,6 +68,8 @@ public final class ImageServer extends VideoServlet{
 		try{
 			ServletContext ctx = config.getServletContext();
 			Properties p = (Properties)ctx.getAttribute("properties");
+			encoderUser = p.getProperty("video.encoder.user");
+			encoderPass = p.getProperty("video.encoder.pwd");
 			if(proxy){
 				hostPorts = AbstractDataSource.createDistrictHostPorts(p);
 			}else{
@@ -128,7 +134,10 @@ public final class ImageServer extends VideoServlet{
 				Encoder encoder = encoderFactory.getEncoder(c.getCameraId());
 				url = encoder.getImageURL(c);
 			}
-			return ImageFactory.getImage(url);
+			if(url==null){
+				return null;
+			}
+			return ImageFactory.getImage(url, encoderUser, encoderPass);
 		}catch(VideoException ve){
 			logger.fine(ve.getMessage());
 		}

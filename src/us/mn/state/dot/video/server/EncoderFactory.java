@@ -63,6 +63,14 @@ public class EncoderFactory {
 		return factory;
 	}
 	
+	public String getUser(){
+		return encoderUser;
+	}
+	
+	public String getPassword(){
+		return encoderPass;
+	}
+	
 	private EncoderFactory(Properties props){
 		this.logger = Logger.getLogger(Constants.LOGGER_NAME);
 		this.properties = props;

@@ -153,7 +153,7 @@ public abstract class AbstractEncoder implements Encoder {
 		return image;
 	}
 
-	protected synchronized final byte[] fetchImage(URL url) throws VideoException{
+/*	protected synchronized final byte[] fetchImage(URL url) throws VideoException{
 		InputStream in = null;
 		try {
 			stillsCon = ImageFactory.createConnection(url, username, password);
@@ -172,7 +172,7 @@ public abstract class AbstractEncoder implements Encoder {
 				stillsCon.disconnect();
 			}catch(Exception e){}
 		}
-	}
+	}*/
 
 	public String createSizeParam(ImageSize size){
 		return PARAM_SIZE + "=" + size.getDimensions();

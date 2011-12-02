@@ -46,6 +46,9 @@ abstract public class ImageFactory {
 
 	public static HttpURLConnection createConnection(URL url, String user, String pwd)
 			throws VideoException {
+		if(url==null){
+			throw new VideoException("URL is null");
+		}
 		HttpURLConnection c = createConnection(url);
 		prepareConnection(c, user, pwd);
 		return c;
@@ -60,6 +63,8 @@ abstract public class ImageFactory {
 			c.setReadTimeout(VideoThread.TIMEOUT_DIRECT);
 			return c;
 		}catch(Exception e){
+			System.err.println("Error creating connection for URL: " + url);
+			e.printStackTrace();
 			throw new VideoException(e.getMessage());
 		}
 	}
@@ -101,11 +106,11 @@ abstract public class ImageFactory {
 	 * @return A byte[] containing the image data.
 	 * @throws IOException
 	 */
-	public static byte[] getImage(URL url)
+	public static byte[] getImage(URL url, String user, String pwd)
 			throws VideoException{
 		InputStream in = null;
 		try{
-			URLConnection c = createConnection(url);
+			URLConnection c = createConnection(url, user, pwd);
 			in = c.getInputStream();
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			byte[] data = new byte[1024];
@@ -117,14 +122,14 @@ abstract public class ImageFactory {
 			}
 			return bos.toByteArray();
 		}catch(Exception e){
-			throw new VideoException(e.getMessage());
+			e.printStackTrace();
+			return null;
+			//throw new VideoException(e.getMessage());
 		}finally{
 			try{
 				in.close();
-			}catch(IOException ioe2){
-				System.err.println(ioe2.getStackTrace());
-			}catch(NullPointerException npe){
-				System.err.println(npe.getStackTrace());
+			}catch(Exception e2){
+				e2.printStackTrace();
 			}
 		}
 	}
