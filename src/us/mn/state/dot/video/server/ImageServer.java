@@ -139,7 +139,7 @@ public final class ImageServer extends VideoServlet{
 	private URL getDistrictImageURL(Client c) throws VideoException {
 		String s = "";
 		try{
-			s = "http://" + hostPorts.get(c.getDistrict().name()) +
+			s = "http://" + hostPorts.get(c.getDistrict()) +
 			"/video/" + RequestType.IMAGE.name().toLowerCase() +
 			"?id=" + c.getCameraId() +
 			"&size=" + c.getSize();

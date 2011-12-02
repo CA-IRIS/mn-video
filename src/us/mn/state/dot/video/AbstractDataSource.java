@@ -153,8 +153,8 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 	public static HashMap<District, String> createDistrictHostPorts(Properties p){
 		HashMap<District, String> hostPortMap = new HashMap<District, String>();
 		for(District d : District.values()){
-			String host = p.getProperty(d.name() + ".host");
-			String port = p.getProperty(d.name() + ".port");
+			String host = p.getProperty(d.name().toLowerCase() + ".host");
+			String port = p.getProperty(d.name().toLowerCase() + ".port");
 			if(isValidHost(host) && isValidPort(port)){
 				hostPortMap.put(d, host + ":" + port);
 			}
