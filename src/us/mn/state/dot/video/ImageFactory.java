@@ -20,8 +20,6 @@
 package us.mn.state.dot.video;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -61,37 +59,6 @@ abstract public class ImageFactory {
 		}
 	}
 	
-	/** Read data from the URL into a file.
-	 * 
-	 * @param url The URL of the source
-	 * @param f The file in which to save the data.
-	 * @throws IOException
-	 */
-	public static void readData(URL url, File f)
-			throws VideoException{
-		FileOutputStream out = null;
-		try{
-			out = new FileOutputStream(f);
-			URLConnection c = createConnection(url);
-			InputStream in = c.getInputStream();
-			byte[] data = new byte[1024];
-			int bytesRead = 0;
-			while(true){
-				bytesRead = in.read(data);
-				if(bytesRead==-1) break;
-				out.write(data, 0, bytesRead);
-			}
-		}catch(Exception e){
-			throw new VideoException(e.getMessage());
-		}finally{
-			try{
-				out.flush();
-				out.close();
-			}catch(Exception e){
-			}
-		}
-	}
-
 	/**
 	 * Get an image from the given url
 	 * @param url The location of the image file
