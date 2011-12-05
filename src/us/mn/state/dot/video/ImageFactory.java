@@ -28,8 +28,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
-import javax.imageio.stream.FileImageInputStream;
-
 
 /** The ImageFactory is a convenience class for retrieving images.
  * 
@@ -37,12 +35,6 @@ import javax.imageio.stream.FileImageInputStream;
  *
  */
 abstract public class ImageFactory {
-
-	/** Location of the no_video image */
-	private static String noVideoFile = 
-		"/usr/share/tomcat6/webapps/video/images/novideo.jpg";
-
-	private static byte[] noVideo = createNoVideoImage();
 
 	public static HttpURLConnection createConnection(URL url, String user, String pwd)
 			throws VideoException {
@@ -143,22 +135,4 @@ abstract public class ImageFactory {
 			c.addRequestProperty("Authorization", "Basic " + encoded.toString());
 		}
 	}
-
-	/** Create a no-video image */
-	protected final static byte[] createNoVideoImage(){
-		try{
-			FileImageInputStream in = null;
-			in = new FileImageInputStream(new File(noVideoFile));
-			byte[] bytes = new byte[(int)in.length()];
-			in.read(bytes, 0, bytes.length);
-			return bytes;
-		}catch(IOException ioe){
-			return null;
-		}
-	}
-
-	public static byte[] getNoVideoImage(){
-		return noVideo;
-	}
-
 }

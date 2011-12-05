@@ -19,12 +19,15 @@
 package us.mn.state.dot.video.server;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+import javax.imageio.stream.FileImageInputStream;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -46,6 +49,8 @@ import us.mn.state.dot.video.VideoThread;
  */
 public abstract class VideoServlet extends HttpServlet {
 	
+	protected static byte[] noVideo = null;
+
 	protected ImageSize maxImageSize = ImageSize.MEDIUM;
 	
 	protected ImageSize defaultImageSize = ImageSize.MEDIUM;
@@ -90,6 +95,7 @@ public abstract class VideoServlet extends HttpServlet {
 		ServletContext ctx = config.getServletContext();
 		Properties props =(Properties)ctx.getAttribute("properties");
 		proxy = new Boolean(props.getProperty("proxy", "false")).booleanValue();
+		createNoVideoImage(props.getProperty("novideo.filename", "novideo.jpg"));
 		if(proxy){
 			try{
 				ssidURL = new URL(props.getProperty("ssid.url"));
@@ -219,12 +225,14 @@ public abstract class VideoServlet extends HttpServlet {
 		Client c) throws Exception;
 
 	protected final void sendNoVideo(HttpServletResponse response, Client c){
+		if(noVideo==null){
+			return;
+		}
 		try{
-			byte[] image = ImageFactory.getNoVideoImage();
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("image/jpeg");
-			response.setContentLength(image.length);
-			response.getOutputStream().write(image);
+			response.setContentLength(noVideo.length);
+			response.getOutputStream().write(noVideo);
 			response.flushBuffer();
 		}catch(Exception e){
 			logger.warning(e.getMessage());
@@ -261,5 +269,18 @@ public abstract class VideoServlet extends HttpServlet {
 			logger.warning("VideoServlet.isValidSSID: " + e.getMessage());
 		}
 		return false;
+	}
+
+	/** Create a no-video image */
+	protected final void createNoVideoImage(String fileName){
+		try{
+			FileImageInputStream in = null;
+			in = new FileImageInputStream(new File(fileName));
+			byte[] bytes = new byte[(int)in.length()];
+			in.read(bytes, 0, bytes.length);
+			noVideo = bytes;
+		}catch(IOException ioe){
+			noVideo = null;
+		}
 	}
 }

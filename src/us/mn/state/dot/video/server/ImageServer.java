@@ -114,7 +114,7 @@ public final class ImageServer extends VideoServlet{
 		if(entry != null && !entry.isExpired()) return entry.getImage();
 		byte[] image = fetchImage(c);
 		if(image == null){
-			return ImageFactory.getNoVideoImage();
+			return noVideo;
 		}
 		if(entry == null){
 			entry = new CacheEntry(image, cacheDuration);
