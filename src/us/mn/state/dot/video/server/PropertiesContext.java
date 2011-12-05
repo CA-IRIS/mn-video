@@ -80,8 +80,6 @@ public class PropertiesContext extends HttpServlet{
 				java.security.Security.getProperty(PROP_DNS_TTL) + " seconds.");
 		ctx.setAttribute("properties", props);
 		ctx.setAttribute(PROP_LOGGER, logger);
-		ctx.setAttribute("minPwdLength",
-				new Integer(props.getProperty("min.pwd.length", "6")));
 		ctx.setAttribute(PROP_MAX_FRAME_RATE,
 				new Integer(props.getProperty(PROP_MAX_FRAME_RATE, "1")));
 		Calendar c = Calendar.getInstance();
