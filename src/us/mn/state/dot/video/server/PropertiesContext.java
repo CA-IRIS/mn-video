@@ -51,10 +51,6 @@ public class PropertiesContext extends HttpServlet{
 
 	public static final String PROP_DNS_TTL = "networkaddress.cache.ttl";
 
-	public static final String PROP_MAX_FRAME_RATE = "max.framerate";
-
-	public static final String PROP_LOGGER = "logger";
-
 	/** Properties */
 	static protected final Properties props = new Properties();
 
@@ -79,9 +75,6 @@ public class PropertiesContext extends HttpServlet{
 		logger.info("DNS Cache duration set to " +
 				java.security.Security.getProperty(PROP_DNS_TTL) + " seconds.");
 		ctx.setAttribute("properties", props);
-		ctx.setAttribute(PROP_LOGGER, logger);
-		ctx.setAttribute(PROP_MAX_FRAME_RATE,
-				new Integer(props.getProperty(PROP_MAX_FRAME_RATE, "1")));
 		Calendar c = Calendar.getInstance();
 		System.out.println(Constants.DATE_FORMAT.format(c.getTime()) + ": Video servlet started.");
 		logger.info("Video Server started.");
