@@ -51,12 +51,6 @@ public class PropertiesContext extends HttpServlet{
 
 	public static final String PROP_DNS_TTL = "networkaddress.cache.ttl";
 
-	public static final String PROP_APP_HOME = "app.home";
-
-	public static final String PROP_APP_NAME = "app.name";
-
-	public static final String PROP_LOG_LEVEL = "log.level";
-
 	public static final String PROP_MAX_FRAME_RATE = "max.framerate";
 
 	public static final String PROP_LOGGER = "logger";
