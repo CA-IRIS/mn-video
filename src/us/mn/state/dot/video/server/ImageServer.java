@@ -20,7 +20,6 @@ package us.mn.state.dot.video.server;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Properties;
 
@@ -29,9 +28,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
-import us.mn.state.dot.video.AbstractDataSource;
 import us.mn.state.dot.video.Client;
-import us.mn.state.dot.video.District;
 import us.mn.state.dot.video.Encoder;
 import us.mn.state.dot.video.ImageFactory;
 import us.mn.state.dot.video.RequestType;
@@ -57,11 +54,6 @@ public final class ImageServer extends VideoServlet{
 	
 	protected long cacheDuration = DEFAULT_CACHE_DURATION;
 	
-	protected HashMap<District, String> hostPorts =
-		new HashMap<District, String>();
-	
-	protected EncoderFactory encoderFactory = null;
-	
 	/** Constructor for the ImageServer */
     public void init(ServletConfig config) throws ServletException {
 		super.init( config );
@@ -70,11 +62,6 @@ public final class ImageServer extends VideoServlet{
 			Properties p = (Properties)ctx.getAttribute("properties");
 			encoderUser = p.getProperty("video.encoder.user");
 			encoderPass = p.getProperty("video.encoder.pwd");
-			if(proxy){
-				hostPorts = AbstractDataSource.createDistrictHostPorts(p);
-			}else{
-				encoderFactory = EncoderFactory.getInstance(p);
-			}
 			cacheDuration = Long.parseLong(
 					p.getProperty("video.cache.duration",
 					Long.toString(DEFAULT_CACHE_DURATION)));

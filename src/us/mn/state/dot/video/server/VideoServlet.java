@@ -24,6 +24,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -35,6 +38,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import us.mn.state.dot.video.AbstractDataSource;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.Constants;
 import us.mn.state.dot.video.District;
@@ -55,8 +59,9 @@ public abstract class VideoServlet extends HttpServlet {
 	
 	protected ImageSize defaultImageSize = ImageSize.MEDIUM;
 
-	protected URL ssidURL = null;
-
+	protected HashMap<District, String> hostPorts =
+		new HashMap<District, String>();
+	
 	/**Flag that controls whether this instance is acting as a proxy 
 	 * or a direct video server */
 	protected boolean proxy = false;
@@ -88,6 +93,8 @@ public abstract class VideoServlet extends HttpServlet {
 
 	protected static District defaultDistrict = District.METRO;
 
+	protected EncoderFactory encoderFactory = null;
+
 	/** Initialize the VideoServlet */
 	public void init(ServletConfig config) throws ServletException {
 		super.init( config );
@@ -98,10 +105,12 @@ public abstract class VideoServlet extends HttpServlet {
 		createNoVideoImage(props.getProperty("novideo.filename", "novideo.jpg"));
 		if(proxy){
 			try{
-				ssidURL = new URL(props.getProperty("ssid.url"));
+				hostPorts = AbstractDataSource.createDistrictHostPorts(props);
 			}catch(Exception e){
 				e.printStackTrace();
 			}
+		}else{
+			encoderFactory = EncoderFactory.getInstance(props);
 		}
 		String max = props.getProperty("max.imagesize", ImageSize.MEDIUM.name());
 		for(ImageSize size : ImageSize.values()){
@@ -242,24 +251,28 @@ public abstract class VideoServlet extends HttpServlet {
 	/** Check to see if the client is authenticated through SONAR */
 	protected final boolean isAuthenticated(Client c){
 		if(!proxy) return true;
-		return isValidSSID(c.getSonarSessionId());
+		long ssid = c.getSonarSessionId();
+		List<Long> validIds = getValidSessionIds(c.getDistrict());
+		for(long validId : validIds){
+			if(ssid == validId) return true;
+		}
+		return false;
 	}
-
-	/** Validate the Sonar Session ID */
-	protected final boolean isValidSSID(long ssid){
-		logger.fine("Validating client " + ssid + "...");
+	
+	private List<Long> getValidSessionIds(District d){
+		List<Long> ids = new LinkedList<Long>();
 		try{
-			HttpURLConnection conn = ImageFactory.createConnection(ssidURL);
+			String s = "http://" + hostPorts.get(d) + "/iris/session_ids";
+			URL url = new URL(s);
+			HttpURLConnection conn = ImageFactory.createConnection(url);
 			conn.setConnectTimeout(VideoThread.TIMEOUT_DIRECT);
 			conn.setReadTimeout(VideoThread.TIMEOUT_DIRECT);
 			InputStreamReader in = new InputStreamReader(conn.getInputStream());
 			BufferedReader reader = new BufferedReader(in);
 			String l = reader.readLine();
 			while(l != null){
-				logger.fine("\tchecking against " + l);
 				try{
-					long validId = Long.parseLong(l);
-					if(ssid == validId) return true;
+					ids.add(Long.parseLong(l));
 				}catch(NumberFormatException nfe){
 					//invalid ssid... ignore it!
 				}
@@ -268,7 +281,7 @@ public abstract class VideoServlet extends HttpServlet {
 		}catch(Exception e){
 			logger.warning("VideoServlet.isValidSSID: " + e.getMessage());
 		}
-		return false;
+		return ids;
 	}
 
 	/** Create a no-video image */
