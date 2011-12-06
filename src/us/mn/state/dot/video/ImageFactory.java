@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -80,17 +81,21 @@ abstract public class ImageFactory {
 				bos.write(data, 0, bytesRead);
 			}
 			return bos.toByteArray();
+		}catch(SocketTimeoutException ste){
+			System.out.println("Timed out: " + url);
 		}catch(Exception e){
 			e.printStackTrace();
-			return null;
 			//throw new VideoException(e.getMessage());
 		}finally{
 			try{
 				in.close();
+			}catch(NullPointerException npe){
+				System.out.println("Null InputStream: " + url);
 			}catch(Exception e2){
 				e2.printStackTrace();
 			}
 		}
+		return null;
 	}
 
 	/** Prepare a connection by setting necessary properties and timeouts */

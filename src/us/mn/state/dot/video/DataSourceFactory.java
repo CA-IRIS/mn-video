@@ -50,9 +50,9 @@ public class DataSourceFactory {
 	 * or a direct video server */
 	private boolean proxy = false;
 
-	protected HashMap<District, String> hostPorts =
-		new HashMap<District, String>();
-	
+	protected static final HashMap<District, URL> districtVideoURLs =
+		new HashMap<District, URL>();
+
 	protected EncoderFactory encoderFactory;
 	
 	/** Constructor for the DataSourceFactory. */
@@ -61,7 +61,13 @@ public class DataSourceFactory {
 		monitor = m;
 		proxy = new Boolean(p.getProperty("proxy", "false")).booleanValue();
 		if(proxy) {
-			hostPorts = AbstractDataSource.createDistrictHostPorts(p);
+			for(District d : District.values()){
+				try{
+					districtVideoURLs.put(d, new URL(p.getProperty(d.name() + ".video.url")));
+				}catch(Exception e){
+					//do nothing, it's a misconfigured url.
+				}
+			}
 		}else{
 			encoderFactory = EncoderFactory.getInstance(p);
 		}
@@ -90,7 +96,7 @@ public class DataSourceFactory {
 	private DataSource createDataSource(Client c) throws VideoException {
 		try{
 			if(proxy){
-				URL url = createURL(c, hostPorts.get(c.getDistrict()));
+				URL url = new URL(districtVideoURLs.get(c.getDistrict()), createRelativeURL(c));
 				return new HttpDataSource(c, logger, monitor, url, null, null);
 			}else{
 				Encoder encoder = encoderFactory.getEncoder(c.getCameraId());
@@ -104,22 +110,15 @@ public class DataSourceFactory {
 		}
 	}
 
-	public static URL createURL(Client c, String hostPort) throws VideoException {
-		try{
-			String s =
-				"http://" + hostPort + "/video/" +
-				RequestType.STREAM.name().toLowerCase() +
-				"?id=" + c.getCameraId() +
-				"&size=" + c.getSize() +
-				"&rate=" + c.getRate() +
-				"&duration=" + c.getDuration() +
-				"&user=" + c.getUser() +
-				"&district=" + c.getDistrict().name() +
-				"&ssid=" + c.getSonarSessionId();
-			return new URL(s);
-		}catch(Exception e){
-			throw new VideoException(e.getMessage());
-		}
+	private static String createRelativeURL(Client c) {
+		return RequestType.STREAM.name().toLowerCase() +
+			"?id=" + c.getCameraId() +
+			//"&size=" + c.getSize() +
+			"&rate=" + c.getRate() +
+			"&duration=" + c.getDuration() +
+			"&user=" + c.getUser() +
+			"&district=" + c.getDistrict().name() +
+			"&ssid=" + c.getSonarSessionId();
 	}
 
 	public synchronized DataSource getDataSource(Client c)

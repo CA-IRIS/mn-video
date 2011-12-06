@@ -23,9 +23,7 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
@@ -143,22 +141,5 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 		}catch(Exception e){
 			return false;
 		}
-	}
-	
-	/** Create a HashMap of host:port strings for the district video servers.
-     * @param p
-     * @param type Stream (1) or Still (2)
-     * @return
-     */
-	public static HashMap<District, String> createDistrictHostPorts(Properties p){
-		HashMap<District, String> hostPortMap = new HashMap<District, String>();
-		for(District d : District.values()){
-			String host = p.getProperty(d.name().toLowerCase() + ".host");
-			String port = p.getProperty(d.name().toLowerCase() + ".port");
-			if(isValidHost(host) && isValidPort(port)){
-				hostPortMap.put(d, host + ":" + port);
-			}
-		}
-		return hostPortMap;
 	}
 }

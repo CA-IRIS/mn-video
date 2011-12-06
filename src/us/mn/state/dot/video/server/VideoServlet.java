@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -38,7 +39,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import us.mn.state.dot.video.AbstractDataSource;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.Constants;
 import us.mn.state.dot.video.District;
@@ -59,8 +59,11 @@ public abstract class VideoServlet extends HttpServlet {
 	
 	protected ImageSize defaultImageSize = ImageSize.MEDIUM;
 
-	protected HashMap<District, String> hostPorts =
-		new HashMap<District, String>();
+	protected static final HashMap<District, URL> districtSessionURLs =
+		new HashMap<District, URL>();
+
+	protected static final HashMap<District, URL> districtVideoURLs =
+		new HashMap<District, URL>();
 	
 	/**Flag that controls whether this instance is acting as a proxy 
 	 * or a direct video server */
@@ -104,11 +107,7 @@ public abstract class VideoServlet extends HttpServlet {
 		proxy = new Boolean(props.getProperty("proxy", "false")).booleanValue();
 		createNoVideoImage(props.getProperty("novideo.filename", "novideo.jpg"));
 		if(proxy){
-			try{
-				hostPorts = AbstractDataSource.createDistrictHostPorts(props);
-			}catch(Exception e){
-				e.printStackTrace();
-			}
+			createDistrictURLs(props);
 		}else{
 			encoderFactory = EncoderFactory.getInstance(props);
 		}
@@ -122,6 +121,21 @@ public abstract class VideoServlet extends HttpServlet {
 		if(logger==null) logger = Logger.getLogger(Constants.LOGGER_NAME);
 	}
 
+	private void createDistrictURLs(Properties p){
+		if(!proxy) return;
+		for(District d : District.values()){
+			String s = null;
+			try{
+				s = p.getProperty(d.name().toLowerCase() + ".video.url");
+				districtVideoURLs.put(d, new URL(s));
+				s = p.getProperty(d.name().toLowerCase() + ".session.url");
+				districtSessionURLs.put(d, new URL(s));
+			}catch(MalformedURLException e){
+				System.out.println("Malformed URL: " + s);
+			}
+		}
+	}
+
 	/** Get an integer parameter request */
 	protected int getIntRequest(HttpServletRequest req, String param) {
 		return Integer.parseInt(req.getParameter(param));
@@ -130,21 +144,20 @@ public abstract class VideoServlet extends HttpServlet {
 	/** Get the requested district. */
 	protected District getRequestedDistrict(HttpServletRequest req) {
 		String value = req.getParameter(PARAM_DISTRICT);
-		if(value == null)
-			return defaultDistrict;
-		for(District d : District.values()){
-			if(d.name().equalsIgnoreCase(value)){
-				return d;
+		if(value != null){
+			for(District d : District.values()){
+				if(d.name().equalsIgnoreCase(value)){
+					return d;
+				}
 			}
 		}
 		//for backward compatibility, support area parameter
 		value = req.getParameter("area");
-		if(value == null){
-			return defaultDistrict;
+		if(value != null){
+			if(value.equals("0")) return District.METRO;
+			if(value.equals("1")) return District.D6;
+			if(value.equals("2")) return District.D1;
 		}
-		if(value.equals("0")) return District.METRO;
-		if(value.equals("1")) return District.D6;
-		if(value.equals("2")) return District.D1;
 		return defaultDistrict;
 	}
 	
@@ -262,9 +275,7 @@ public abstract class VideoServlet extends HttpServlet {
 	private List<Long> getValidSessionIds(District d){
 		List<Long> ids = new LinkedList<Long>();
 		try{
-			String s = "http://" + hostPorts.get(d) + "/iris/session_ids";
-			URL url = new URL(s);
-			HttpURLConnection conn = ImageFactory.createConnection(url);
+			HttpURLConnection conn = ImageFactory.createConnection(districtSessionURLs.get(d));
 			conn.setConnectTimeout(VideoThread.TIMEOUT_DIRECT);
 			conn.setReadTimeout(VideoThread.TIMEOUT_DIRECT);
 			InputStreamReader in = new InputStreamReader(conn.getInputStream());

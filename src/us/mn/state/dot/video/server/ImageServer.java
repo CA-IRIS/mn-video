@@ -133,15 +133,15 @@ public final class ImageServer extends VideoServlet{
 
 	/** Get the URL used to retrieve a new image from a district server */
 	private URL getDistrictImageURL(Client c) throws VideoException {
-		String s = "";
+		String relativeURL = "";
 		try{
-			s = "http://" + hostPorts.get(c.getDistrict()) +
-			"/video/" + RequestType.IMAGE.name().toLowerCase() +
-			"?id=" + c.getCameraId() +
-			"&size=" + c.getSize();
-			return new URL(s);
+			relativeURL = "/video/" +
+				RequestType.IMAGE.name().toLowerCase() +
+				"?id=" + c.getCameraId();
+				//"&size=" + c.getSize();
+			return new URL(districtVideoURLs.get(c.getDistrict()), relativeURL);
 		}catch(MalformedURLException mue){
-			throw new VideoException("Malformed URL: " + s);
+			throw new VideoException(mue.getMessage());
 		}
 	}
 
