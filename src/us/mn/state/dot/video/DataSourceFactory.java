@@ -63,7 +63,7 @@ public class DataSourceFactory {
 		if(proxy) {
 			for(District d : District.values()){
 				try{
-					districtVideoURLs.put(d, new URL(p.getProperty(d.name() + ".video.url")));
+					districtVideoURLs.put(d, new URL(p.getProperty(d.name().toLowerCase() + ".video.url")));
 				}catch(Exception e){
 					//do nothing, it's a misconfigured url.
 				}
