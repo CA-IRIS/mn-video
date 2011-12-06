@@ -98,7 +98,7 @@
 
 	<!-- Create the war -->
 	<target name="war"
-		depends="compile"
+		depends="clean, compile"
 		description="Creates the war file. Can be used as backend or repeater">
 		<copy todir="${build.war.dir}/WEB-INF/lib">
 			<fileset dir="${lib.dir}" >
