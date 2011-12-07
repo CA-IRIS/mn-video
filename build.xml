@@ -33,7 +33,6 @@
 	<property name="build.javadocs.dir" value="${build.dir}/javadocs" />
 	<property name="webxml" value="${web.dir}/web-inf/web.xml"/>
 	<property name="userdocs.dir" value="${name}" />
-	<property name="manifest" value="etc/manifest.mf" />
 	<property name="build.compiler.pedantic" value="true"/>
 	<path id="classpath">
 		<fileset dir = "${lib.dir}" includes="**/*.jar"/>
@@ -122,7 +121,6 @@
 		<war
 			destfile="${build.lib.dir}/${name}.war-${version}"
 			webxml="${webxml}"
-			manifest="${manifest}"
 			basedir="${build.war.dir}">
 		</war>
 	</target>
