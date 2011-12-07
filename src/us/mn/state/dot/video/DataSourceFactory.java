@@ -20,9 +20,7 @@
 package us.mn.state.dot.video;
 
 import java.net.URL;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -40,9 +38,9 @@ public class DataSourceFactory {
 
 	private ThreadMonitor monitor = null;
 	
-	/** Table of video streams that are active. */
-	static final protected Hashtable<String, AbstractDataSource>
-		sourceTable = new Hashtable<String, AbstractDataSource>();
+	/** Hash of video streams that are active. */
+	static final protected HashMap<String, AbstractDataSource>
+		sources = new HashMap<String, AbstractDataSource>();
 
 	private final Logger logger;
 	
@@ -71,28 +69,21 @@ public class DataSourceFactory {
 		}else{
 			encoderFactory = EncoderFactory.getInstance(p);
 		}
-		Thread t = new Thread(){
-			public void run(){
-				while(true){
-					Enumeration<AbstractDataSource> e = sourceTable.elements();
-					while(e.hasMoreElements()){
-						AbstractDataSource src = e.nextElement();
-						if(!src.isAlive()){
-							Client c = src.getClient();
-							logger.info("Purging " + src);
-							sourceTable.remove(c.getCameraId() + ":" + c.getSize());
-						}
-					}
-					try{
-						Thread.sleep(60 * 1000);
-					}catch(InterruptedException ie){
-					}
-				}
-			}
-		};
-		t.start();
+	}
+
+	private String createSourceKey(Client c){
+		return c.getCameraId() + ":" + c.getSize();
 	}
 	
+	private void cleanupSources(){
+		for(AbstractDataSource src : sources.values()){
+			if(!src.isAlive()){
+				logger.info("Purging " + src);
+				sources.remove(createSourceKey(src.getClient()));
+			}
+		}
+	}
+
 	private DataSource createDataSource(Client c) throws VideoException {
 		try{
 			if(proxy){
@@ -123,20 +114,18 @@ public class DataSourceFactory {
 
 	public synchronized DataSource getDataSource(Client c)
 			throws VideoException {
-		if(c.getCameraId()==null) throw new VideoException(
-				"Invalid camera: " + c.getCameraId());
-		String name = c.getCameraId() + ":" + c.getSize();
-		logger.fine("There are currently " + sourceTable.size() + " datasources.");
-		AbstractDataSource src = sourceTable.get(name);
+		if(c.getCameraId()==null){
+			return null;
+		}
+		String key = createSourceKey(c);
+		logger.info("There are currently " + sources.size() + " datasources.");
+		cleanupSources();
+		AbstractDataSource src = sources.get(key);
 		if(src != null){
-			if(src.isAlive()){
-				return src;
-			}else{
-				sourceTable.remove(name);
-			}
+			return src;
 		}
 		src = (AbstractDataSource)createDataSource(c);
-		sourceTable.put(name, src);
+		sources.put(key, src);
 		return src;
 	}
 }

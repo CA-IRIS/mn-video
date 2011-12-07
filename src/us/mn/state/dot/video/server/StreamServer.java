@@ -34,7 +34,6 @@ import us.mn.state.dot.video.DataSource;
 import us.mn.state.dot.video.DataSourceFactory;
 import us.mn.state.dot.video.MJPEG;
 import us.mn.state.dot.video.MJPEGWriter;
-import us.mn.state.dot.video.ThreadMonitor;
 import us.mn.state.dot.video.VideoException;
 
 /**
@@ -52,7 +51,7 @@ public class StreamServer extends VideoServlet {
 	/** The DataSourceFactory that maintains the DataSources. */
 	private static DataSourceFactory dsFactory;
 
-	private ThreadMonitor monitor = null;
+//	private ThreadMonitor monitor = null;
 	
 	private int maxFrameRate = 3;
 	
@@ -63,10 +62,10 @@ public class StreamServer extends VideoServlet {
 	public void init( ServletConfig config ) throws ServletException {
 		super.init( config );
 		Calendar begin = Calendar.getInstance();
-		monitor = new ThreadMonitor("ThreadMonitor", 10000, logger);
+		//monitor = new ThreadMonitor("ThreadMonitor", 10000, logger);
 		ServletContext ctx = config.getServletContext();
 		Properties props =(Properties)ctx.getAttribute("properties");
-		dsFactory = new DataSourceFactory(props, monitor);
+		dsFactory = new DataSourceFactory(props, null);
 		try{
 			maxFrameRate = Integer.parseInt(props.getProperty("max.framerate"));
 		}catch(Exception e){
