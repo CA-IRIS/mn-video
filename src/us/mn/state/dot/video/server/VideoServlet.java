@@ -74,8 +74,6 @@ public abstract class VideoServlet extends HttpServlet {
 
 	protected String servletName = "VideoServlet";
 	
-	protected HttpServletRequest request = null;
-	
 	/** The request parameter name for the SONAR session ID */
 	public static final String PARAM_SSID = "ssid";
 	
@@ -247,7 +245,6 @@ public abstract class VideoServlet extends HttpServlet {
 	{
 		//parseRequest(request);
 		Client c = new Client();
-		this.request = request; 
 		try {
 			configureClient(c, request);
 			processRequest(response, c);
