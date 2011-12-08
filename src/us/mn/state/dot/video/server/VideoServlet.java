@@ -162,8 +162,21 @@ public abstract class VideoServlet extends HttpServlet {
 		return defaultDistrict;
 	}
 	
+	/** Get the requested camera ID. */
+	protected String getRequestedCameraId(HttpServletRequest req) {
+		String path = req.getPathInfo();
+		if(path!=null){
+			String[] pathParts = path.substring(1).split("/");
+			if(pathParts.length==2){
+				return pathParts[1];
+			}
+		}
+		//for backward compatibility, support id parameter
+		return req.getParameter("id");
+	}
+
 	/** Get the requested image size.
-	 * Valid request values are d1,d2,3 or s,m,l
+	 * Valid request values are 1,2,3 or s,m,l
 	 */
 	protected ImageSize getRequestedSize(HttpServletRequest req) {
 		String value = req.getParameter(PARAM_SIZE);
@@ -199,10 +212,8 @@ public abstract class VideoServlet extends HttpServlet {
 		if(req.getParameter(PARAM_USER) != null)
 			c.setUser(req.getParameter(PARAM_USER));
 		c.setDistrict(getRequestedDistrict(req));
-		if(req.getParameter("id") != null)
-			c.setCameraId(req.getParameter("id"));
-		if(req.getParameter(PARAM_SIZE) != null)
-			c.setSize(getRequestedSize(req));
+		c.setCameraId(getRequestedCameraId(req));
+		c.setSize(getRequestedSize(req));
 		if(req.getParameter(PARAM_RATE) != null)
 			c.setRate(getIntRequest(req, PARAM_RATE));
 		if(req.getParameter(PARAM_DURATION) != null)
@@ -222,6 +233,8 @@ public abstract class VideoServlet extends HttpServlet {
 		System.out.println("Path info: " + r.getPathInfo());
 		System.out.println("Request URI: " + r.getRequestURI());
 		System.out.println("Servlet path: " + r.getServletPath());
+		System.out.println("Query string: " + r.getQueryString());
+		System.out.println("Local name: " + r.getLocalName());
 	}
 	
 	/**
@@ -232,7 +245,7 @@ public abstract class VideoServlet extends HttpServlet {
 	protected final void doGet(HttpServletRequest request,
 		HttpServletResponse response)
 	{
-		parseRequest(request);
+		//parseRequest(request);
 		Client c = new Client();
 		this.request = request; 
 		try {
