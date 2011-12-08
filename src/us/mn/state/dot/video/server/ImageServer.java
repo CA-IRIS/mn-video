@@ -78,7 +78,6 @@ public final class ImageServer extends VideoServlet{
 	public void processRequest(HttpServletResponse response, Client c)
 		throws VideoException
 	{
-		long start = System.currentTimeMillis();
 		byte[] image = getImage(c);
 		try{
 			response.setStatus(HttpServletResponse.SC_OK);
@@ -89,9 +88,6 @@ public final class ImageServer extends VideoServlet{
 		}catch(Throwable t){
 			logger.warning("Error serving image " + c.getCameraId() +
 					" to client " + c.getHost());
-		}finally{
-			logger.fine("Request filled in " + (System.currentTimeMillis()-start) +
-					" milliseconds");
 		}
 	}
 
