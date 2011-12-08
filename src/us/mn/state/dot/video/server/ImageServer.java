@@ -71,15 +71,16 @@ public final class ImageServer extends VideoServlet{
 		}
     }
 
-	/**
-	 * @param request servlet request
-	 * @param response servlet response
-	 */
 	public void processRequest(HttpServletResponse response, Client c)
 		throws VideoException
 	{
 		byte[] image = getImage(c);
 		try{
+			if(!isValidCamera(c)){
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+				response.flushBuffer();
+				return;
+			}
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("image/jpeg\r\n");
 			response.setContentLength(image.length);

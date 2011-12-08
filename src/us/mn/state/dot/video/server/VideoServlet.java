@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.Constants;
 import us.mn.state.dot.video.District;
+import us.mn.state.dot.video.Encoder;
 import us.mn.state.dot.video.ImageFactory;
 import us.mn.state.dot.video.ImageSize;
 import us.mn.state.dot.video.VideoThread;
@@ -226,13 +227,12 @@ public abstract class VideoServlet extends HttpServlet {
 		c.setHost(host);
 	}
     
-	private void parseRequest(HttpServletRequest r){
-		System.out.println("Context path: " + r.getContextPath());
-		System.out.println("Path info: " + r.getPathInfo());
-		System.out.println("Request URI: " + r.getRequestURI());
-		System.out.println("Servlet path: " + r.getServletPath());
-		System.out.println("Query string: " + r.getQueryString());
-		System.out.println("Local name: " + r.getLocalName());
+	protected boolean isValidCamera(Client c){
+		if(c==null) return false;
+		if(c.getCameraId()==null) return false;
+		if(proxy) return true;//proxy server can't validate camera id
+		Encoder encoder = encoderFactory.getEncoder(c.getCameraId());
+		return encoder != null;
 	}
 	
 	/**
