@@ -78,21 +78,30 @@ public class StreamServer extends VideoServlet {
 	 */
 	public void processRequest(HttpServletResponse response,
 			Client c) throws VideoException {
-		logger.fine(c.getCameraId() + " stream requested");
 		DataSource source = dsFactory.getDataSource(c);
 		try{
-			if( !isAuthenticated(c) || source==null || c.getCameraId() == null){
-				sendNoVideo(response, c);
-			}else{
-				response.setStatus(HttpServletResponse.SC_OK);
-				response.setContentType(HEADER_CONTENT_TYPE);
+			if(!isAuthenticated(c)){
+				response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 				response.flushBuffer();
-				streamVideo(response, c, source);
+				return;
 			}
+			if(c.getCameraId() == null){
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+				response.flushBuffer();
+				return;
+			}
+			if(source==null){
+				response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+				response.flushBuffer();
+				return;
+			}
+			response.setStatus(HttpServletResponse.SC_OK);
+			response.setContentType(HEADER_CONTENT_TYPE);
+			response.flushBuffer();
+			streamVideo(response, c, source);
 		}catch(Exception e){
 			throw new VideoException(e.getMessage());
 		}
-		logger.fine(c.getCameraId() + " stream request processed.");
 	}
 	
 	/** Send MJPEG stream to the client.
