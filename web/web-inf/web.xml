@@ -17,7 +17,7 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>StreamServer</servlet-name>
-		<url-pattern>/stream</url-pattern>
+		<url-pattern>/stream/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet>
@@ -26,6 +26,6 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ImageServer</servlet-name>
-		<url-pattern>/image</url-pattern>
+		<url-pattern>/image/*</url-pattern>
 	</servlet-mapping>
 </web-app>

@@ -143,16 +143,17 @@ public abstract class VideoServlet extends HttpServlet {
 
 	/** Get the requested district. */
 	protected District getRequestedDistrict(HttpServletRequest req) {
-		String value = req.getParameter(PARAM_DISTRICT);
-		if(value != null){
+		String path = req.getPathInfo();
+		if(path!=null){
+			path = path.toLowerCase();
 			for(District d : District.values()){
-				if(d.name().equalsIgnoreCase(value)){
+				if(path.startsWith("/" + d.name().toLowerCase())){
 					return d;
 				}
 			}
 		}
 		//for backward compatibility, support area parameter
-		value = req.getParameter("area");
+		String value = req.getParameter("area");
 		if(value != null){
 			if(value.equals("0")) return District.METRO;
 			if(value.equals("1")) return District.D6;
@@ -216,6 +217,13 @@ public abstract class VideoServlet extends HttpServlet {
 		c.setHost(host);
 	}
     
+	private void parseRequest(HttpServletRequest r){
+		System.out.println("Context path: " + r.getContextPath());
+		System.out.println("Path info: " + r.getPathInfo());
+		System.out.println("Request URI: " + r.getRequestURI());
+		System.out.println("Servlet path: " + r.getServletPath());
+	}
+	
 	/**
 	 * Handles the HTTP <code>GET</code> method.
 	 * @param request servlet request
@@ -224,6 +232,7 @@ public abstract class VideoServlet extends HttpServlet {
 	protected final void doGet(HttpServletRequest request,
 		HttpServletResponse response)
 	{
+		parseRequest(request);
 		Client c = new Client();
 		this.request = request; 
 		try {
