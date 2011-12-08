@@ -20,12 +20,12 @@
 package us.mn.state.dot.video;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.logging.Logger;
 
 
 /** The ImageFactory is a convenience class for retrieving images.
@@ -34,6 +34,8 @@ import java.net.URLConnection;
  *
  */
 abstract public class ImageFactory {
+
+	static Logger logger = Logger.getLogger(Constants.LOGGER_NAME);
 
 	public static HttpURLConnection createConnection(URL url, String user, String pwd)
 			throws VideoException {
@@ -54,23 +56,27 @@ abstract public class ImageFactory {
 			c.setReadTimeout(VideoThread.TIMEOUT_DIRECT);
 			return c;
 		}catch(Exception e){
-			System.err.println("Error creating connection for URL: " + url);
-			e.printStackTrace();
-			throw new VideoException(e.getMessage());
+			logger.info("CONNECT EXCEPT: " + url);
 		}
+		return null;
 	}
 	
 	/**
 	 * Get an image from the given url
 	 * @param url The location of the image file
 	 * @return A byte[] containing the image data.
-	 * @throws IOException
+	 * @throws VideoException
 	 */
 	public static byte[] getImage(URL url, String user, String pwd)
 			throws VideoException{
 		InputStream in = null;
 		try{
-			URLConnection c = createConnection(url, user, pwd);
+			HttpURLConnection c = createConnection(url, user, pwd);
+			int response = c.getResponseCode();
+			if(response != 200){
+				logger.info("RESPONSE " + response + ": " + url);
+				return null;
+			}
 			in = c.getInputStream();
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			byte[] data = new byte[1024];
@@ -82,25 +88,20 @@ abstract public class ImageFactory {
 			}
 			return bos.toByteArray();
 		}catch(SocketTimeoutException ste){
-			System.out.println("Timed out: " + url);
+			logger.info("TIMEOUT: " + url);
 		}catch(Exception e){
-			e.printStackTrace();
-			//throw new VideoException(e.getMessage());
+			throw new VideoException(e.getMessage());
 		}finally{
 			try{
 				in.close();
-			}catch(NullPointerException npe){
-				System.out.println("Null InputStream: " + url);
 			}catch(Exception e2){
-				e2.printStackTrace();
 			}
 		}
 		return null;
 	}
 
 	/** Prepare a connection by setting necessary properties and timeouts */
-	protected static void prepareConnection(URLConnection c, String user, String pwd)
-			throws VideoException {
+	protected static void prepareConnection(URLConnection c, String user, String pwd) {
 		if(user!=null && pwd!=null){
 			String userPass = user + ":" + pwd;
 			String encoded = Base64.encodeBytes(userPass.getBytes());
