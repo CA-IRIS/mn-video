@@ -19,9 +19,7 @@
 package us.mn.state.dot.video.server;
 
 import java.sql.ResultSet;
-import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Properties;
 
 
@@ -32,7 +30,7 @@ public class TmsConnection extends DatabaseConnection {
 	protected static final String CAMERA_ENCODER_CHANNEL = "encoder_channel";
 	protected static final String CAMERA_PUBLISH = "publish";
 	protected static final String CAMERA_ENCODER_TYPE = "encoder_type";
-	
+
 	protected static final String TABLE_CAMERA = "camera_view";
 
 	protected static final String F_CROSS_STREET = "cross_street";
@@ -81,26 +79,6 @@ public class TmsConnection extends DatabaseConnection {
 		return getString(sql, CAMERA_ENCODER);
 	}
 
-	/**
-	 * Get an array of encoder hostnames for all cameras.
-	 */
-	public ArrayList<String> getEncoderHosts(){
-		String sql = "select distinct " + CAMERA_ENCODER + " from " + TABLE_CAMERA +
-			" where " + CAMERA_ENCODER + " is not null";
-		return getColumnList(sql, CAMERA_ENCODER);
-	}
-	
-	/**
-	 * Get an array of camera ids for the given encoder ip address.
-	 * @param host The hostname of the encoder.
-	 * @return An array camera ids.
-	 */
-	public ArrayList<String> getCameraIdsByEncoder(String ip){
-		String sql = "select " + CAMERA_ID + " from " + TABLE_CAMERA +
-			" where " + CAMERA_ENCODER + " like '" + ip + ":%'";
-		return getColumnList(sql, CAMERA_ID);
-	}
-
 	public String getEncoderType(String name){
 		String q = "select " + CAMERA_ENCODER_TYPE + " from " + TABLE_CAMERA +
 			" where " + CAMERA_ID + " = '" + name + "'";
@@ -125,27 +103,6 @@ public class TmsConnection extends DatabaseConnection {
 		return -1;
 	}
 
-	public Hashtable<String,List> getEncoderInfo(){
-		String q = "select " + CAMERA_ID + "," +
-		CAMERA_ENCODER + "," + CAMERA_ENCODER_CHANNEL + "," + CAMERA_ENCODER_TYPE +
-		" from " + TABLE_CAMERA +
-		" where " + CAMERA_ENCODER + " is not null";
-		Hashtable encoderData = new Hashtable<String,List>();
-		try{
-			ResultSet rs = query(q);
-			while(rs != null && rs.next()){
-				List l = new ArrayList();
-				l.add(rs.getString(CAMERA_ENCODER));
-				l.add(rs.getString(CAMERA_ENCODER_CHANNEL));
-				l.add(rs.getString(CAMERA_ENCODER_TYPE));
-				encoderData.put(rs.getString(CAMERA_ID), l);
-			}
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		return encoderData;
-	}
-
 	/** Get the publish attribute of the camera */
 	public boolean isPublished(String camId){
 		String q = "select " + CAMERA_PUBLISH + " from " + TABLE_CAMERA +
@@ -161,31 +118,4 @@ public class TmsConnection extends DatabaseConnection {
 		return false;
 	}
 
-	/** Get the location of a camera */
-	public String getLocation(String name){
-		String q = "select " + F_ROADWAY + ", " + F_ROADWAY_DIR + ", " +
-			F_CROSS_STREET + ", " + F_CROSS_DIR + ", " + F_CROSS_MOD +
-			" from " + TABLE_CAMERA + " where " + F_CAMERA_ID + " = '" + name + "'";
-		String loc = "";
-		try{
-			ResultSet rs = query(q);
-			if(rs != null && rs.next()){
-				loc = loc.concat(rs.getString(F_ROADWAY));
-				loc = loc.concat(" " + rs.getString(F_ROADWAY_DIR));
-				loc = loc.concat(" " + rs.getString(F_CROSS_MOD));
-				loc = loc.concat(" " + rs.getString(F_CROSS_STREET));
-				loc = loc.concat(" " + rs.getString(F_CROSS_DIR));
-			}
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		return loc;
-	}
-
-	/** Get a list of camera names. */
-	public List<String> getCameraNames(){
-		String sql = "select " + F_CAMERA_ID + " from " + TABLE_CAMERA +
-			" order by " + F_CAMERA_ID;
-		return getColumnList(sql, F_CAMERA_ID);
-	}
 }
