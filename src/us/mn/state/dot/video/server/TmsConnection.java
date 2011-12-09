@@ -33,13 +33,6 @@ public class TmsConnection extends DatabaseConnection {
 
 	protected static final String TABLE_CAMERA = "camera_view";
 
-	protected static final String F_CROSS_STREET = "cross_street";
-	protected static final String F_CROSS_DIR = "cross_dir";
-	protected static final String F_CROSS_MOD = "cross_mod";
-	protected static final String F_ROADWAY = "roadway";
-	protected static final String F_ROADWAY_DIR = "road_dir";
-	protected static final String F_CAMERA_ID = "name";
-	
 	private static final Hashtable<String, TmsConnection> connections =
 		new Hashtable<String, TmsConnection>();
 	
@@ -65,12 +58,6 @@ public class TmsConnection extends DatabaseConnection {
 			p.getProperty("tms.db.host"),
 			Integer.parseInt(p.getProperty("tms.db.port")),
 			p.getProperty("tms.db.name"));
-	}
-
-	protected String createId(int camNumber){
-		String id = Integer.toString(camNumber);
-		while(id.length()<4) id = "0" + id;
-		return "C" + id;
 	}
 
 	public String getEncoderHost(String camId){
