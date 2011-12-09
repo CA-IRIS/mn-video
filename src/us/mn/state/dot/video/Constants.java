@@ -18,7 +18,6 @@
  */
 package us.mn.state.dot.video;
 
-import java.awt.Dimension;
 import java.text.SimpleDateFormat;
 
 /**
@@ -28,10 +27,6 @@ import java.text.SimpleDateFormat;
  */
 public class Constants {
 
-	public static final Dimension SIF_QUARTER = new Dimension(176,120);
-	public static final Dimension SIF_FULL = new Dimension(352,240);
-	public static final Dimension SIF_4X = new Dimension(704,480);
-	
 	public static final SimpleDateFormat DATE_FORMAT =
 		new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
 
