@@ -78,26 +78,36 @@ public class StreamServer extends VideoServlet {
 	 */
 	public void processRequest(HttpServletResponse response,
 			Client c) throws VideoException {
+		logger.info("Processing stream request.");
 		DataSource source = dsFactory.getDataSource(c);
+		logger.info("created datasource.");
 		try{
+			logger.info("authenticating.");
 			if(!isAuthenticated(c)){
 				response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 				response.flushBuffer();
+				logger.info("user is not authenticated.");
 				return;
 			}
+			logger.info("validating camera id.");
 			if(c.getCameraId() == null){
 				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 				response.flushBuffer();
+				logger.info("invalid camera id: " + c.getCameraId());
 				return;
 			}
+			logger.info("validating datasource.");
 			if(source==null){
 				response.setStatus(HttpServletResponse.SC_NO_CONTENT);
 				response.flushBuffer();
+				logger.info("datasource is null.");
 				return;
 			}
+			logger.info("setting up to stream video.");
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType(HEADER_CONTENT_TYPE);
 			response.flushBuffer();
+			logger.info("streaming...");
 			streamVideo(response, c, source);
 		}catch(Exception e){
 			throw new VideoException(e.getMessage());
