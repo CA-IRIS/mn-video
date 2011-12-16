@@ -18,6 +18,7 @@
  */
 package us.mn.state.dot.video.server;
 
+import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -46,6 +47,12 @@ public class EncoderFactory {
 	protected String encoderUser = null;
 	
 	protected String encoderPass = null;
+
+	/** The expiration time of database information, in seconds */
+	protected int dbExpire = 60;
+
+	/** The time, in milliseconds, of the last database update */
+	protected long dbTime = 0;
 	
 	protected Properties properties = null;
 
@@ -77,9 +84,25 @@ public class EncoderFactory {
 		tms = TmsConnection.create(props);
 		encoderUser = props.getProperty("video.encoder.user");
 		encoderPass = props.getProperty("video.encoder.pwd");
+		try{
+			dbExpire = Integer.parseInt(props.getProperty("db.expire"));
+		}catch(Exception e){
+			//do nothing, use the default database expiration
+		}
 	}
 
+	private boolean dbExpired(){
+		long now = Calendar.getInstance().getTimeInMillis();
+		return (now - dbTime)/1000 > dbExpire;
+	}
+
+	private void updateEncoders(){
+	}
+	
 	public Encoder getEncoder(String cameraId){
+		if(dbExpired()) updateEncoders();
+		Encoder e = encoders.get(cameraId);
+		if(e != null) return e;
 		try{
 			return createEncoder(cameraId);
 		}catch(Throwable th){
