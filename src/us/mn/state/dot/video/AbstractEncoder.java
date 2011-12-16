@@ -81,8 +81,17 @@ public abstract class AbstractEncoder implements Encoder {
 		return InetAddress.getByName(host).getHostAddress();
 	}
 
-	public AbstractEncoder(String host){
-		this.host = host;
+	public AbstractEncoder(String host_port){
+		if(host_port.indexOf(":")>-1){
+			host = host_port.substring(0,host_port.indexOf(":"));
+			try{
+				port = Integer.parseInt(host_port.substring(host_port.indexOf(":")+1));
+			}catch(NumberFormatException ex){
+				//host port parsing error... use default http port
+			}
+		}else{
+			this.host = host_port;
+		}
 	}
 	
 	public String toString(){

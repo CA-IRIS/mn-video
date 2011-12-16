@@ -51,7 +51,7 @@ public class EncoderFactory {
 
 	protected Logger logger = null;
 	
-	/** Hashtable of all encoders indexed by host */
+	/** Hashtable of encoders indexed by camera name */
 	protected final Hashtable<String, Encoder> encoders =
 		new Hashtable<String, Encoder>();
 
@@ -94,40 +94,22 @@ public class EncoderFactory {
 	
 	protected Encoder createEncoder(String name){
 		if(name == null) return null;
-		if(!tms.isPublished(name)){
-			logger.fine("camera " + name + " is not published.");
-			return new Axis(null);
-		}
-		String host_port = tms.getEncoderHost(name);
-		String host = host_port;
-		if(host_port.indexOf(":")>-1){
-			host = host_port.substring(0,host_port.indexOf(":"));
-		}
-		Encoder e = encoders.get(host);
-		logger.fine("Re-using encoder for camera " + name);
-		if(e == null){
-			logger.fine("Creating new encoder for camera " + name);
-			String mfr = tms.getEncoderType(name);
-			if(mfr != null && mfr.indexOf(INFINOVA) > -1){
-				e = new Infinova(host);
-			}else{
-				e = new Axis(host);
-			}
-		}
-		if(host_port.indexOf(":")>-1){
-			try{
-				int port = Integer.parseInt(host_port.substring(host_port.indexOf(":")+1));
-				e.setPort(port);
-			}catch(NumberFormatException ex){
-				//host port parsing error... use default http port
-			}
+		String mfr = tms.getEncoderType(name);
+		String host = tms.getEncoderHost(name);
+		if(mfr == null || host == null) return null;
+		logger.fine("Creating new encoder for camera " + name);
+		Encoder e = null;
+		if(mfr.indexOf(INFINOVA) > -1){
+			e = new Infinova(host);
+		}else{
+			e = new Axis(host);
 		}
 		int ch = tms.getEncoderChannel(name);
 		String standardId = Camera.createStandardId(name);
 		e.setCamera(standardId, ch);
 		e.setUsername(encoderUser);
 		e.setPassword(encoderPass);
-		encoders.put(host, e);
+		encoders.put(name, e);
 		logger.fine(name + " " + e);
 		logger.fine(encoders.size() + " encoders.");
 		return e;

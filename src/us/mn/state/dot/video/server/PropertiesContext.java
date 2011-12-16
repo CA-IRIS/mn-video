@@ -51,6 +51,11 @@ public class PropertiesContext extends HttpServlet{
 
 	public static final String PROP_DNS_TTL = "networkaddress.cache.ttl";
 
+	public static final String PROP_DB_REFRESH = "db.refresh";
+	
+	/** The time interval for refreshing database information (seconds)*/
+	public static final String DB_REFRESH = "3600"; // 1 hour
+	
 	/** Properties */
 	static protected final Properties props = new Properties();
 
