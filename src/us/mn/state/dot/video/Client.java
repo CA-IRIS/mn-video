@@ -93,6 +93,7 @@ public class Client {
 		this.size = size;
 	}
 	public String getCameraId(){
+		if(camera==null) return null;
 		return camera.getId();
 	}
 	public void setCameraId(String id){
