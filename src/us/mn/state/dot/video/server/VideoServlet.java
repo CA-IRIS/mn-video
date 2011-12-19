@@ -235,6 +235,13 @@ public abstract class VideoServlet extends HttpServlet {
 		return encoder != null;
 	}
 	
+	protected final boolean isPublished(String cameraId){
+		if(proxy){
+			return true;
+		}
+		return encoderFactory.isPublished(cameraId);
+	}
+	
 	/**
 	 * Handles the HTTP <code>GET</code> method.
 	 * @param request servlet request

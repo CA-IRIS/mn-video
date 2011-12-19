@@ -74,13 +74,19 @@ public final class ImageServer extends VideoServlet{
 	public void processRequest(HttpServletResponse response, Client c)
 		throws VideoException
 	{
-		byte[] image = getImage(c);
 		try{
-			if(!isValidCamera(c)){
+			URL imageURL = getImageURL(c);
+			if(imageURL == null){
 				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 				response.flushBuffer();
 				return;
 			}
+			if(!isPublished(c.getCameraId())){
+				response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+				response.flushBuffer();
+				return;
+			}
+			byte[] image = getImage(c, imageURL);
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("image/jpeg\r\n");
 			response.setContentLength(image.length);
@@ -92,11 +98,11 @@ public final class ImageServer extends VideoServlet{
 		}
 	}
 
-	private byte[] getImage(Client c) {
+	private byte[] getImage(Client c, URL imageURL) throws VideoException {
 		String key = createCacheKey(c);
 		CacheEntry entry = cache.get(key);
 		if(entry != null && !entry.isExpired()) return entry.getImage();
-		byte[] image = fetchImage(c);
+		byte[] image = fetchImage(imageURL);
 		if(image == null){
 			return noVideo;
 		}
@@ -109,23 +115,20 @@ public final class ImageServer extends VideoServlet{
 		return image;
 	}
 	
-	private byte[] fetchImage(Client c){
-		URL url = null;
-		try{
-			if(proxy){
-				url = getDistrictImageURL(c);
-			}else{
-				Encoder encoder = encoderFactory.getEncoder(c.getCameraId());
-				url = encoder.getImageURL(c);
+	private URL getImageURL(Client c) throws VideoException {
+		if(proxy){
+			return getDistrictImageURL(c);
+		}else{
+			Encoder encoder = encoderFactory.getEncoder(c.getCameraId());
+			if(encoder != null){
+				return encoder.getImageURL(c);
 			}
-			if(url==null){
-				return null;
-			}
-			return ImageFactory.getImage(url, encoderUser, encoderPass);
-		}catch(VideoException ve){
-			logger.fine(ve.getMessage());
 		}
 		return null;
+	}
+	
+	private byte[] fetchImage(URL url) throws VideoException {
+		return ImageFactory.getImage(url, encoderUser, encoderPass);
 	}
 
 	/** Get the URL used to retrieve a new image from a district server */

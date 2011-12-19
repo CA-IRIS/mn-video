@@ -145,4 +145,8 @@ public class EncoderFactory {
 		logger.info(encoders.size() + " encoders.");
 		return e;
 	}
+	
+	public boolean isPublished(String cameraId){
+		return tms.isPublished(cameraId);
+	}
 }
