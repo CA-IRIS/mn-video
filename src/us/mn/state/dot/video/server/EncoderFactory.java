@@ -48,8 +48,8 @@ public class EncoderFactory {
 	
 	protected String encoderPass = null;
 
-	/** The expiration time of database information, in seconds */
-	protected int dbExpire = 60;
+	/** The expiration time of database information, in milliseconds */
+	protected int dbExpire = 10 * 1000;
 
 	/** The time, in milliseconds, of the last database update */
 	protected long dbTime = 0;
@@ -92,15 +92,19 @@ public class EncoderFactory {
 	}
 
 	private boolean dbExpired(){
+		logger.info("Checking if database is expired.");
 		long now = Calendar.getInstance().getTimeInMillis();
-		return (now - dbTime)/1000 > dbExpire;
+		return (now - dbTime) > dbExpire;
 	}
 
-	private void updateEncoders(){
+	private void updateEncoder(String cameraId){
+		logger.info("Updating encoder information for camera " + cameraId);
+		encoders.put(cameraId, createEncoder(cameraId));
+		dbTime = Calendar.getInstance().getTimeInMillis();
 	}
 	
 	public Encoder getEncoder(String cameraId){
-		if(dbExpired()) updateEncoders();
+		if(dbExpired()) updateEncoder(cameraId);
 		Encoder e = encoders.get(cameraId);
 		if(e != null) return e;
 		try{
@@ -120,7 +124,7 @@ public class EncoderFactory {
 		String mfr = tms.getEncoderType(name);
 		String host = tms.getEncoderHost(name);
 		if(mfr == null || host == null) return null;
-		logger.fine("Creating new encoder for camera " + name);
+		logger.info("Creating new encoder for camera " + name);
 		Encoder e = null;
 		if(mfr.indexOf(INFINOVA) > -1){
 			e = new Infinova(host);
@@ -132,9 +136,8 @@ public class EncoderFactory {
 		e.setCamera(standardId, ch);
 		e.setUsername(encoderUser);
 		e.setPassword(encoderPass);
-		encoders.put(name, e);
-		logger.fine(name + " " + e);
-		logger.fine(encoders.size() + " encoders.");
+		logger.info(name + " " + e);
+		logger.info(encoders.size() + " encoders.");
 		return e;
 	}
 }
