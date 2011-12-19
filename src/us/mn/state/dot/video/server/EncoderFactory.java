@@ -49,7 +49,7 @@ public class EncoderFactory {
 	protected String encoderPass = null;
 
 	/** The expiration time of database information, in milliseconds */
-	protected int dbExpire = 10 * 1000;
+	protected long dbExpire = 10 * 1000;
 
 	/** The time, in milliseconds, of the last database update */
 	protected long dbTime = 0;
@@ -85,7 +85,7 @@ public class EncoderFactory {
 		encoderUser = props.getProperty("video.encoder.user");
 		encoderPass = props.getProperty("video.encoder.pwd");
 		try{
-			dbExpire = Integer.parseInt(props.getProperty("db.expire"));
+			dbExpire = Long.parseLong(props.getProperty("db.expire"));
 		}catch(Exception e){
 			//do nothing, use the default database expiration
 		}
