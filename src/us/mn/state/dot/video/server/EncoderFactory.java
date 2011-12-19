@@ -97,14 +97,18 @@ public class EncoderFactory {
 		return (now - dbTime) > dbExpire;
 	}
 
-	private void updateEncoder(String cameraId){
-		logger.info("Updating encoder information for camera " + cameraId);
-		encoders.put(cameraId, createEncoder(cameraId));
+	private synchronized void updateEncoders(){
+		logger.info("Updating encoder information.");
+		Encoder e = null;
+		for(String key : encoders.keySet()){
+			logger.info("Updating encoder for " + key);
+			createEncoder(key);
+		}
 		dbTime = Calendar.getInstance().getTimeInMillis();
 	}
 	
 	public Encoder getEncoder(String cameraId){
-		if(dbExpired()) updateEncoder(cameraId);
+		if(dbExpired()) updateEncoders();
 		Encoder e = encoders.get(cameraId);
 		if(e != null) return e;
 		try{
@@ -136,6 +140,7 @@ public class EncoderFactory {
 		e.setCamera(standardId, ch);
 		e.setUsername(encoderUser);
 		e.setPassword(encoderPass);
+		encoders.put(name, e);
 		logger.info(name + " " + e);
 		logger.info(encoders.size() + " encoders.");
 		return e;
