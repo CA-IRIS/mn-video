@@ -44,7 +44,7 @@ import us.mn.state.dot.video.VideoException;
  */
 public class StreamServer extends VideoServlet {
 
-	protected static final Hashtable<String, MJPEGWriter> clientStreams =
+	private static final Hashtable<String, MJPEGWriter> clientStreams =
 		new Hashtable<String, MJPEGWriter>();
 	
 	/** The DataSourceFactory that maintains the DataSources. */
@@ -139,7 +139,7 @@ public class StreamServer extends VideoServlet {
 		w.sendImages();
 	}
 
-	protected synchronized static final void registerStream(
+	private synchronized static final void registerStream(
 			Client c, MJPEGWriter w){
 		MJPEGWriter oldStream = (MJPEGWriter)clientStreams.get(c.getUser());
 		if(oldStream != null){

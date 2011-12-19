@@ -73,8 +73,6 @@ public abstract class VideoServlet extends HttpServlet {
 	/** The logger used to log all output for the application */
 	protected static Logger logger;
 
-	protected String servletName = "VideoServlet";
-	
 	/** The request parameter name for the SONAR session ID */
 	public static final String PARAM_SSID = "ssid";
 	
@@ -100,7 +98,6 @@ public abstract class VideoServlet extends HttpServlet {
 	/** Initialize the VideoServlet */
 	public void init(ServletConfig config) throws ServletException {
 		super.init( config );
-		servletName = this.getClass().getSimpleName();
 		ServletContext ctx = config.getServletContext();
 		Properties props =(Properties)ctx.getAttribute("properties");
 		proxy = new Boolean(props.getProperty("proxy", "false")).booleanValue();
