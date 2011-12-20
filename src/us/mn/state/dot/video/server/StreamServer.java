@@ -33,6 +33,7 @@ import us.mn.state.dot.video.DataSource;
 import us.mn.state.dot.video.DataSourceFactory;
 import us.mn.state.dot.video.MJPEG;
 import us.mn.state.dot.video.MJPEGWriter;
+import us.mn.state.dot.video.StreamStatus;
 import us.mn.state.dot.video.VideoException;
 
 /**
@@ -78,39 +79,33 @@ public class StreamServer extends VideoServlet {
 	 */
 	public void processRequest(HttpServletResponse response,
 			Client c) throws VideoException {
-		logger.info("Processing stream request.");
 		DataSource source = dsFactory.getDataSource(c);
-		logger.info("created datasource.");
+		int sc = 200; //default status code ok
+		if(!isAuthenticated(c)){
+			sc = HttpServletResponse.SC_FORBIDDEN;
+		}else if(c.getCameraId() == null){
+			sc = HttpServletResponse.SC_NOT_FOUND;
+		}else if(source == null){
+			sc = HttpServletResponse.SC_NO_CONTENT;
+		}
+		response.setStatus(sc);
+		response.setContentType(HEADER_CONTENT_TYPE);
 		try{
-			logger.info("authenticating.");
-			if(!isAuthenticated(c)){
-				response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-				response.flushBuffer();
-				logger.info("user is not authenticated.");
-				return;
-			}
-			logger.info("validating camera id.");
-			if(c.getCameraId() == null){
-				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-				response.flushBuffer();
-				logger.info("invalid camera id: " + c.getCameraId());
-				return;
-			}
-			logger.info("validating datasource.");
-			if(source==null){
-				response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-				response.flushBuffer();
-				logger.info("datasource is null.");
-				return;
-			}
-			logger.info("setting up to stream video.");
-			response.setStatus(HttpServletResponse.SC_OK);
-			response.setContentType(HEADER_CONTENT_TYPE);
 			response.flushBuffer();
-			logger.info("streaming...");
+		}catch(IOException ioe){
+			throw new VideoException("Client closed conection: "+ c.toString());
+		}
+		if(sc != 200) return;
+		try{
+			response.flushBuffer();
+		}catch(IOException ioe){
+			throw new VideoException("Client closed conection: "+ c.toString());
+		}
+		logger.info("streaming...");
+		try{
 			streamVideo(response, c, source);
-		}catch(Exception e){
-			throw new VideoException(e.getMessage());
+		}catch(IOException ioe){
+			throw new VideoException(ioe.getMessage());
 		}
 	}
 	
@@ -128,9 +123,7 @@ public class StreamServer extends VideoServlet {
 		MJPEGWriter w =
 			new MJPEGWriter(c, response.getOutputStream(),
 				source, logger, maxFrameRate);
-		logger.fine(c.getCameraId() + " registering stream...");
 		//registerStream(c, w); //FIXME: broken for unauthenticated users
-		logger.fine(c.getCameraId() + " sending images...");
 		try{
 			((Thread)source).start();
 		}catch(IllegalThreadStateException its){
@@ -143,7 +136,7 @@ public class StreamServer extends VideoServlet {
 			Client c, MJPEGWriter w){
 		MJPEGWriter oldStream = (MJPEGWriter)clientStreams.get(c.getUser());
 		if(oldStream != null){
-			oldStream.halt("New stream requested.");
+			oldStream.halt(StreamStatus.FINISHED);
 		}
 		clientStreams.put(c.getUser(), w);
 	}

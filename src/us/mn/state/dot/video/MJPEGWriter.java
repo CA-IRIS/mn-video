@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 public class MJPEGWriter implements DataSink {
 
 	/** The maximum time a stream can run (in seconds) */
-	private static final long MAX_DURATION = 60 * 1000 * 60 * 24; // 1 day
+	private static final long MAX_DURATION = 60 * 1000 * 60; // 1 hour
 	
 	/** The maximum time to wait for more data before terminating (in seconds) */
 	private static final long DATA_TIMEOUT = 5 * 1000 ; // 5 seconds
@@ -70,6 +70,8 @@ public class MJPEGWriter implements DataSink {
 	
 	private byte[] data = null;
 	
+	private StreamStatus status = StreamStatus.INITIALIZED;
+	
 	/** Constructor for the MJPEGWriter. */
 	public MJPEGWriter (Client c, OutputStream out,
 			DataSource source, Logger l, int maxRate){
@@ -79,6 +81,10 @@ public class MJPEGWriter implements DataSink {
 		this.out = new DataOutputStream(out);
 		this.source = source;
 		source.connectSink(this);
+	}
+
+	public StreamStatus getStatus(){
+		return status;
 	}
 
 	/** Flush the data down the sink */
@@ -100,22 +106,22 @@ public class MJPEGWriter implements DataSink {
 	/** Sends images to the client until all the requested
 	 * images have been sent. */
 	public void sendImages() {
-		String termReason = "completed";
+		status = StreamStatus.STREAMING;
 		try{
 			while(!isDone()) {
 				writeBodyPart();
 				Thread.sleep(sleepDuration);
 			}
 		}catch(IOException ioe){
-			termReason = "IOE:";
+			status = StreamStatus.CLIENT_DISCONNECTED;
 			logger.info("IOE: " + this.toString() + " is closing.");
-		}catch(Exception e){
-			termReason = e.getClass().getSimpleName();
+		}catch(InterruptedException e){
+			status = StreamStatus.INTERRUPTED;
 			logger.info("Error sending images to " + client.getUser());
 		}finally{
 			source.disconnectSink(this);
 			try{
-				halt(termReason);
+				halt(status);
 				out.close();
 			}catch(Exception e2){
 			}
@@ -125,10 +131,10 @@ public class MJPEGWriter implements DataSink {
 	public boolean isDone(){
 		long now = Calendar.getInstance().getTimeInMillis();
 		if((now-startTime) > MAX_DURATION){
-			halt("Stream is too old.");
+			halt(StreamStatus.STALE);
 		}
 		if((now-lastPacket) > DATA_TIMEOUT){
-			halt("Time out receiving data.");
+			halt(StreamStatus.RECEIVE_TIMEOUT);
 		}
 		if((now-lastRateCalc) > 5000){
 			logger.info(client.getHost() + ": " + client.getCameraId() +
@@ -139,8 +145,8 @@ public class MJPEGWriter implements DataSink {
 		return done;
 	}
 	
-	public void halt(String reason){
-		logger.info(this.toString() + " terminated: " + reason);
+	public void halt(StreamStatus ss){
+		logger.info(this.toString() + " terminated: " + ss.name());
 		done = true;
 	}
 	
