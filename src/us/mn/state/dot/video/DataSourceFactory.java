@@ -21,6 +21,8 @@ package us.mn.state.dot.video;
 
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -39,8 +41,8 @@ public class DataSourceFactory {
 	private ThreadMonitor monitor = null;
 	
 	/** Hash of video streams that are active. */
-	static final protected HashMap<String, AbstractDataSource>
-		sources = new HashMap<String, AbstractDataSource>();
+	static final private HashMap<String, AbstractDataSource> sources =
+		new HashMap<String, AbstractDataSource>();
 
 	private final Logger logger;
 	
@@ -53,8 +55,17 @@ public class DataSourceFactory {
 
 	protected EncoderFactory encoderFactory;
 	
+	private static DataSourceFactory factory = null;
+
+	public static synchronized DataSourceFactory create(Properties p, ThreadMonitor m){
+		if(factory == null){
+			factory = new DataSourceFactory(p, m);
+		}
+		return factory;
+	}
+	
 	/** Constructor for the DataSourceFactory. */
-	public DataSourceFactory(Properties p, ThreadMonitor m) {
+	private DataSourceFactory(Properties p, ThreadMonitor m) {
 		logger = Logger.getLogger(Constants.LOGGER_NAME);
 		monitor = m;
 		proxy = new Boolean(p.getProperty("proxy", "false")).booleanValue();
@@ -71,15 +82,16 @@ public class DataSourceFactory {
 		}
 	}
 
-	private String createSourceKey(Client c){
+	private static String createSourceKey(Client c){
 		return c.getCameraId() + ":" + c.getSize();
 	}
 	
-	private void cleanupSources(){
-		for(AbstractDataSource src : sources.values()){
-			if(!src.isAlive()){
-				logger.info("Purging " + src);
-				sources.remove(createSourceKey(src.getClient()));
+	private static void cleanupSources(){
+		Iterator<Entry<String, AbstractDataSource>> it = sources.entrySet().iterator();
+		while(it.hasNext()){
+			Entry<String, AbstractDataSource> entry = it.next();
+			if(!entry.getValue().isAlive()){
+				it.remove();
 			}
 		}
 	}
@@ -117,11 +129,11 @@ public class DataSourceFactory {
 		if(c.getCameraId()==null){
 			return null;
 		}
+		cleanupSources();
 		String key = createSourceKey(c);
 		logger.info("There are currently " + sources.size() + " datasources.");
-		cleanupSources();
 		AbstractDataSource src = sources.get(key);
-		if(src != null){
+		if(src != null && src.isAlive()){
 			return src;
 		}
 		src = (AbstractDataSource)createDataSource(c);

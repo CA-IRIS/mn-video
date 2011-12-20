@@ -247,7 +247,6 @@ public abstract class VideoServlet extends HttpServlet {
 	protected final void doGet(HttpServletRequest request,
 		HttpServletResponse response)
 	{
-		//parseRequest(request);
 		Client c = new Client();
 		try {
 			configureClient(c, request);
@@ -255,6 +254,7 @@ public abstract class VideoServlet extends HttpServlet {
 		}
 		catch(Throwable th) {
 			logger.warning(c.getCameraId() + ": " + th.getMessage());
+			th.printStackTrace();
 			sendNoVideo(response, c);
 		}
 		finally {

@@ -64,7 +64,7 @@ public class StreamServer extends VideoServlet {
 		//monitor = new ThreadMonitor("ThreadMonitor", 10000, logger);
 		ServletContext ctx = config.getServletContext();
 		Properties props =(Properties)ctx.getAttribute("properties");
-		dsFactory = new DataSourceFactory(props, null);
+		dsFactory = DataSourceFactory.create(props, null);
 		try{
 			maxFrameRate = Integer.parseInt(props.getProperty("max.framerate"));
 		}catch(Exception e){
