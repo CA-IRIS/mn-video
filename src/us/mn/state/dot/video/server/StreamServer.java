@@ -83,6 +83,8 @@ public class StreamServer extends VideoServlet {
 		int sc = 200; //default status code ok
 		if(!isAuthenticated(c)){
 			sc = HttpServletResponse.SC_FORBIDDEN;
+		}else if(!isPublished(c.getCameraId())){
+			sc = HttpServletResponse.SC_FORBIDDEN;
 		}else if(c.getCameraId() == null){
 			sc = HttpServletResponse.SC_NOT_FOUND;
 		}else if(source == null){
