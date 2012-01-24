@@ -137,8 +137,8 @@ public final class ImageServer extends VideoServlet{
 		try{
 			relativeURL = "/video/" +
 				RequestType.IMAGE.name().toLowerCase() +
-				"?id=" + c.getCameraId();
-				//"&size=" + c.getSize();
+				"/" + c.getDistrict().name().toLowerCase() +
+				"/" + c.getCameraId();
 			return new URL(districtVideoURLs.get(c.getDistrict()), relativeURL);
 		}catch(MalformedURLException mue){
 			throw new VideoException(mue.getMessage());
