@@ -117,7 +117,7 @@ public class DataSourceFactory {
 		return RequestType.STREAM.name().toLowerCase() +
 			"/" + c.getDistrict().name().toLowerCase() +
 			"/" + c.getCameraId() +
-			"&size=" + c.getSize().name().charAt(0) +
+			"?size=" + c.getSize().name().toLowerCase().charAt(0) +
 			"&rate=" + c.getRate() +
 			"&duration=" + c.getDuration() +
 			"&ssid=" + c.getSonarSessionId();
