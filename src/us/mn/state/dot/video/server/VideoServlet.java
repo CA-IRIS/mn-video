@@ -263,13 +263,18 @@ public abstract class VideoServlet extends HttpServlet {
 		catch(Throwable th) {
 			logger.warning(c.getCameraId() + ": " + th.getMessage());
 			th.printStackTrace();
-			sendNoVideo(response, c);
+			//sendNoVideo(response, c);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			try{
+				response.flushBuffer();
+			}catch(Exception e){
+			}
 		}
 		finally {
 			try {
 				response.getOutputStream().close();
 			}
-			catch(Exception e) {
+			catch(Exception e2) {
 			}
 		}
 	}
@@ -277,7 +282,7 @@ public abstract class VideoServlet extends HttpServlet {
 	public abstract void processRequest(HttpServletResponse response,
 		Client c) throws Exception;
 
-	protected final void sendNoVideo(HttpServletResponse response, Client c){
+	private final void sendNoVideo(HttpServletResponse response, Client c){
 		if(noVideo==null){
 			return;
 		}
