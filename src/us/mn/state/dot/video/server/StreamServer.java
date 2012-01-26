@@ -129,10 +129,10 @@ public class StreamServer extends VideoServlet {
 
 	private synchronized static final void registerStream(
 			Client c, MJPEGWriter w){
-		MJPEGWriter oldStream = (MJPEGWriter)clientStreams.get(c.getUser());
+		MJPEGWriter oldStream = (MJPEGWriter)clientStreams.get(c.getHost());
 		if(oldStream != null){
 			oldStream.halt(StreamStatus.FINISHED);
 		}
-		clientStreams.put(c.getUser(), w);
+		clientStreams.put(c.getHost(), w);
 	}
 }

@@ -34,8 +34,6 @@ public class Client {
 
 	private String host = "unknown";
 	
-	private String user = "unknown";
-	
 	private int duration = 60;
 	
 	private Camera camera = null;
@@ -54,9 +52,6 @@ public class Client {
 	public int getRate() {
 		return rate;
 	}
-	public String getUser() {
-		return user;
-	}
 	public int getFramesRequested() {
 		return duration * rate;
 	}
@@ -67,12 +62,9 @@ public class Client {
 		return district;
 	}
 	public String toString(){
-		return user + "@" + host + ": C=" + getCameraId() +
+		return  host + ": C=" + getCameraId() +
 			" S=" + size + " R=" + rate + " D=" +
 			duration;
-	}
-	public void setUser(String user) {
-		this.user = user;
 	}
 	public void setHost(String host) {
 		this.host = host;

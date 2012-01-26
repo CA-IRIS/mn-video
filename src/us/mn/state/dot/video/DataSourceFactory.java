@@ -115,12 +115,11 @@ public class DataSourceFactory {
 
 	private static String createRelativeURL(Client c) {
 		return RequestType.STREAM.name().toLowerCase() +
-			"?id=" + c.getCameraId() +
-			//"&size=" + c.getSize() +
+			"/" + c.getDistrict().name().toLowerCase() +
+			"/" + c.getCameraId() +
+			"&size=" + c.getSize().name().charAt(0) +
 			"&rate=" + c.getRate() +
 			"&duration=" + c.getDuration() +
-			"&user=" + c.getUser() +
-			"&district=" + c.getDistrict().name() +
 			"&ssid=" + c.getSonarSessionId();
 	}
 

@@ -117,7 +117,7 @@ public class MJPEGWriter implements DataSink {
 			logger.info("IOE: " + this.toString() + " is closing.");
 		}catch(InterruptedException e){
 			status = StreamStatus.INTERRUPTED;
-			logger.info("Error sending images to " + client.getUser());
+			logger.info("Error sending images to " + client.getHost());
 		}finally{
 			source.disconnectSink(this);
 			try{

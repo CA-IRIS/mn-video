@@ -88,9 +88,6 @@ public abstract class VideoServlet extends HttpServlet {
 	/** The request parameter name for the duration of MJPEG streams */
 	public static final String PARAM_DURATION = "duration";
 
-	/** The request parameter name for the user making the request */
-	public static final String PARAM_USER = "user";
-
 	protected static District defaultDistrict = District.METRO;
 
 	protected EncoderFactory encoderFactory = null;
@@ -212,8 +209,6 @@ public abstract class VideoServlet extends HttpServlet {
 
 	/** Configure a client from an HTTP request */
 	protected void configureClient(Client c, HttpServletRequest req) {
-		if(req.getParameter(PARAM_USER) != null)
-			c.setUser(req.getParameter(PARAM_USER));
 		c.setDistrict(getRequestedDistrict(req));
 		c.setCameraId(getRequestedCameraId(req));
 		c.setSize(getRequestedSize(req));
