@@ -53,8 +53,6 @@ public class StreamServer extends VideoServlet {
 
 //	private ThreadMonitor monitor = null;
 	
-	private int maxFrameRate = 3;
-	
 	private final String HEADER_CONTENT_TYPE =
 		"Content-type: multipart/x-mixed-replace; boundary=" + MJPEG.BOUNDARY;
 	
@@ -65,11 +63,6 @@ public class StreamServer extends VideoServlet {
 		ServletContext ctx = config.getServletContext();
 		Properties props =(Properties)ctx.getAttribute("properties");
 		dsFactory = DataSourceFactory.create(props, null);
-		try{
-			maxFrameRate = Integer.parseInt(props.getProperty("max.framerate"));
-		}catch(Exception e){
-			logger.info("Max frame rate not defined, using default...");
-		}
 	}
 
 	/**
@@ -124,7 +117,7 @@ public class StreamServer extends VideoServlet {
 		logger.fine(c.getCameraId() + " creating client stream...");
 		MJPEGWriter w =
 			new MJPEGWriter(c, response.getOutputStream(),
-				source, logger, maxFrameRate);
+				source, logger, c.getRate());
 		//registerStream(c, w); //FIXME: broken for unauthenticated users
 		try{
 			((Thread)source).start();

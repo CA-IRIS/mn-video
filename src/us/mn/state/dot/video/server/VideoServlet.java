@@ -95,6 +95,8 @@ public abstract class VideoServlet extends HttpServlet {
 
 	protected EncoderFactory encoderFactory = null;
 
+	protected int maxFrameRate = 3;
+
 	/** Initialize the VideoServlet */
 	public void init(ServletConfig config) throws ServletException {
 		super.init( config );
@@ -113,6 +115,11 @@ public abstract class VideoServlet extends HttpServlet {
 				maxImageSize = size;
 				break;
 			}
+		}
+		try{
+			maxFrameRate = Integer.parseInt(props.getProperty("max.framerate"));
+		}catch(Exception e){
+			logger.info("Max frame rate not defined, using default...");
 		}
 		if(logger==null) logger = Logger.getLogger(Constants.LOGGER_NAME);
 	}
@@ -172,7 +179,7 @@ public abstract class VideoServlet extends HttpServlet {
 	}
 
 	/** Get the requested image size.
-	 * Valid request values are 1,2,3 or s,m,l
+	 * Valid request values are 1,2,3 or s,m,l 
 	 */
 	protected ImageSize getRequestedSize(HttpServletRequest req) {
 		String value = req.getParameter(PARAM_SIZE);
@@ -210,8 +217,14 @@ public abstract class VideoServlet extends HttpServlet {
 		c.setDistrict(getRequestedDistrict(req));
 		c.setCameraId(getRequestedCameraId(req));
 		c.setSize(getRequestedSize(req));
+		if(maxImageSize.ordinal() < c.getSize().ordinal()){
+			c.setSize(maxImageSize);
+		}
 		if(req.getParameter(PARAM_RATE) != null)
 			c.setRate(getIntRequest(req, PARAM_RATE));
+		if(maxFrameRate < c.getRate()){
+			c.setRate(maxFrameRate);
+		}
 		if(req.getParameter(PARAM_DURATION) != null)
 			c.setDuration(getIntRequest(req, PARAM_DURATION));
 		if(req.getParameter(PARAM_SSID) != null)
