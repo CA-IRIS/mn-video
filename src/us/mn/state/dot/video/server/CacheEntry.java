@@ -60,7 +60,7 @@ public class CacheEntry {
 	}
 
 	private boolean isExpired(){
-		return (getAge() > expirationAge);
+		return (getAge() > expirationAge || image == null);
 	}
 
 	private void setImage(byte[] i){
