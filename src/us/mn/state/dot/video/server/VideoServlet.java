@@ -272,6 +272,7 @@ public abstract class VideoServlet extends HttpServlet {
 		}
 		finally {
 			try {
+				response.flushBuffer();
 				response.getOutputStream().close();
 			}
 			catch(Exception e2) {

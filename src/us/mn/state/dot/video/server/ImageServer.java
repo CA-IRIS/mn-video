@@ -20,17 +20,17 @@ package us.mn.state.dot.video.server;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Hashtable;
 import java.util.Properties;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.ws.http.HTTPException;
 
 import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.Encoder;
-import us.mn.state.dot.video.ImageFactory;
+import us.mn.state.dot.video.ImageCache;
 import us.mn.state.dot.video.RequestType;
 import us.mn.state.dot.video.VideoException;
 
@@ -43,16 +43,7 @@ import us.mn.state.dot.video.VideoException;
  */
 public final class ImageServer extends VideoServlet{
 
-	private static Hashtable<String, CacheEntry> cache =
-		new Hashtable<String, CacheEntry>();
-
-	private String encoderUser = null;
-	
-	private String encoderPass = null;
-	
-	protected final long DEFAULT_CACHE_DURATION = 10000; //10 seconds
-	
-	protected long cacheDuration = DEFAULT_CACHE_DURATION;
+	private static ImageCache imageCache = null;
 	
 	/** Constructor for the ImageServer */
     public void init(ServletConfig config) throws ServletException {
@@ -60,11 +51,7 @@ public final class ImageServer extends VideoServlet{
 		try{
 			ServletContext ctx = config.getServletContext();
 			Properties p = (Properties)ctx.getAttribute("properties");
-			encoderUser = p.getProperty("video.encoder.user");
-			encoderPass = p.getProperty("video.encoder.pwd");
-			cacheDuration = Long.parseLong(
-					p.getProperty("video.cache.duration",
-					Long.toString(DEFAULT_CACHE_DURATION)));
+			imageCache = ImageCache.create(p);
 		}catch(Exception e){
 			logger.severe(e.getMessage() + " --see error log for details.");
 			e.printStackTrace();
@@ -74,47 +61,36 @@ public final class ImageServer extends VideoServlet{
 	public void processRequest(HttpServletResponse response, Client c)
 		throws VideoException
 	{
+		URL imageURL = getImageURL(c);
+		if(imageURL == null){
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			return;
+		}
+		if(!isPublished(c.getCameraId())){
+			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+			return;
+		}
+		byte[] image = null;
 		try{
-			URL imageURL = getImageURL(c);
-			if(imageURL == null){
-				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-				response.flushBuffer();
-				return;
-			}
-			if(!isPublished(c.getCameraId())){
-				response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-				response.flushBuffer();
-				return;
-			}
-			byte[] image = getImage(c, imageURL);
-			response.setStatus(HttpServletResponse.SC_OK);
-			response.setContentType("image/jpeg\r\n");
-			response.setContentLength(image.length);
+			image = imageCache.getImage(createCacheKey(c), imageURL);
+		}catch(HTTPException httpEx){
+			response.setStatus(httpEx.getStatusCode());
+		}
+		if(image == null){
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			return;
+		}
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.setContentType("image/jpeg\r\n");
+		response.setContentLength(image.length);
+		try{
 			response.getOutputStream().write(image);
-			response.flushBuffer();
 		}catch(Throwable t){
 			logger.warning("Error serving image " + c.getCameraId() +
 					" to client " + c.getHost());
 		}
 	}
 
-	private byte[] getImage(Client c, URL imageURL) throws VideoException {
-		String key = createCacheKey(c);
-		CacheEntry entry = cache.get(key);
-		if(entry != null && !entry.isExpired()) return entry.getImage();
-		byte[] image = fetchImage(imageURL);
-		if(image == null){
-			return noVideo;
-		}
-		if(entry == null){
-			entry = new CacheEntry(image, cacheDuration);
-			cache.put(key, entry);
-		}else{
-			entry.setImage(image);
-		}
-		return image;
-	}
-	
 	private URL getImageURL(Client c) throws VideoException {
 		if(proxy){
 			return getDistrictImageURL(c);
@@ -127,10 +103,6 @@ public final class ImageServer extends VideoServlet{
 		return null;
 	}
 	
-	private byte[] fetchImage(URL url) throws VideoException {
-		return ImageFactory.getImage(url, encoderUser, encoderPass);
-	}
-
 	/** Get the URL used to retrieve a new image from a district server */
 	private URL getDistrictImageURL(Client c) throws VideoException {
 		String relativeURL = "";
@@ -144,7 +116,7 @@ public final class ImageServer extends VideoServlet{
 			throw new VideoException(mue.getMessage());
 		}
 	}
-
+	
     private static String createCacheKey(Client c){
     	return c.getDistrict().name() + ":" + c.getCameraId() + ":" + c.getSize();
     }

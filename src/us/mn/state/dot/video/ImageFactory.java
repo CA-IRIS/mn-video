@@ -27,6 +27,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.logging.Logger;
 
+import javax.xml.ws.http.HTTPException;
+
 
 /** The ImageFactory is a convenience class for retrieving images.
  * 
@@ -65,17 +67,17 @@ abstract public class ImageFactory {
 	 * Get an image from the given url
 	 * @param url The location of the image file
 	 * @return A byte[] containing the image data.
-	 * @throws VideoException
+	 * @throws HTTPException
 	 */
 	public static byte[] getImage(URL url, String user, String pwd)
-			throws VideoException{
+			throws HTTPException, VideoException{
 		InputStream in = null;
 		try{
 			HttpURLConnection c = createConnection(url, user, pwd);
 			int response = c.getResponseCode();
 			if(response != 200){
 				logger.info("RESPONSE " + response + ": " + url);
-				return null;
+				throw new HTTPException(response);
 			}
 			in = c.getInputStream();
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();

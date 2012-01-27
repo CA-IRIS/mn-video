@@ -18,6 +18,13 @@
  */
 package us.mn.state.dot.video.server;
 
+import java.net.URL;
+
+import javax.xml.ws.http.HTTPException;
+
+import us.mn.state.dot.video.ImageFactory;
+import us.mn.state.dot.video.VideoException;
+
 
 /**
  * An object that can be placed in the stills cache.  This class
@@ -29,12 +36,17 @@ public class CacheEntry {
 
 	private long imageTime = System.currentTimeMillis();
 	private byte[] image = null;
+	private final URL imageURL;
+	private final String user;
+	private final String pass;
 	
 	/** Length of time that an image should be cached */
 	protected final long expirationAge;
 	
-	public CacheEntry(byte[] data, long age){
-		this.image = data;
+	public CacheEntry(URL url, String user, String pass, long age){
+		this.imageURL = url;
+		this.user = user;
+		this.pass = pass;
 		this.expirationAge = age;
 	}
 
@@ -47,21 +59,20 @@ public class CacheEntry {
 		return (System.currentTimeMillis() - imageTime);
 	}
 
-	public boolean isExpired(){
-		return (getAge() > expirationAge || image == null);
+	private boolean isExpired(){
+		return (getAge() > expirationAge);
 	}
 
-	public synchronized void setImage(byte[] i){
+	private void setImage(byte[] i){
 		imageTime = System.currentTimeMillis();
 		image = i;
 	}
 	
-	public synchronized byte[] getImage() {
-		if(!isExpired()){
-			return image;
-		}else{
-			return null;
+	public synchronized byte[] getImage() throws HTTPException, VideoException{
+		if(isExpired()){
+			setImage(ImageFactory.getImage(imageURL, user, pass));
 		}
+		return image;
 	}
 }
 
