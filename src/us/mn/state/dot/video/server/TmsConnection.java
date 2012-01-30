@@ -19,7 +19,6 @@
 package us.mn.state.dot.video.server;
 
 import java.sql.ResultSet;
-import java.util.Hashtable;
 import java.util.Properties;
 
 
@@ -33,22 +32,17 @@ public class TmsConnection extends DatabaseConnection {
 
 	protected static final String TABLE_CAMERA = "camera_view";
 
-	private static final Hashtable<String, TmsConnection> connections =
-		new Hashtable<String, TmsConnection>();
+	private static TmsConnection connection = null;
 	
-	public static TmsConnection create(final Properties p){
-		try{
-			String key = p.getProperty("tms.db.user") +
-				p.getProperty("tms.db.host") +
-				p.getProperty("tms.db.name");
-			TmsConnection c = connections.get(key);
-			if(c != null) return c;
-			c = new TmsConnection(p);
-			connections.put(key, c);
-			return c;
-		}catch(Exception e){
-			return null;
+	public static synchronized TmsConnection create(final Properties p){
+		if(connection == null){
+			try{
+				connection = new TmsConnection(p);
+			}catch(Exception e){
+				return null;
+			}
 		}
+		return connection;
 	}
 	protected TmsConnection(Properties p){
 		super(
