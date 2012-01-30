@@ -98,7 +98,6 @@ public class EncoderFactory {
 
 	private synchronized void updateEncoders(){
 		logger.info("Updating encoder information.");
-		Encoder e = null;
 		for(String key : encoders.keySet()){
 			logger.info("Updating encoder for " + key);
 			createEncoder(key);
