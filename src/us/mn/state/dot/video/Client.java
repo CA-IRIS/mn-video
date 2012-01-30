@@ -36,10 +36,10 @@ public class Client {
 	
 	private int duration = 60;
 	
-	private Camera camera = null;
-
 	protected ImageSize size = ImageSize.MEDIUM;
 
+	protected String cameraName = null;
+	
 	public Client(){
 	}
 
@@ -62,7 +62,7 @@ public class Client {
 		return district;
 	}
 	public String toString(){
-		return  host + ": C=" + getCameraId() +
+		return  host + ": C=" + cameraName +
 			" S=" + size + " R=" + rate + " D=" +
 			duration;
 	}
@@ -71,9 +71,6 @@ public class Client {
 	}
 	public void setDistrict(District d) {
 		this.district = d;
-	}
-	public void setCamera(Camera c) {
-		this.camera = c;
 	}
 	public void setDuration(int duration) {
 		this.duration = duration;
@@ -84,14 +81,12 @@ public class Client {
 	public void setSize(ImageSize size) {
 		this.size = size;
 	}
-	public String getCameraId(){
-		if(camera==null) return null;
-		return camera.getId();
+	public String getCameraName(){
+		return cameraName;
 	}
-	public void setCameraId(String id){
-		if(id == null || id.length() > 10) return;
-		if(camera == null) camera = new Camera();
-		camera.setId(Camera.createStandardId(id));
+	public void setCameraName(String name){
+		if(name != null && name.length() > 10) return;
+		cameraName = createStandardId(name);
 	}
 	/** Get the SONAR session ID */
 	public long getSonarSessionId() {
@@ -100,5 +95,12 @@ public class Client {
 	/** Set the SONAR session ID */
 	public void setSonarSessionId(long sonarSessionId) {
 		this.sonarSessionId = sonarSessionId;
+	}
+	public static String createStandardId(String id){
+		if(id == null) return null;
+		id = id.toUpperCase();
+		if(id.startsWith("C")) id = id.substring(1);
+		while(id.length()<3) id = "0" + id;
+		return "C" + id;
 	}
 }

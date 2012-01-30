@@ -83,7 +83,7 @@ public class DataSourceFactory {
 	}
 
 	private static String createSourceKey(Client c){
-		return c.getCameraId() + ":" + c.getSize();
+		return c.getCameraName() + ":" + c.getSize();
 	}
 	
 	private static void cleanupSources(){
@@ -102,9 +102,9 @@ public class DataSourceFactory {
 				URL url = new URL(districtVideoURLs.get(c.getDistrict()), createRelativeURL(c));
 				return new HttpDataSource(c, logger, monitor, url, null, null);
 			}else{
-				Encoder encoder = encoderFactory.getEncoder(c.getCameraId());
+				Encoder encoder = encoderFactory.getEncoder(c.getCameraName());
 				if(encoder == null){
-					throw new VideoException("No encoder for " + c.getCameraId());
+					throw new VideoException("No encoder for " + c.getCameraName());
 				}
 				return encoder.getDataSource(c);
 			}
@@ -116,7 +116,7 @@ public class DataSourceFactory {
 	private static String createRelativeURL(Client c) {
 		return RequestType.STREAM.name().toLowerCase() +
 			"/" + c.getDistrict().name().toLowerCase() +
-			"/" + c.getCameraId() +
+			"/" + c.getCameraName() +
 			"?size=" + c.getSize().name().toLowerCase().charAt(0) +
 			"&rate=" + c.getRate() +
 			"&duration=" + c.getDuration() +
@@ -125,7 +125,7 @@ public class DataSourceFactory {
 
 	public synchronized DataSource getDataSource(Client c)
 			throws VideoException {
-		if(c.getCameraId()==null){
+		if(c.getCameraName()==null){
 			return null;
 		}
 		cleanupSources();

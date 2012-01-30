@@ -52,7 +52,7 @@ public final class Axis extends AbstractEncoder {
 	 * @return
 	 */
 	public URL getStreamURL(Client c){
-		int channel = getChannel(c.getCameraId());
+		int channel = getChannel(c.getCameraName());
 		if(channel == NO_CAMERA_CONNECTED) return null;
 		try{
 			return new URL( "http://" + host + ":" +
@@ -65,11 +65,11 @@ public final class Axis extends AbstractEncoder {
 	}
 
 	private String createCameraParam(Client c){
-		return PARAM_CAMERA + "=" + getChannel(c.getCameraId());	
+		return PARAM_CAMERA + "=" + getChannel(c.getCameraName());	
 	}
 
 	public URL getImageURL(Client c) {
-		int channel = getChannel(c.getCameraId());
+		int channel = getChannel(c.getCameraName());
 		if(channel == NO_CAMERA_CONNECTED) return null;
 		try{
 			String url = 

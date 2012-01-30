@@ -51,11 +51,4 @@ public class Camera {
 		return id + ": (" + getFreeway() + " @ " + getCrossStreet() + ")";
 	}
 
-	public static String createStandardId(String id){
-		if(id == null) return null;
-		id = id.toUpperCase();
-		if(id.startsWith("C")) id = id.substring(1);
-		while(id.length()<3) id = "0" + id;
-		return "C" + id;
-	}
 }

@@ -66,7 +66,7 @@ public final class ImageServer extends VideoServlet{
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			return;
 		}
-		if(!isPublished(c.getCameraId())){
+		if(!isPublished(c.getCameraName())){
 			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 			return;
 		}
@@ -86,7 +86,7 @@ public final class ImageServer extends VideoServlet{
 		try{
 			response.getOutputStream().write(image);
 		}catch(Throwable t){
-			logger.warning("Error serving image " + c.getCameraId() +
+			logger.warning("Error serving image " + c.getCameraName() +
 					" to client " + c.getHost());
 		}
 	}
@@ -95,7 +95,7 @@ public final class ImageServer extends VideoServlet{
 		if(proxy){
 			return getDistrictImageURL(c);
 		}else{
-			Encoder encoder = encoderFactory.getEncoder(c.getCameraId());
+			Encoder encoder = encoderFactory.getEncoder(c.getCameraName());
 			if(encoder != null){
 				return encoder.getImageURL(c);
 			}
@@ -110,7 +110,7 @@ public final class ImageServer extends VideoServlet{
 			relativeURL = "/video/" +
 				RequestType.IMAGE.name().toLowerCase() +
 				"/" + c.getDistrict().name().toLowerCase() +
-				"/" + c.getCameraId() +
+				"/" + c.getCameraName() +
 				"?size=" + c.getSize().name().toLowerCase().charAt(0);
 			return new URL(districtVideoURLs.get(c.getDistrict()), relativeURL);
 		}catch(MalformedURLException mue){
@@ -119,6 +119,6 @@ public final class ImageServer extends VideoServlet{
 	}
 	
     private static String createCacheKey(Client c){
-    	return c.getDistrict().name() + ":" + c.getCameraId() + ":" + c.getSize();
+    	return c.getDistrict().name() + ":" + c.getCameraName() + ":" + c.getSize();
     }
 }

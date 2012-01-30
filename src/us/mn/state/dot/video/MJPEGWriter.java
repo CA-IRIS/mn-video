@@ -137,7 +137,7 @@ public class MJPEGWriter implements DataSink {
 			halt(StreamStatus.RECEIVE_TIMEOUT);
 		}
 		if((now-lastRateCalc) > 5000){
-			logger.info(client.getHost() + ": " + client.getCameraId() +
+			logger.info(client.getHost() + ": " + client.getCameraName() +
 					" at " + (int)(frameCount/5) + " fps.");
 			frameCount = 0;
 			lastRateCalc = now;

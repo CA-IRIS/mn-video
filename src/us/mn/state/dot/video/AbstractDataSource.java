@@ -67,7 +67,7 @@ public abstract class AbstractDataSource extends VideoThread implements DataSour
 			return "Uninitialized DataSource";
 		}
 		return "DataSource for" +
-			" " + client.getCameraId() + " " +
+			" " + client.getCameraName() + " " +
 			"size " + client.getSize() +
 			" timestamp " + timeStamp;
 	}

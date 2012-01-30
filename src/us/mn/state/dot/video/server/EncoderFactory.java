@@ -23,9 +23,8 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import us.mn.state.dot.video.server.TmsConnection;
 import us.mn.state.dot.video.Axis;
-import us.mn.state.dot.video.Camera;
+import us.mn.state.dot.video.Client;
 import us.mn.state.dot.video.Constants;
 import us.mn.state.dot.video.Encoder;
 import us.mn.state.dot.video.Infinova;
@@ -136,7 +135,7 @@ public class EncoderFactory {
 			e = new Axis(host);
 		}
 		int ch = tms.getEncoderChannel(name);
-		String standardId = Camera.createStandardId(name);
+		String standardId = Client.createStandardId(name);
 		e.setCamera(standardId, ch);
 		e.setUsername(encoderUser);
 		e.setPassword(encoderPass);

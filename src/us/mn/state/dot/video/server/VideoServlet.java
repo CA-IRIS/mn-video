@@ -210,7 +210,7 @@ public abstract class VideoServlet extends HttpServlet {
 	/** Configure a client from an HTTP request */
 	protected void configureClient(Client c, HttpServletRequest req) {
 		c.setDistrict(getRequestedDistrict(req));
-		c.setCameraId(getRequestedCameraId(req));
+		c.setCameraName(getRequestedCameraId(req));
 		c.setSize(getRequestedSize(req));
 		if(maxImageSize.ordinal() < c.getSize().ordinal()){
 			c.setSize(maxImageSize);
@@ -234,9 +234,9 @@ public abstract class VideoServlet extends HttpServlet {
     
 	protected boolean isValidCamera(Client c){
 		if(c==null) return false;
-		if(c.getCameraId()==null) return false;
+		if(c.getCameraName()==null) return false;
 		if(proxy) return true;//proxy server can't validate camera id
-		Encoder encoder = encoderFactory.getEncoder(c.getCameraId());
+		Encoder encoder = encoderFactory.getEncoder(c.getCameraName());
 		return encoder != null;
 	}
 	
@@ -261,7 +261,7 @@ public abstract class VideoServlet extends HttpServlet {
 			processRequest(response, c);
 		}
 		catch(Throwable th) {
-			logger.warning(c.getCameraId() + ": " + th.getMessage());
+			logger.warning(c.getCameraName() + ": " + th.getMessage());
 			th.printStackTrace();
 			//sendNoVideo(response, c);
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

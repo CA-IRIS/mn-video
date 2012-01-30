@@ -76,9 +76,9 @@ public class StreamServer extends VideoServlet {
 		int sc = 200; //default status code ok
 		if(!isAuthenticated(c)){
 			sc = HttpServletResponse.SC_FORBIDDEN;
-		}else if(!isPublished(c.getCameraId())){
+		}else if(!isPublished(c.getCameraName())){
 			sc = HttpServletResponse.SC_FORBIDDEN;
-		}else if(c.getCameraId() == null){
+		}else if(c.getCameraName() == null){
 			sc = HttpServletResponse.SC_NOT_FOUND;
 		}else if(source == null){
 			sc = HttpServletResponse.SC_NO_CONTENT;
@@ -114,7 +114,7 @@ public class StreamServer extends VideoServlet {
 	 */
 	private void streamVideo(HttpServletResponse response, Client c, DataSource source)
 			throws IOException {
-		logger.fine(c.getCameraId() + " creating client stream...");
+		logger.fine(c.getCameraName() + " creating client stream...");
 		MJPEGWriter w =
 			new MJPEGWriter(c, response.getOutputStream(),
 				source, logger, c.getRate());
