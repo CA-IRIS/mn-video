@@ -23,10 +23,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 
 /**
@@ -42,9 +39,6 @@ public class DatabaseConnection {
 	protected static final String ASCENDING = "asc";
 	
 	protected static final String DESCENDING = "desc";
-	
-	public static final SimpleDateFormat DATE_FORMAT =
-		new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
 	
 	/** Username for authentication to the oracle db server */
 	private String user = null;
@@ -159,24 +153,6 @@ public class DatabaseConnection {
 			}
 		}
 		return null;
-	}
-
-	/** Create a Calendar object from a string representation */
-	public static Calendar getCalendar(String s) {
-		try{
-			Calendar c = Calendar.getInstance();
-			s = s.replace(" ", "_");
-			c.setTime(DATE_FORMAT.parse(s));
-			return c;
-		}catch(ParseException pe){
-			System.err.println("Calendar format error: " + s);
-			return null;
-		}
-	}
-	
-	public static String calendar2String(Calendar c){
-		String s = DATE_FORMAT.format(c.getTime());
-		return s.replace("_", " ");
 	}
 
 	protected final String getString(String sql, String column){
