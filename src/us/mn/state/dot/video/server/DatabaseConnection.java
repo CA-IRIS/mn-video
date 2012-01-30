@@ -40,13 +40,13 @@ public class DatabaseConnection {
 	
 	protected static final String DESCENDING = "desc";
 	
-	/** Username for authentication to the oracle db server */
+	/** Username for authentication to the db server */
 	private String user = null;
 
 	/** The name of the database to connect to */
 	private String dbName = null;
 
-	/** Password for authentication to the oracle db server */
+	/** Password for authentication to the db server */
 	private String password = null;
 
 	/** Database URL */
@@ -57,25 +57,8 @@ public class DatabaseConnection {
 	
 	protected Statement statement = null;
 	
-	/** The fully qualified name of the database driver for postgres */
-	private static final String DRIVER_POSTGRES = "org.postgresql.Driver";
-
-	/** The fully qualified name of the database driver for oracle */
-	private static final String DRIVER_ORACLE = "oracle.jdbc.driver.OracleDriver";
-
-	private final String driver;
-
-	private static final String PROTOCOL_POSTGRES = "jdbc:postgresql://";
-	private static final String PROTOCOL_ORACLE = "jdbc:oracle:thin:@";
-
-	private final String protocol;
-	
-	public static final int TYPE_POSTGRES = 1;
-	public static final int TYPE_ORACLE = 2;
-	
 	/** Constructor for the DatabaseConnection class.
 	 * 
-	 * @param dbType The database vendor.
 	 * @param user The username for connections.
 	 * @param pwd The user password.
 	 * @param host Host name or ip.
@@ -83,32 +66,17 @@ public class DatabaseConnection {
 	 * @param dbName The name of the database.
 	 */
 	public DatabaseConnection(
-			int dbType, String user, String pwd, String host, int port, String dbName) {
+			String user, String pwd, String host, int port, String dbName) {
 		this.user = user;
 		this.dbName = dbName;
 		this.password = pwd;
 		String port_name_separator = "/";
-		switch(dbType){
-			case(TYPE_ORACLE):
-				driver = DRIVER_ORACLE;
-				protocol = PROTOCOL_ORACLE;
-				port_name_separator = ":";
-				break;
-			case(TYPE_POSTGRES):
-				driver = DRIVER_POSTGRES;
-				protocol = PROTOCOL_POSTGRES;
-				break;
-			default:
-				driver = DRIVER_POSTGRES;
-				protocol = PROTOCOL_POSTGRES;
-				break;
-		}
-		url = protocol + host + ":" + port + port_name_separator + dbName;
+		url = "jdbc:postgresql://" + host + ":" + port + port_name_separator + dbName;
 	}
 
 	private void connect(){
 		try {
-			Class.forName( driver );
+			Class.forName( "org.postgresql.Driver" );
 			System.out.println( "Openning connection to " + dbName + " database." );
 			connection = DriverManager.getConnection( url, user, password );
 			DatabaseMetaData md = connection.getMetaData();

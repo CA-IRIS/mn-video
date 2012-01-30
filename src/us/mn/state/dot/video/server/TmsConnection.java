@@ -52,7 +52,6 @@ public class TmsConnection extends DatabaseConnection {
 	}
 	protected TmsConnection(Properties p){
 		super(
-			DatabaseConnection.TYPE_POSTGRES,
 			p.getProperty("tms.db.user"),
 			p.getProperty("tms.db.pwd"),
 			p.getProperty("tms.db.host"),
