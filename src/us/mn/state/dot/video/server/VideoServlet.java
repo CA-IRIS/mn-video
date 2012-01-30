@@ -54,8 +54,6 @@ import us.mn.state.dot.video.VideoThread;
  */
 public abstract class VideoServlet extends HttpServlet {
 	
-	protected static byte[] noVideo = null;
-
 	protected ImageSize maxImageSize = ImageSize.MEDIUM;
 	
 	protected ImageSize defaultImageSize = ImageSize.MEDIUM;
@@ -100,7 +98,6 @@ public abstract class VideoServlet extends HttpServlet {
 		ServletContext ctx = config.getServletContext();
 		Properties props =(Properties)ctx.getAttribute("properties");
 		proxy = new Boolean(props.getProperty("proxy", "false")).booleanValue();
-		createNoVideoImage(props.getProperty("novideo.filename", "novideo.jpg"));
 		if(proxy){
 			createDistrictURLs(props);
 		}else{
@@ -263,7 +260,6 @@ public abstract class VideoServlet extends HttpServlet {
 		catch(Throwable th) {
 			logger.warning(c.getCameraName() + ": " + th.getMessage());
 			th.printStackTrace();
-			//sendNoVideo(response, c);
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			try{
 				response.flushBuffer();
@@ -315,18 +311,5 @@ public abstract class VideoServlet extends HttpServlet {
 			logger.warning("VideoServlet.isValidSSID: " + e.getMessage());
 		}
 		return ids;
-	}
-
-	/** Create a no-video image */
-	protected final void createNoVideoImage(String fileName){
-		try{
-			FileImageInputStream in = null;
-			in = new FileImageInputStream(new File(fileName));
-			byte[] bytes = new byte[(int)in.length()];
-			in.read(bytes, 0, bytes.length);
-			noVideo = bytes;
-		}catch(IOException ioe){
-			noVideo = null;
-		}
 	}
 }
