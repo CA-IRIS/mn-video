@@ -283,21 +283,6 @@ public abstract class VideoServlet extends HttpServlet {
 	public abstract void processRequest(HttpServletResponse response,
 		Client c) throws Exception;
 
-	private final void sendNoVideo(HttpServletResponse response, Client c){
-		if(noVideo==null){
-			return;
-		}
-		try{
-			response.setStatus(HttpServletResponse.SC_OK);
-			response.setContentType("image/jpeg");
-			response.setContentLength(noVideo.length);
-			response.getOutputStream().write(noVideo);
-			response.flushBuffer();
-		}catch(Exception e){
-			logger.warning(e.getMessage());
-		}
-	}
-	
 	/** Check to see if the client is authenticated through SONAR */
 	protected final boolean isAuthenticated(Client c){
 		if(!proxy) return true;
