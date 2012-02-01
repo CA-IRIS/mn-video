@@ -24,7 +24,7 @@ import java.util.Properties;
 
 import javax.xml.ws.http.HTTPException;
 
-import us.mn.state.dot.video.server.CacheEntry;
+import us.mn.state.dot.video.CacheEntry;
 
 public class ImageCache {
 

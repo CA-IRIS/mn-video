@@ -16,11 +16,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package us.mn.state.dot.video.server;
+package us.mn.state.dot.video;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -31,21 +29,12 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import javax.imageio.stream.FileImageInputStream;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import us.mn.state.dot.video.Client;
-import us.mn.state.dot.video.Constants;
-import us.mn.state.dot.video.District;
-import us.mn.state.dot.video.Encoder;
-import us.mn.state.dot.video.ImageFactory;
-import us.mn.state.dot.video.ImageSize;
-import us.mn.state.dot.video.VideoThread;
 
 /**
  * The VideoServlet is the base class for all servlets in the video package. 

@@ -26,7 +26,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import us.mn.state.dot.video.server.EncoderFactory;
+import us.mn.state.dot.video.EncoderFactory;
 
 /**
  * The DataSourceFactory creates and maintains DataSources.
