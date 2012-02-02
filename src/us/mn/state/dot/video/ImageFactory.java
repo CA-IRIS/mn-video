@@ -20,6 +20,7 @@
 package us.mn.state.dot.video;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
@@ -76,7 +77,6 @@ abstract public class ImageFactory {
 			HttpURLConnection c = createConnection(url, user, pwd);
 			int response = c.getResponseCode();
 			if(response != 200){
-				logger.info("RESPONSE " + response + ": " + url);
 				throw new HTTPException(response);
 			}
 			in = c.getInputStream();
@@ -91,8 +91,8 @@ abstract public class ImageFactory {
 			return bos.toByteArray();
 		}catch(SocketTimeoutException ste){
 			logger.info("TIMEOUT: " + url);
-		}catch(Exception e){
-			throw new VideoException(e.getMessage());
+		}catch(IOException ioe){
+			throw new VideoException(ioe.getMessage());
 		}finally{
 			try{
 				in.close();
