@@ -113,7 +113,6 @@ public abstract class VideoServlet extends HttpServlet {
 	}
 
 	private void createDistrictURLs(Properties p){
-		if(!proxy) return;
 		for(District d : District.values()){
 			String s = null;
 			try{
@@ -248,10 +247,13 @@ public abstract class VideoServlet extends HttpServlet {
 	
 	private String createRedirect(HttpServletRequest req, Client c)
 			throws VideoException {
-		return req.getContextPath() + req.getServletPath() +
+		String s = req.getContextPath() + req.getServletPath() +
 			"/" + c.getDistrict().name().toLowerCase() +
 			"/" + c.getCameraName() + ".jpg";
-			//"?size=" + c.getSize().name().toLowerCase().charAt(0);
+		if(c.getSize() != defaultImageSize){
+			s = s + "?size=" + c.getSize().name().toLowerCase().charAt(0); 
+		}
+		return s;
 	}
 	
 	/**
@@ -265,7 +267,7 @@ public abstract class VideoServlet extends HttpServlet {
 		Client c = new Client();
 		try {
 			configureClient(c, request);
-			if(c.isLegacy() && !legacySupport){
+			if(proxy && c.isLegacy() && !legacySupport){
 				response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
 				String newLocation = (createRedirect(request, c));
 				response.addHeader("Location", newLocation);
@@ -305,7 +307,7 @@ public abstract class VideoServlet extends HttpServlet {
 	}
 
 	public abstract void processRequest(HttpServletResponse response,
-		Client c) throws Exception;
+			Client c) throws Exception;
 
 	/** Check to see if the client is authenticated through SONAR */
 	protected final boolean isAuthenticated(Client c){

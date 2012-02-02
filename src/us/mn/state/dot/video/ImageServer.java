@@ -25,14 +25,9 @@ import java.util.Properties;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.ws.http.HTTPException;
-
-import us.mn.state.dot.video.Client;
-import us.mn.state.dot.video.Encoder;
-import us.mn.state.dot.video.ImageCache;
-import us.mn.state.dot.video.RequestType;
-import us.mn.state.dot.video.VideoException;
 
 /**
  * VideoServer is the main thread for still video server.
@@ -91,6 +86,21 @@ public final class ImageServer extends VideoServlet{
 		}
 	}
 
+	/** Is this district server responsible for handling
+	 * the request from the client?
+	 */
+	private boolean isDistrictServer(HttpServletRequest request, Client c){
+		String localIp = request.getLocalAddr();
+		URL districtURL = districtVideoURLs.get(c.getDistrict());
+		if(districtURL == null){
+			return false;
+		}
+		String districtIp = districtURL.getHost();
+		logger.warning("Local: " + localIp);
+		logger.warning("District: " + districtIp);
+		return (districtIp.equals(localIp));
+	}
+	
 	private URL getImageURL(Client c) throws VideoException {
 		if(proxy){
 			return getDistrictImageURL(c);

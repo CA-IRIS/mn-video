@@ -28,14 +28,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
-import us.mn.state.dot.video.Client;
-import us.mn.state.dot.video.DataSource;
-import us.mn.state.dot.video.DataSourceFactory;
-import us.mn.state.dot.video.MJPEG;
-import us.mn.state.dot.video.MJPEGWriter;
-import us.mn.state.dot.video.StreamStatus;
-import us.mn.state.dot.video.VideoException;
-
 /**
  * The <code>StreamServer</code> class is a servlet that responds to client requests for
  * a MN/Dot video stream.  The response is a standard multipart http response which
