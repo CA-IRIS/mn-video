@@ -7,12 +7,12 @@
 <web-app>
 	<servlet>
 		<servlet-name>Context</servlet-name>
-		<servlet-class>us.mn.state.dot.video.server.PropertiesContext</servlet-class>
+		<servlet-class>us.mn.state.dot.video.PropertiesContext</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet>
 		<servlet-name>StreamServer</servlet-name>
-		<servlet-class>us.mn.state.dot.video.server.StreamServer</servlet-class>
+		<servlet-class>us.mn.state.dot.video.StreamServer</servlet-class>
 		<load-on-startup>2</load-on-startup>
 	</servlet>
 	<servlet-mapping>
@@ -22,7 +22,7 @@
 
 	<servlet>
 		<servlet-name>ImageServer</servlet-name>
-		<servlet-class>us.mn.state.dot.video.server.ImageServer</servlet-class>
+		<servlet-class>us.mn.state.dot.video.ImageServer</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>ImageServer</servlet-name>

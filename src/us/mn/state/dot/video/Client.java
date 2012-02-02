@@ -40,6 +40,8 @@ public class Client {
 
 	protected String cameraName = null;
 	
+	protected boolean legacy = false;
+	
 	public Client(){
 	}
 
@@ -86,7 +88,7 @@ public class Client {
 	}
 	public void setCameraName(String name){
 		if(name != null && name.length() > 10) return;
-		cameraName = createStandardId(name);
+		cameraName = name;
 	}
 	/** Get the SONAR session ID */
 	public long getSonarSessionId() {
@@ -96,11 +98,10 @@ public class Client {
 	public void setSonarSessionId(long sonarSessionId) {
 		this.sonarSessionId = sonarSessionId;
 	}
-	public static String createStandardId(String id){
-		if(id == null) return null;
-		id = id.toUpperCase();
-		if(id.startsWith("C")) id = id.substring(1);
-		while(id.length()<3) id = "0" + id;
-		return "C" + id;
+	public void setLegacy(boolean legacy){
+		this.legacy = legacy;
+	}
+	public boolean isLegacy(){
+		return legacy;
 	}
 }

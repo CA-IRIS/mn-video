@@ -23,12 +23,6 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import us.mn.state.dot.video.Axis;
-import us.mn.state.dot.video.Client;
-import us.mn.state.dot.video.Constants;
-import us.mn.state.dot.video.Encoder;
-import us.mn.state.dot.video.Infinova;
-
 /**
  * @author john3tim
  *
@@ -134,8 +128,7 @@ public class EncoderFactory {
 			e = new Axis(host);
 		}
 		int ch = tms.getEncoderChannel(name);
-		String standardId = Client.createStandardId(name);
-		e.setCamera(standardId, ch);
+		e.setCamera(name, ch);
 		e.setUsername(encoderUser);
 		e.setPassword(encoderPass);
 		encoders.put(name, e);
