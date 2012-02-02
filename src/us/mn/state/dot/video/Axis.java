@@ -76,12 +76,8 @@ public final class Axis extends AbstractEncoder {
 				"http://" + host + ":" +
 				getPort() + BASE_IMAGE_URI +
 				createCameraParam(c) +
-				"&" + createSizeParam(c.getSize());
-/*			if(size==SMALL){
-				url = url +
-					"&" + PARAM_CLOCK + "=" + VALUE_OFF +
-					"&" + PARAM_DATE + "=" + VALUE_OFF;
-			}*/
+				"&" + createSizeParam(c.getSize()) +
+				"&compression=30";
 			return new URL(url);
 		}catch(Exception e){
 			return null;

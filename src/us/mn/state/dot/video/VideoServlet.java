@@ -158,18 +158,10 @@ public abstract class VideoServlet extends HttpServlet {
 		if(path!=null){
 			String[] pathParts = path.substring(1).split("/");
 			if(pathParts.length==2){
-				String name = pathParts[1];
-				if(name.indexOf(".")>-1){
-					name = name.substring(0,name.indexOf("."));
-				}
-				return name;
+				return createCameraName(pathParts[1]);
 			}
 		}
-		try{
-			return createCameraName(getIntRequest(req, "id"));
-		}catch(Exception e){
-			return null;
-		}
+		return createCameraName(req.getParameter("id"));
 	}
 
 	/** Get the requested image size.
@@ -294,14 +286,29 @@ public abstract class VideoServlet extends HttpServlet {
 		}
 	}
 
-	/** Create a camera name from an int.
+	/** Create a camera name from an id
 	 * This method is for legacy support only.
-	 * @param number
+	 * Attempts to create a standard camera name from a string
+	 * @param s
 	 * @return The standard camera name
 	 */
-	private String createCameraName(int number){
-		if(number < 0) return null;
-		String s = Integer.toString(number);
+	private String createCameraName(String s){
+		if(s == null) return null;
+		s = s.toUpperCase();
+		if(s.indexOf(".")>-1){
+			s = s.substring(0,s.indexOf("."));
+		}
+		if(s.length()>4){
+			return s;
+		}
+		if(s.startsWith("C")){
+			s = s.substring(1);
+		}
+		try{
+			int i = Integer.parseInt(s);
+			s = Integer.toString(i);
+		}catch(NumberFormatException nfe){
+		}
 		while(s.length()<3) s = "0" + s;
 		return "C" + s;
 	}
