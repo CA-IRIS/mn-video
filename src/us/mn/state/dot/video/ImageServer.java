@@ -68,9 +68,6 @@ public final class ImageServer extends VideoServlet{
 		byte[] image = null;
 		try{
 			image = imageCache.getImage(createCacheKey(c), imageURL);
-			if(image != null){
-				logger.warning("Image length= " + image.length);
-			}
 			if(image == null){
 				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 				return;
@@ -80,11 +77,10 @@ public final class ImageServer extends VideoServlet{
 			response.setContentLength(image.length);
 			response.getOutputStream().write(image);
 		}catch(HTTPException httpEx){
-			logger.warning("Caught HTTPException: " + httpEx.getStatusCode());
 			response.setStatus(httpEx.getStatusCode());
 		}catch(Throwable t){
 			t.printStackTrace();
-			logger.warning("Error serving image " + c.getCameraName() +
+			logger.warning("Exception serving image " + c.getCameraName() +
 					" to client " + c.getHost());
 		}
 	}
