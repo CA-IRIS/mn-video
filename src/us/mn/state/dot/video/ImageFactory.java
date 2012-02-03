@@ -90,16 +90,15 @@ abstract public class ImageFactory {
 			}
 			return bos.toByteArray();
 		}catch(SocketTimeoutException ste){
-			logger.info("TIMEOUT: " + url);
+			throw new HTTPException(504); //Gateway Timeout
 		}catch(IOException ioe){
-			throw new VideoException(ioe.getMessage());
+			throw new HTTPException(504);
 		}finally{
 			try{
 				in.close();
 			}catch(Exception e2){
 			}
 		}
-		return null;
 	}
 
 	/** Prepare a connection by setting necessary properties and timeouts */
