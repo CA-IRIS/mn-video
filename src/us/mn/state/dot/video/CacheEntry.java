@@ -19,6 +19,7 @@
 package us.mn.state.dot.video;
 
 import java.net.URL;
+import java.util.logging.Logger;
 
 import javax.xml.ws.http.HTTPException;
 
@@ -39,6 +40,7 @@ public class CacheEntry {
 	private final URL imageURL;
 	private final String user;
 	private final String pass;
+	private int statusCode = -1;
 	
 	/** Length of time that an image should be cached */
 	protected final long expirationAge;
@@ -48,6 +50,7 @@ public class CacheEntry {
 		this.user = user;
 		this.pass = pass;
 		this.expirationAge = age;
+		imageTime = imageTime - (2 * expirationAge); //initially expired
 	}
 
     /**
@@ -60,7 +63,7 @@ public class CacheEntry {
 	}
 
 	private boolean isExpired(){
-		return (getAge() > expirationAge || image == null);
+		return (getAge() > expirationAge);
 	}
 
 	private void setImage(byte[] i){
@@ -70,9 +73,29 @@ public class CacheEntry {
 	
 	public synchronized byte[] getImage() throws HTTPException, VideoException{
 		if(isExpired()){
-			setImage(ImageFactory.getImage(imageURL, user, pass));
+			System.out.println("Image expired, fetching now.");
+			fetchImage();
+		}
+		if(statusCode > 0 && statusCode != 200){
+			throw new HTTPException(statusCode);
 		}
 		return image;
+	}
+
+	private void fetchImage() throws HTTPException, VideoException {
+		try{
+			setImage(ImageFactory.getImage(imageURL, user, pass));
+			statusCode = 200;
+		}catch(HTTPException httpE){
+			System.out.println("Caught HTTP " + httpE.getStatusCode());
+			statusCode = httpE.getStatusCode();
+			imageTime = System.currentTimeMillis();
+			throw httpE;
+		}catch(VideoException ve){
+			statusCode = -1;
+			imageTime = System.currentTimeMillis();
+			throw ve;
+		}
 	}
 }
 
