@@ -73,7 +73,6 @@ public class CacheEntry {
 	
 	public synchronized byte[] getImage() throws HTTPException, VideoException{
 		if(isExpired()){
-			System.out.println("Image expired, fetching now.");
 			fetchImage();
 		}
 		if(statusCode > 0 && statusCode != 200){
@@ -87,7 +86,6 @@ public class CacheEntry {
 			setImage(ImageFactory.getImage(imageURL, user, pass));
 			statusCode = 200;
 		}catch(HTTPException httpE){
-			System.out.println("Caught HTTP " + httpE.getStatusCode());
 			statusCode = httpE.getStatusCode();
 			imageTime = System.currentTimeMillis();
 			throw httpE;
