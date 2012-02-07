@@ -18,13 +18,17 @@
  */
 package us.mn.state.dot.video;
 
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.net.URL;
-import java.util.logging.Logger;
 
+import javax.imageio.ImageIO;
 import javax.xml.ws.http.HTTPException;
-
-import us.mn.state.dot.video.ImageFactory;
-import us.mn.state.dot.video.VideoException;
 
 
 /**
@@ -41,15 +45,17 @@ public class CacheEntry {
 	private final String user;
 	private final String pass;
 	private int statusCode = -1;
+	private final ImageSize size;
 	
 	/** Length of time that an image should be cached */
 	protected final long expirationAge;
 	
-	public CacheEntry(URL url, String user, String pass, long age){
+	public CacheEntry(URL url, String user, String pass, long age, ImageSize s){
 		this.imageURL = url;
 		this.user = user;
 		this.pass = pass;
 		this.expirationAge = age;
+		this.size = s;
 		imageTime = imageTime - (2 * expirationAge); //initially expired
 	}
 
@@ -68,7 +74,32 @@ public class CacheEntry {
 
 	private void setImage(byte[] i){
 		imageTime = System.currentTimeMillis();
-		image = i;
+		image = scale(i);
+	}
+
+	private byte[] scale(byte[] data){
+		System.out.println("Original image size: " + data.length);
+		if(data == null) return data;
+		if(data.length < size.getMaxBytes()) return data;
+		System.out.println("Scaling image...");
+		try{
+			InputStream in = new ByteArrayInputStream(data);
+			BufferedImage bi = ImageIO.read(in);
+			Dimension d = size.getDimension();
+			Image i = bi.getScaledInstance(d.width, d.height, Image.SCALE_FAST);
+			BufferedImage newBi = new BufferedImage(d.width, d.height, BufferedImage.TYPE_INT_RGB);
+			System.out.println("New w: " + newBi.getWidth() + " New h: " + newBi.getHeight());
+			Graphics bg = newBi.getGraphics();
+			bg.drawImage(i, 0, 0, null);
+			bg.dispose();
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			ImageIO.write(newBi, "jpg", out);
+			out.flush();
+			System.out.println("Scaled size: " + out.toByteArray().length);
+			return out.toByteArray();
+		}catch(Exception e){
+			return data;
+		}
 	}
 	
 	public synchronized byte[] getImage() throws HTTPException, VideoException{

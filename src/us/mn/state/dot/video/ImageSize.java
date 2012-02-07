@@ -18,17 +18,23 @@
 */
 package us.mn.state.dot.video;
 
+import java.awt.Dimension;
+
 public enum ImageSize {
 
-	SMALL("176x144"),
-	MEDIUM("352x240"),
-	LARGE("704x480");
+	SMALL (new Dimension(176, 144),   5 * 1024),
+	MEDIUM(new Dimension(352, 240),  15 * 1024),
+	LARGE (new Dimension(740, 480),  40 * 1024);
 	
-	private final String dimensions;
+	private final int maxBytes;
+	private final Dimension dimension;
 
-	private ImageSize(String s){
-		dimensions = s;
+	private ImageSize(Dimension d, int mb){
+		dimension = d;
+		maxBytes = mb;
 	}
 	
-	public String getDimensions(){ return dimensions; }
+	public int getMaxBytes(){ return maxBytes; }
+	
+	public Dimension getDimension(){ return dimension; }
 }

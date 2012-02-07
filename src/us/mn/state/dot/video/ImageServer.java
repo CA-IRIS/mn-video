@@ -67,7 +67,7 @@ public final class ImageServer extends VideoServlet{
 		}
 		byte[] image = null;
 		try{
-			image = imageCache.getImage(createCacheKey(c), imageURL);
+			image = imageCache.getImage(c, imageURL);
 			if(image == null){
 				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 				return;
@@ -126,8 +126,4 @@ public final class ImageServer extends VideoServlet{
 			throw new VideoException(mue.getMessage());
 		}
 	}
-	
-    private static String createCacheKey(Client c){
-    	return c.getDistrict().name() + ":" + c.getCameraName() + ":" + c.getSize();
-    }
 }

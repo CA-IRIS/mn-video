@@ -24,8 +24,6 @@ import java.util.Properties;
 
 import javax.xml.ws.http.HTTPException;
 
-import us.mn.state.dot.video.CacheEntry;
-
 public class ImageCache {
 
 	private String user = null;
@@ -55,18 +53,22 @@ public class ImageCache {
 		return imageCache;
 	}
 	
-	private synchronized CacheEntry getEntry(String key, URL imageURL){
+	private synchronized CacheEntry getEntry(String key, URL imageURL, ImageSize size){
 		CacheEntry entry = cacheMap.get(key);
 		if(entry != null){
 			return entry;
 		}
-		entry = new CacheEntry(imageURL, user, pass, cacheDuration);
+		entry = new CacheEntry(imageURL, user, pass, cacheDuration, size);
 		cacheMap.put(key, entry);
 		return entry;
 	}
 	
-	public byte[] getImage(String key, URL imageURL) throws HTTPException, VideoException {
-		CacheEntry entry = getEntry(key, imageURL);
+	public byte[] getImage(Client c, URL imageURL) throws HTTPException, VideoException {
+		CacheEntry entry = getEntry(createCacheKey(c), imageURL, c.getSize());
 		return entry.getImage();
 	}
+
+	private static String createCacheKey(Client c){
+    	return c.getDistrict().name() + ":" + c.getCameraName() + ":" + c.getSize();
+    }
 }

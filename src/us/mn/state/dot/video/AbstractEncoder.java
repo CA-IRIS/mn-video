@@ -18,6 +18,7 @@
  */
 package us.mn.state.dot.video;
 
+import java.awt.Dimension;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -159,6 +160,7 @@ public abstract class AbstractEncoder implements Encoder {
 	}
 
 	public String createSizeParam(ImageSize size){
-		return PARAM_SIZE + "=" + size.getDimensions();
+		Dimension d = size.getDimension();
+		return PARAM_SIZE + "=" + d.width + "x" + d.height;
 	}
 }
