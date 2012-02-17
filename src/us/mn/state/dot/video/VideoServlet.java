@@ -19,7 +19,11 @@
 package us.mn.state.dot.video;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -248,6 +252,25 @@ public abstract class VideoServlet extends HttpServlet {
 		return s;
 	}
 	
+	private boolean isDirectoryRequest(HttpServletRequest req){
+		boolean nullPath  = req.getPathInfo() == null;
+		boolean nullQuery = req.getQueryString() == null;
+		boolean isDirectoryReq = nullPath && nullQuery;
+		return isDirectoryReq;
+	}
+	
+	private void sendDistrictList(HttpServletResponse response)
+			throws IOException {
+		response.setStatus(HttpServletResponse.SC_OK);
+		response.setContentType("text");
+		OutputStream os = response.getOutputStream();
+		OutputStreamWriter osw = new OutputStreamWriter(os);
+		for(District d : District.values()){
+			osw.write(d.name().toLowerCase() + "\n");
+			osw.flush();
+		}
+	}
+
 	/**
 	 * Handles the HTTP <code>GET</code> method.
 	 * @param request servlet request
@@ -258,6 +281,10 @@ public abstract class VideoServlet extends HttpServlet {
 	{
 		Client c = new Client();
 		try {
+			if(isDirectoryRequest(request)){
+				sendDistrictList(response);
+				return;
+			}
 			configureClient(c, request);
 			if(proxy && c.isLegacy() && !legacySupport){
 				response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
