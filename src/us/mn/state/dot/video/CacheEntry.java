@@ -78,24 +78,20 @@ public class CacheEntry {
 	}
 
 	private byte[] scale(byte[] data){
-		System.out.println("Original image size: " + data.length);
 		if(data == null) return data;
 		if(data.length < size.getMaxBytes()) return data;
-		System.out.println("Scaling image...");
 		try{
 			InputStream in = new ByteArrayInputStream(data);
 			BufferedImage bi = ImageIO.read(in);
 			Dimension d = size.getDimension();
 			Image i = bi.getScaledInstance(d.width, d.height, Image.SCALE_FAST);
 			BufferedImage newBi = new BufferedImage(d.width, d.height, BufferedImage.TYPE_INT_RGB);
-			System.out.println("New w: " + newBi.getWidth() + " New h: " + newBi.getHeight());
 			Graphics bg = newBi.getGraphics();
 			bg.drawImage(i, 0, 0, null);
 			bg.dispose();
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			ImageIO.write(newBi, "jpg", out);
 			out.flush();
-			System.out.println("Scaled size: " + out.toByteArray().length);
 			return out.toByteArray();
 		}catch(Exception e){
 			return data;
