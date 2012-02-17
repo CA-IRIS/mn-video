@@ -21,7 +21,6 @@
 	<property name="web.dir" value="web" />
 	<property name="lib.dir" value="lib" />
 	<property name="bin.dir" value="bin" />
-	<property name="images.dir" value="web/images" />
 	<property name="build.dir" value="build" />
 	<property name="build.war.dir" value="${build.dir}/war" />
 	<property name="build.src.dir" value="${build.dir}/src" />
@@ -102,11 +101,6 @@
 		<copy todir="${build.war.dir}/WEB-INF/lib">
 			<fileset dir="${lib.dir}" >
 				<exclude name="servlet*" />
-			</fileset>
-		</copy>
-		<copy todir="${build.war.dir}/images">
-			<fileset dir="${images.dir}" >
-				<include name="*" />
 			</fileset>
 		</copy>
 		<copy todir="${build.war.dir}/WEB-INF/classes">
