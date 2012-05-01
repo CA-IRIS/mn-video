@@ -2,6 +2,3 @@ build
 lib
 .classpath
 .project
-.mpg
-.mov
-web/cameras
