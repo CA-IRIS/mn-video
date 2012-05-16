@@ -89,24 +89,6 @@ public class DatabaseConnection {
 			System.err.println("Error connecting to DB: " + url + " USER: " + user + " PWD: " + password );
 		}
 	}
-
-	private boolean connected(){
-		if(connection == null) connect();
-		try{
-			connection.isClosed();
-			return true;
-		}catch(Exception e){
-			try{
-				connect();
-				connection.isClosed();
-				return true;
-			}catch(Exception e2){
-				System.err.println("Unable to connect to DB.");
-				return false;
-			}
-		}
-		
-	}
 	
 	public ResultSet query( String sql ){
 		try{
