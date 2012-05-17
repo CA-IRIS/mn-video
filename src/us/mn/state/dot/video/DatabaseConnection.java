@@ -21,9 +21,11 @@ package us.mn.state.dot.video;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.ArrayList;
+import java.util.Properties;
+import java.util.logging.Logger;
 
 
 /**
@@ -35,6 +37,14 @@ import java.util.ArrayList;
  *
  */
 public class DatabaseConnection {
+
+	protected static final String CAMERA_ID = "name";
+	protected static final String CAMERA_ENCODER = "encoder";
+	protected static final String CAMERA_ENCODER_CHANNEL = "encoder_channel";
+	protected static final String CAMERA_PUBLISH = "publish";
+	protected static final String CAMERA_ENCODER_TYPE = "encoder_type";
+
+	protected static final String TABLE_CAMERA = "camera_view";
 
 	protected static final String ASCENDING = "asc";
 	
@@ -57,21 +67,41 @@ public class DatabaseConnection {
 	
 	protected Statement statement = null;
 	
-	/** Constructor for the DatabaseConnection class.
-	 * 
-	 * @param user The username for connections.
-	 * @param pwd The user password.
-	 * @param host Host name or ip.
-	 * @param port Port on which to connect.
-	 * @param dbName The name of the database.
-	 */
-	public DatabaseConnection(
-			String user, String pwd, String host, int port, String dbName) {
-		this.user = user;
-		this.dbName = dbName;
-		this.password = pwd;
+	protected PreparedStatement isPublishedStatement = null;
+	
+	protected PreparedStatement encoderHostStatement = null;
+
+	protected PreparedStatement encoderTypeStatement = null;
+
+	protected PreparedStatement encoderChannelStatement = null;
+
+	private static DatabaseConnection db = null;
+	
+	private Logger logger = null;
+
+	public static synchronized DatabaseConnection create(final Properties p){
+		if(db == null){
+			try{
+				db = new DatabaseConnection(p);
+			}catch(Exception e){
+				return null;
+			}
+		}
+		return db;
+	}
+
+	private DatabaseConnection(Properties p){
+		this.logger = Logger.getLogger(Constants.LOGGER_NAME);
+		this.user = p.getProperty("tms.db.user");
+		this.dbName = p.getProperty("tms.db.name");
+		this.password = p.getProperty("tms.db.pwd");
 		String port_name_separator = "/";
-		url = "jdbc:postgresql://" + host + ":" + port + port_name_separator + dbName;
+		url = "jdbc:postgresql://" +
+				p.getProperty("tms.db.host") + ":" +
+				p.getProperty("tms.db.port") +
+				port_name_separator +
+				dbName;
+		connect();
 	}
 
 	private void connect(){
@@ -81,54 +111,77 @@ public class DatabaseConnection {
 			connection = DriverManager.getConnection( url, user, password );
 			DatabaseMetaData md = connection.getMetaData();
 			String dbVersion = md.getDatabaseProductName() + ":" + md.getDatabaseProductVersion();
-			System.out.println("DB: " + dbVersion);
+			logger.warning("DB: " + dbVersion);
 			statement = connection.createStatement(
 					ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-			System.out.println( "Opened connection to " + dbName + " database." );
+			isPublishedStatement = connection.prepareStatement(
+					"select " + CAMERA_PUBLISH + " from " + TABLE_CAMERA +
+					" where " + CAMERA_ID + " = ?");
+			encoderHostStatement = connection.prepareStatement(
+					"select " + CAMERA_ENCODER + " from " + TABLE_CAMERA +
+					" where " + CAMERA_ID + " = ?");
+			encoderTypeStatement = connection.prepareStatement(
+					"select " + CAMERA_ENCODER_TYPE + " from " + TABLE_CAMERA +
+					" where " + CAMERA_ID + " = ?");
+			encoderChannelStatement = connection.prepareStatement(
+					"select " + CAMERA_ENCODER_CHANNEL + " from " + TABLE_CAMERA +
+					" where " + CAMERA_ID + " = ?");
+			logger.warning( "Opened connection to " + dbName + " database." );
 		} catch ( Exception e ) {
 			System.err.println("Error connecting to DB: " + url + " USER: " + user + " PWD: " + password );
 		}
 	}
 	
-	public ResultSet query( String sql ){
+	/** Get the publish attribute of the camera */
+	public synchronized boolean isPublished(String camId){
 		try{
-			return statement.executeQuery(sql);
-		}catch(Exception e){
-			try{
-				System.err.println("Unable to execute DB query. Reconnecting...");
-				connect();
-				return statement.executeQuery(sql);
-			}catch(Exception e2){
-				System.err.println("Reconnection to DB failed: " + e2.getMessage());
+			isPublishedStatement.setString(1, camId);
+			ResultSet rs = isPublishedStatement.executeQuery();
+			if(rs != null && rs.next()){
+				return rs.getBoolean(CAMERA_PUBLISH);
 			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public synchronized String getEncoderHost(String camId){
+		try{
+			encoderHostStatement.setString(1, camId);
+			ResultSet rs = encoderHostStatement.executeQuery();
+			if(rs != null && rs.next()){
+				return rs.getString(CAMERA_ENCODER);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
 		}
 		return null;
 	}
 
-	protected final String getString(String sql, String column){
+	public synchronized String getEncoderType(String camId){
 		try{
-			ResultSet rs = query(sql);
-			if(rs == null) throw new Exception("Null resultset");
-			if(rs.next()) return rs.getString(column);
-		}catch(Exception e){
-			System.err.println("Error retrieving DB column " + column +
-					": " + e.getMessage());
-		}
-		return null; 
-	}
-
-	protected ArrayList<String> getColumnList(String sql, String column){
-		ArrayList<String> list = new ArrayList<String>();
-		try{
-			ResultSet rs = query(sql);
-			if(rs == null) throw new Exception("Null resultset");
-			while(rs != null && rs.next()){
-				list.add(rs.getString(column));
+			encoderTypeStatement.setString(1, camId);
+			ResultSet rs = encoderTypeStatement.executeQuery();
+			if(rs != null && rs.next()){
+				return rs.getString(CAMERA_ENCODER_TYPE);
 			}
 		}catch(Exception e){
-			System.err.println("Error retrieving DB column " + column +
-					": " + e.getMessage());
+			e.printStackTrace();
 		}
-		return list;
+		return null;
+	}
+
+	public synchronized int getEncoderChannel(String camId){
+		try{
+			encoderChannelStatement.setString(1, camId);
+			ResultSet rs = encoderChannelStatement.executeQuery();
+			if(rs != null && rs.next()){
+				return rs.getInt(CAMERA_ENCODER_CHANNEL);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return -1;
 	}
 }

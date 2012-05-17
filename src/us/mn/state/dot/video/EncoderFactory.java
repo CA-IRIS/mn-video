@@ -35,7 +35,7 @@ public class EncoderFactory {
 
 	protected static final String AXIS     = "Axis";
 	
-	protected TmsConnection tms = null;
+	protected DatabaseConnection tms = null;
 
 	protected String encoderUser = null;
 	
@@ -74,7 +74,7 @@ public class EncoderFactory {
 	private EncoderFactory(Properties props){
 		this.logger = Logger.getLogger(Constants.LOGGER_NAME);
 		this.properties = props;
-		tms = TmsConnection.create(props);
+		tms = DatabaseConnection.create(props);
 		encoderUser = props.getProperty("video.encoder.user");
 		encoderPass = props.getProperty("video.encoder.pwd");
 		try{
@@ -110,7 +110,7 @@ public class EncoderFactory {
 				logger.warning("Error creating encoder for camera " +
 						cameraId + ": " + th.getMessage());
 			}
-			tms = TmsConnection.create(properties);
+			tms = DatabaseConnection.create(properties);
 			return null;
 		}
 	}
