@@ -23,7 +23,6 @@ import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -64,8 +63,6 @@ public class DatabaseConnection {
 
 	/** The connection object used for executing queries */
 	protected Connection connection = null;
-	
-	protected Statement statement = null;
 	
 	protected PreparedStatement isPublishedStatement = null;
 	
@@ -112,8 +109,6 @@ public class DatabaseConnection {
 			DatabaseMetaData md = connection.getMetaData();
 			String dbVersion = md.getDatabaseProductName() + ":" + md.getDatabaseProductVersion();
 			logger.warning("DB: " + dbVersion);
-			statement = connection.createStatement(
-					ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 			isPublishedStatement = connection.prepareStatement(
 					"select " + CAMERA_PUBLISH + " from " + TABLE_CAMERA +
 					" where " + CAMERA_ID + " = ?");
