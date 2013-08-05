@@ -26,10 +26,6 @@ import javax.xml.ws.http.HTTPException;
 
 public class ImageCache {
 
-	private String user = null;
-	
-	private String pass = null;
-	
 	private static HashMap<String, CacheEntry> cacheMap =
 		new HashMap<String, CacheEntry>();
 
@@ -40,8 +36,6 @@ public class ImageCache {
 	private static ImageCache imageCache = null;
 	
 	protected ImageCache(Properties p){
-		user = p.getProperty("video.encoder.user");
-		pass = p.getProperty("video.encoder.pwd");
 		cacheDuration = Long.parseLong(
 				p.getProperty("video.cache.duration",
 				Long.toString(DEFAULT_CACHE_DURATION)));
@@ -53,7 +47,7 @@ public class ImageCache {
 		return imageCache;
 	}
 	
-	private synchronized CacheEntry getEntry(String key, URL imageURL, ImageSize size){
+	private synchronized CacheEntry getEntry(String key, URL imageURL, ImageSize size, String user, String pass){
 		CacheEntry entry = cacheMap.get(key);
 		if(entry != null){
 			return entry;
@@ -63,8 +57,8 @@ public class ImageCache {
 		return entry;
 	}
 	
-	public byte[] getImage(Client c, URL imageURL) throws HTTPException, VideoException {
-		CacheEntry entry = getEntry(createCacheKey(c), imageURL, c.getSize());
+	public byte[] getImage(Client c, URL imageURL, String user, String pass) throws HTTPException, VideoException {
+		CacheEntry entry = getEntry(createCacheKey(c), imageURL, c.getSize(), user, pass);
 		return entry.getImage();
 	}
 

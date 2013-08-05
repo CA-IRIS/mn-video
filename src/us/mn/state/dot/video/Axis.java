@@ -42,8 +42,8 @@ public final class Axis extends AbstractEncoder {
 	private static final String PARAM_CAMERA = "camera";
 	
 	/** Constructor for the axis encoder object */
-	public Axis(String host) {
-		super(host);
+	public Axis(String host, String user, String pass) {
+		super(host, user, pass);
 	}
 	
 	/**

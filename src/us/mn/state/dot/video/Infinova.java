@@ -36,8 +36,8 @@ public final class Infinova extends AbstractEncoder {
 	private final String BASE_STREAM_URI = "/jpgimage/1/image.jpg";
 	
 	/** Constructor for the Infinova encoder object */
-	public Infinova(String host) {
-		super(host);
+	public Infinova(String host, String user, String pass) {
+		super(host, user, pass);
 	}
 	
 	/**

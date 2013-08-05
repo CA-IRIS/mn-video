@@ -56,17 +56,9 @@ public interface Encoder {
 	 */
 	public DataSource getDataSource(Client c) throws VideoException;
 
-	/**
-	 * Set the authentication password.
-	 * @param pwd
-	 */
-	public void setPassword(String pwd);
+	public String getPassword();
 
-	/**
-	 * Set the authentication username.
-	 * @param name
-	 */
-	public void setUsername(String name);
+	public String getUsername();
 
 	public void setCamera(String id, int channel);
 

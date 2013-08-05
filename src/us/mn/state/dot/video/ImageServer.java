@@ -56,7 +56,19 @@ public final class ImageServer extends VideoServlet{
 	public void processRequest(HttpServletResponse response, Client c)
 		throws VideoException
 	{
-		URL imageURL = getImageURL(c);
+		URL imageURL = null;
+		String user = null;
+		String pass = null;
+		if(proxy){
+			imageURL = getDistrictImageURL(c);
+		}else{
+			Encoder e = encoderFactory.getEncoder(c.getCameraName());
+			if(e != null){
+				imageURL = e.getImageURL(c);
+				user = e.getUsername();
+				pass = e.getPassword();
+			}
+		}
 		if(imageURL == null){
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			return;
@@ -67,7 +79,7 @@ public final class ImageServer extends VideoServlet{
 		}
 		byte[] image = null;
 		try{
-			image = imageCache.getImage(c, imageURL);
+			image = imageCache.getImage(c, imageURL, user, pass);
 			if(image == null){
 				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 				return;

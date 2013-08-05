@@ -82,7 +82,7 @@ public abstract class AbstractEncoder implements Encoder {
 		return InetAddress.getByName(host).getHostAddress();
 	}
 
-	public AbstractEncoder(String host_port){
+	public AbstractEncoder(String host_port, String user, String pass){
 		if(host_port.indexOf(":")>-1){
 			host = host_port.substring(0,host_port.indexOf(":"));
 			try{
@@ -93,6 +93,8 @@ public abstract class AbstractEncoder implements Encoder {
 		}else{
 			this.host = host_port;
 		}
+		this.username = user;
+		this.password = pass;
 	}
 	
 	public String toString(){
@@ -124,20 +126,14 @@ public abstract class AbstractEncoder implements Encoder {
 		ids.put(id, new Integer(channel));
 	}
 
-	/**
-	 * Set the username for authentication.
-	 */
-	public final void setUsername(String user){
-		username = user;
+	public final String getUsername() {
+		return username;
 	}
 
-	/**
-	 * Set the password for authentication.
-	 */
-	public final void setPassword(String pwd){
-		password = pwd;
+	public final String getPassword() {
+		return password;
 	}
-	
+
 	/** Get the next image in the mjpeg stream 
 	 *  in which the Content-Length header is present
 	 * @return

@@ -37,10 +37,6 @@ public class EncoderFactory {
 	
 	protected DatabaseConnection tms = null;
 
-	protected String encoderUser = null;
-	
-	protected String encoderPass = null;
-
 	/** The expiration time of database information, in milliseconds */
 	protected long dbExpire = 10 * 1000;
 
@@ -63,20 +59,10 @@ public class EncoderFactory {
 		return factory;
 	}
 	
-	public String getUser(){
-		return encoderUser;
-	}
-	
-	public String getPassword(){
-		return encoderPass;
-	}
-	
 	private EncoderFactory(Properties props){
 		this.logger = Logger.getLogger(Constants.LOGGER_NAME);
 		this.properties = props;
 		tms = DatabaseConnection.create(props);
-		encoderUser = props.getProperty("video.encoder.user");
-		encoderPass = props.getProperty("video.encoder.pwd");
 		try{
 			dbExpire = Long.parseLong(props.getProperty("db.expire"));
 		}catch(Exception e){
@@ -123,14 +109,16 @@ public class EncoderFactory {
 		logger.info("Creating new encoder for camera " + name);
 		Encoder e = null;
 		if(mfr.indexOf(INFINOVA) > -1){
-			e = new Infinova(host);
+			String u = properties.getProperty("video.encoder.infinova.user");
+			String p = properties.getProperty("video.encoder.infinova.pwd");
+			e = new Infinova(host,u,p);
 		}else{
-			e = new Axis(host);
+			String u = properties.getProperty("video.encoder.axis.user");
+			String p = properties.getProperty("video.encoder.axis.pwd");
+			e = new Axis(host,u,p);
 		}
 		int ch = tms.getEncoderChannel(name);
 		e.setCamera(name, ch);
-		e.setUsername(encoderUser);
-		e.setPassword(encoderPass);
 		encoders.put(name, e);
 		logger.info(name + " " + e);
 		logger.info(encoders.size() + " encoders.");
