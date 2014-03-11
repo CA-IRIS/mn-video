@@ -105,12 +105,12 @@ public abstract class VideoServlet extends HttpServlet {
 				break;
 			}
 		}
+		if(logger==null) logger = Logger.getLogger(Constants.LOGGER_NAME);
 		try{
 			maxFrameRate = Integer.parseInt(props.getProperty("max.framerate"));
 		}catch(Exception e){
 			logger.info("Max frame rate not defined, using default...");
 		}
-		if(logger==null) logger = Logger.getLogger(Constants.LOGGER_NAME);
 		logger.warning("Legacy support: " + legacySupport);
 		logger.warning("Proxy: " + proxy);
 	}
@@ -157,14 +157,22 @@ public abstract class VideoServlet extends HttpServlet {
 	
 	/** Get the requested camera name. */
 	protected String getRequestedCamera(HttpServletRequest req) {
+		String name = null;
 		String path = req.getPathInfo();
 		if(path!=null){
 			String[] pathParts = path.substring(1).split("/");
 			if(pathParts.length==2){
-				return createCameraName(pathParts[1]);
+				name = pathParts[1];
+				if(name.indexOf('.')>-1){
+					name = name.substring(0,name.indexOf('.'));
+				}
+				logger.warning("Requested Camera = " + name);
+				return name;
 			}
 		}
-		return createCameraName(req.getParameter("id"));
+		name = createCameraName(req.getParameter("id"));
+		logger.warning("Requested Camera = " + name);
+		return name;
 	}
 
 	/** Get the requested image size.
@@ -203,6 +211,7 @@ public abstract class VideoServlet extends HttpServlet {
 	protected void configureClient(Client c, HttpServletRequest req) {
 		if(req.getParameter("id") != null) c.setLegacy(true);
 		c.setDistrict(getRequestedDistrict(req));
+		logger.warning("Requested camera= " + getRequestedCamera(req));
 		c.setCameraName(getRequestedCamera(req));
 		c.setSize(getRequestedSize(req));
 		if(maxImageSize.ordinal() < c.getSize().ordinal()){
