@@ -30,6 +30,10 @@ public class Constants {
 	public static final SimpleDateFormat DATE_FORMAT =
 		new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
 
+	public static final SimpleDateFormat LAST_MODIFIED_FORMAT =
+			new SimpleDateFormat("EEE, d MMM y HH:mm:ss z");
+			//Tue, 15 Nov 1994 12:45:26 GMT
+
 	//public static final String LOGGER_NAME = "us.mn.state.dot.video";
 
 	public static final String LOGGER_NAME = "video";

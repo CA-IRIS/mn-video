@@ -20,6 +20,7 @@ package us.mn.state.dot.video;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Calendar;
 import java.util.Properties;
 
 import javax.servlet.ServletConfig;
@@ -87,6 +88,8 @@ public final class ImageServer extends VideoServlet{
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.setContentType("image/jpeg\r\n");
 			response.setContentLength(image.length);
+			Calendar cal = Calendar.getInstance();
+			response.setHeader("Last-Modified", Constants.LAST_MODIFIED_FORMAT.format(cal.getTime()));
 			response.getOutputStream().write(image);
 		}catch(HTTPException httpEx){
 			response.setStatus(httpEx.getStatusCode());
