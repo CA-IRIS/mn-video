@@ -22,6 +22,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.Properties;
+import java.util.TimeZone;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -89,6 +90,7 @@ public final class ImageServer extends VideoServlet{
 			response.setContentType("image/jpeg\r\n");
 			response.setContentLength(image.length);
 			Calendar cal = Calendar.getInstance();
+			Constants.LAST_MODIFIED_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
 			response.setHeader("Last-Modified", Constants.LAST_MODIFIED_FORMAT.format(cal.getTime()));
 			response.getOutputStream().write(image);
 		}catch(HTTPException httpEx){
