@@ -104,11 +104,11 @@ public class DatabaseConnection {
 	private void connect(){
 		try {
 			Class.forName( "org.postgresql.Driver" );
-			System.out.println( "Openning connection to " + dbName + " database." );
+			logger.info( "Openning connection to " + dbName + " database." );
 			connection = DriverManager.getConnection( url, user, password );
 			DatabaseMetaData md = connection.getMetaData();
 			String dbVersion = md.getDatabaseProductName() + ":" + md.getDatabaseProductVersion();
-			logger.warning("DB: " + dbVersion);
+			logger.info("DB: " + dbVersion);
 			isPublishedStatement = connection.prepareStatement(
 					"select " + CAMERA_PUBLISH + " from " + TABLE_CAMERA +
 					" where " + CAMERA_ID + " = ?");
@@ -121,7 +121,7 @@ public class DatabaseConnection {
 			encoderChannelStatement = connection.prepareStatement(
 					"select " + CAMERA_ENCODER_CHANNEL + " from " + TABLE_CAMERA +
 					" where " + CAMERA_ID + " = ?");
-			logger.warning( "Opened connection to " + dbName + " database." );
+			logger.info( "Opened connection to " + dbName + " database." );
 		} catch ( Exception e ) {
 			System.err.println("Error connecting to DB: " + url + " USER: " + user + " PWD: " + password );
 		}
