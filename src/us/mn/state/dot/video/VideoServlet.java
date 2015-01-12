@@ -84,15 +84,12 @@ public abstract class VideoServlet extends HttpServlet {
 
 	protected int maxFrameRate = 3;
 
-	protected boolean legacySupport = true;
-
 	/** Initialize the VideoServlet */
 	public void init(ServletConfig config) throws ServletException {
 		super.init( config );
 		ServletContext ctx = config.getServletContext();
 		Properties props =(Properties)ctx.getAttribute("properties");
 		proxy = new Boolean(props.getProperty("proxy", "false")).booleanValue();
-		legacySupport = new Boolean(props.getProperty("legacy", "true")).booleanValue();
 		if(proxy){
 			createDistrictURLs(props);
 		}else{
@@ -111,8 +108,7 @@ public abstract class VideoServlet extends HttpServlet {
 		}catch(Exception e){
 			logger.info("Max frame rate not defined, using default...");
 		}
-		logger.warning("Legacy support: " + legacySupport);
-		logger.warning("Proxy: " + proxy);
+		logger.info("Proxy: " + proxy);
 	}
 
 	private void createDistrictURLs(Properties p){
@@ -145,13 +141,6 @@ public abstract class VideoServlet extends HttpServlet {
 				}
 			}
 		}
-		//for backward compatibility, support area parameter
-		String value = req.getParameter("area");
-		if(value != null){
-			if(value.equals("0")) return District.METRO;
-			if(value.equals("1")) return District.D6;
-			if(value.equals("2")) return District.D1;
-		}
 		return defaultDistrict;
 	}
 	
@@ -159,19 +148,13 @@ public abstract class VideoServlet extends HttpServlet {
 	protected String getRequestedCamera(HttpServletRequest req) {
 		String name = null;
 		String path = req.getPathInfo();
-		if(path!=null){
-			String[] pathParts = path.substring(1).split("/");
-			if(pathParts.length==2){
-				name = pathParts[1];
-				if(name.indexOf('.')>-1){
-					name = name.substring(0,name.indexOf('.'));
-				}
-				logger.warning("Requested Camera = " + name);
-				return name;
-			}
+		if(path==null) return null;
+		String[] pathParts = path.substring(1).split("/");
+		if(pathParts.length!=2) return null;
+		name = pathParts[1];
+		if(name.indexOf('.')>-1){
+			name = name.substring(0,name.indexOf('.'));
 		}
-		name = createCameraName(req.getParameter("id"));
-		logger.warning("Requested Camera = " + name);
 		return name;
 	}
 
@@ -209,9 +192,7 @@ public abstract class VideoServlet extends HttpServlet {
 
 	/** Configure a client from an HTTP request */
 	protected void configureClient(Client c, HttpServletRequest req) {
-		if(req.getParameter("id") != null) c.setLegacy(true);
 		c.setDistrict(getRequestedDistrict(req));
-		logger.warning("Requested camera= " + getRequestedCamera(req));
 		c.setCameraName(getRequestedCamera(req));
 		c.setSize(getRequestedSize(req));
 		if(maxImageSize.ordinal() < c.getSize().ordinal()){
@@ -248,18 +229,7 @@ public abstract class VideoServlet extends HttpServlet {
 		}
 		return encoderFactory.isPublished(cameraId);
 	}
-	
-	private String createRedirect(HttpServletRequest req, Client c)
-			throws VideoException {
-		String s = req.getContextPath() + req.getServletPath() +
-			"/" + c.getDistrict().name().toLowerCase() +
-			"/" + c.getCameraName() + ".jpg";
-		if(c.getSize() != defaultImageSize){
-			s = s + "?size=" + c.getSize().name().toLowerCase().charAt(0); 
-		}
-		return s;
-	}
-	
+
 	private boolean isDirectoryRequest(HttpServletRequest req){
 		boolean nullPath  = req.getPathInfo() == null;
 		boolean nullQuery = req.getQueryString() == null;
@@ -294,12 +264,6 @@ public abstract class VideoServlet extends HttpServlet {
 				return;
 			}
 			configureClient(c, request);
-			if(proxy && c.isLegacy() && !legacySupport){
-				response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
-				String newLocation = (createRedirect(request, c));
-				response.addHeader("Location", newLocation);
-				return;
-			}
 			processRequest(response, c);
 		}
 		catch(Throwable th) {
@@ -319,33 +283,6 @@ public abstract class VideoServlet extends HttpServlet {
 			catch(Exception e2) {
 			}
 		}
-	}
-
-	/** Create a camera name from an id
-	 * This method is for legacy support only.
-	 * Attempts to create a standard camera name from a string
-	 * @param s
-	 * @return The standard camera name
-	 */
-	private String createCameraName(String s){
-		if(s == null) return null;
-		s = s.toUpperCase();
-		if(s.indexOf(".")>-1){
-			s = s.substring(0,s.indexOf("."));
-		}
-		if(s.length()>4){
-			return s;
-		}
-		if(s.startsWith("C")){
-			s = s.substring(1);
-		}
-		try{
-			int i = Integer.parseInt(s);
-			s = Integer.toString(i);
-		}catch(NumberFormatException nfe){
-		}
-		while(s.length()<3) s = "0" + s;
-		return "C" + s;
 	}
 
 	public abstract void processRequest(HttpServletResponse response,
