@@ -21,17 +21,12 @@ package us.mn.state.dot.video;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Calendar;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
-
-import us.mn.state.dot.video.Constants;
 
 /**
  * Sets up the properties context for all servlets.
@@ -40,11 +35,8 @@ import us.mn.state.dot.video.Constants;
  */
 public class PropertiesContext extends HttpServlet{
 
-	/** The logger used to log all output for the application */
-	private Logger logger;
-
 	/** Properties file */
-	protected final File propsFile = new File("/etc/iris/video.properties");
+	protected final File propsFile = new File("/etc/tms/video.properties");
 
 	/** The default time to live for DNS cache within JRE */
 	public static final String DNS_TTL = "3600"; // 1 hour
@@ -68,20 +60,11 @@ public class PropertiesContext extends HttpServlet{
 			props.load(stream);
 			stream.close();
 		}catch(IOException ioe){
-			System.out.println("Exception loading: " +
-					propsFile.getAbsolutePath());
 		}
 		String dnsTTL = props.getProperty(PROP_DNS_TTL, DNS_TTL);
 		//networkaddress.cache.ttl must be set within the java properties files
 		// for TOMCAT applications.  This will do nothing here!
 		java.security.Security.setProperty(PROP_DNS_TTL, dnsTTL);
-		logger = Logger.getLogger(Constants.LOGGER_NAME);
-		logger.setLevel(Level.INFO);
-		logger.info("DNS Cache duration set to " +
-				java.security.Security.getProperty(PROP_DNS_TTL) + " seconds.");
 		ctx.setAttribute("properties", props);
-		Calendar c = Calendar.getInstance();
-		System.out.println(Constants.DATE_FORMAT.format(c.getTime()) + ": Video servlet started.");
-		logger.info("Video Server started.");
 	}
 }
