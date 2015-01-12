@@ -39,9 +39,7 @@ public class Client {
 	protected ImageSize size = ImageSize.MEDIUM;
 
 	protected String cameraName = null;
-	
-	protected boolean legacy = false;
-	
+
 	public Client(){
 	}
 
@@ -97,11 +95,5 @@ public class Client {
 	/** Set the SONAR session ID */
 	public void setSonarSessionId(long sonarSessionId) {
 		this.sonarSessionId = sonarSessionId;
-	}
-	public void setLegacy(boolean legacy){
-		this.legacy = legacy;
-	}
-	public boolean isLegacy(){
-		return legacy;
 	}
 }
