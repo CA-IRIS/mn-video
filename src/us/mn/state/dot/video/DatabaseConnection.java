@@ -31,7 +31,7 @@ import java.util.logging.Logger;
  * DatabaseConnection is a convenience class for making a connection to
  * a database.  It handles all of the queries and sql exceptions as
  * well as re-establishing the connection if it is lost.
- * 
+ *
  * @author Timothy Johnson
  *
  */
@@ -46,9 +46,9 @@ public class DatabaseConnection {
 	protected static final String TABLE_CAMERA = "camera_view";
 
 	protected static final String ASCENDING = "asc";
-	
+
 	protected static final String DESCENDING = "desc";
-	
+
 	/** Username for authentication to the db server */
 	private String user = null;
 
@@ -63,9 +63,9 @@ public class DatabaseConnection {
 
 	/** The connection object used for executing queries */
 	protected Connection connection = null;
-	
+
 	protected PreparedStatement isPublishedStatement = null;
-	
+
 	protected PreparedStatement encoderHostStatement = null;
 
 	protected PreparedStatement encoderTypeStatement = null;
@@ -73,7 +73,7 @@ public class DatabaseConnection {
 	protected PreparedStatement encoderChannelStatement = null;
 
 	private static DatabaseConnection db = null;
-	
+
 	private Logger logger = null;
 
 	public static synchronized DatabaseConnection create(final Properties p){
@@ -126,7 +126,7 @@ public class DatabaseConnection {
 			System.err.println("Error connecting to DB: " + url + " USER: " + user + " PWD: " + password );
 		}
 	}
-	
+
 	/** Get the publish attribute of the camera */
 	public synchronized boolean isPublished(String camId){
 		try{
