@@ -1,6 +1,7 @@
 /*
  * Project: Video
  * Copyright (C) 2007  Minnesota Department of Transportation
+ * Copyright (C) 2014-2015  AHMCT, University of California
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,9 +33,9 @@ import javax.xml.ws.http.HTTPException;
 
 
 /** The ImageFactory is a convenience class for retrieving images.
- * 
- * @author Timothy A. Johnson
  *
+ * @author Timothy A. Johnson
+ * @author Travis Swanston
  */
 abstract public class ImageFactory {
 
@@ -55,8 +56,8 @@ abstract public class ImageFactory {
 		try{
 			HttpURLConnection c = (HttpURLConnection)url.openConnection();
 			HttpURLConnection.setFollowRedirects(true);
-			c.setConnectTimeout(VideoThread.TIMEOUT_DIRECT);
-			c.setReadTimeout(VideoThread.TIMEOUT_DIRECT);
+			c.setConnectTimeout(VideoThread.getConnTimeout());
+			c.setReadTimeout(VideoThread.getReadTimeout());
 			return c;
 		}catch(Exception e){
 			logger.info("CONNECT EXCEPT: " + url);

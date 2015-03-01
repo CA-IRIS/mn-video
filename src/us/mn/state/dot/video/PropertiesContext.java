@@ -1,6 +1,7 @@
 /*
  * Project: Video
  * Copyright (C) 2002-2007  Minnesota Department of Transportation
+ * Copyright (C) 2014-2015  AHMCT, University of California
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +37,7 @@ import us.mn.state.dot.video.Constants;
 /**
  * Sets up the properties context for all servlets.
  * @author Timothy Johnson
- *
+ * @author Travis Swanston
  */
 public class PropertiesContext extends HttpServlet{
 
@@ -52,7 +53,16 @@ public class PropertiesContext extends HttpServlet{
 	public static final String PROP_DNS_TTL = "networkaddress.cache.ttl";
 
 	public static final String PROP_DB_REFRESH = "db.refresh";
-	
+
+	/** The property name for the connection timeout */
+	public static final String PROP_TIMEOUT_CONN = "video.timeout.conn";
+
+	/** The property name for the read timeout */
+	public static final String PROP_TIMEOUT_READ = "video.timeout.read";
+
+	/** The property name for the image cache duration */
+	public static final String PROP_CACHE_DURATION = "video.cache.duration";
+
 	/** The time interval for refreshing database information (seconds)*/
 	public static final String DB_REFRESH = "3600"; // 1 hour
 	
@@ -84,4 +94,38 @@ public class PropertiesContext extends HttpServlet{
 		System.out.println(Constants.DATE_FORMAT.format(c.getTime()) + ": Video servlet started.");
 		logger.info("Video Server started.");
 	}
+
+	/**
+	 * Get an integer value from the properties.
+	 * @param key The properties key.
+	 * @return The value as an Integer, or null if not found or error.
+	 */
+	public static Integer getIntProp(String key) {
+		String s = props.getProperty(key);
+		if (s == null)
+			return null;
+		Integer i = null;
+		try {
+			i = Integer.valueOf(s);
+		}
+		catch (NumberFormatException e) {
+			i = null;
+		}
+		return i;
+	}
+
+	/**
+	 * Get an integer value from the properties.
+	 * @param key The properties key.
+	 * @param def The default value to return if property cannot be
+	 *            found/parsed.
+	 * @return The value as an int.
+	 */
+	public static int getIntProp(String key, int def) {
+		Integer i = getIntProp(key);
+		if (i == null)
+			return def;
+		return i.intValue();
+	}
+
 }
