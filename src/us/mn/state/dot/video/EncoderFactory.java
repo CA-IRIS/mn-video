@@ -1,6 +1,7 @@
 /*
  * Project: Video
  * Copyright (C) 2002-2007  Minnesota Department of Transportation
+ * Copyright (C) 2014-2015  AHMCT, University of California
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +26,7 @@ import java.util.logging.Logger;
 
 /**
  * @author john3tim
+ * @author Travis Swanston
  *
  * The EncoderFactory is responsible for creating Encoder objects and
  * making sure that they are in sync with the database.
@@ -115,7 +117,7 @@ public class EncoderFactory {
 		}else{
 			String u = properties.getProperty("video.encoder.axis.user");
 			String p = properties.getProperty("video.encoder.axis.pwd");
-			e = new Axis(host,u,p);
+			e = new Axis(host,u,p,properties);
 		}
 		int ch = tms.getEncoderChannel(name);
 		e.setCamera(name, ch);
