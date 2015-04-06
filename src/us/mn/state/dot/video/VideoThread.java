@@ -1,6 +1,7 @@
 /*
  * Project: Video
  * Copyright (C) 2002-2007  Minnesota Department of Transportation
+ * Copyright (C) 2014-2015  AHMCT, University of California
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,24 +23,24 @@ import java.util.Calendar;
 
 /**
  * @author Timothy A. Johnson
- *
+ * @author Travis Swanston
  */
 public abstract class VideoThread extends Thread{
 
 	private final Calendar startTime = Calendar.getInstance();
 	protected boolean done = false;
 
-	/** Default timeout for direct URL Connections */
+	/** Timeout for direct URL Connections */
 	public final static int TIMEOUT_DIRECT = 5 * 1000;
 
-	/** Default timeout for proxied URL Connections */
+	/** Timeout for proxied URL Connections */
 	public final static int TIMEOUT_PROXY = 2 * 1000;
 
 	/** Default timeout for HttpUrlConnection connect */
-	public final static int TIMEOUT_CONNECT = 5 * 1000;
-	
+	private final static int DEFAULT_TIMEOUT_CONNECT = 5 * 1000;
+
 	/** Default timeout for HttpUrlConnection read */
-	public final static int TIMEOUT_READ = 5 * 1000;
+	private final static int DEFAULT_TIMEOUT_READ = 5 * 1000;
 	
 	public VideoThread(ThreadMonitor m){
 		if(m != null) m.addThread(this);
@@ -60,4 +61,27 @@ public abstract class VideoThread extends Thread{
 		Calendar now = Calendar.getInstance();
 		return (int)(now.getTimeInMillis()-getStartTime().getTimeInMillis()/1000);
 	}
+
+	/**
+	 * Get the video connection timeout value.
+	 * @return The value from the properties, or the default value if not
+	 * found in properties.
+	 */
+	public static int getConnTimeout() {
+		return PropertiesContext.getIntProp(
+			PropertiesContext.PROP_TIMEOUT_CONN,
+			DEFAULT_TIMEOUT_CONNECT);
+	}
+
+	/**
+	 * Get the video read timeout value.
+	 * @return The value from the properties, or the default value if not
+	 * found in properties.
+	 */
+	public static int getReadTimeout() {
+		return PropertiesContext.getIntProp(
+			PropertiesContext.PROP_TIMEOUT_READ,
+			DEFAULT_TIMEOUT_READ);
+	}
+
 }
