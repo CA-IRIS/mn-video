@@ -43,8 +43,8 @@ public final class AxisJPEG extends Axis {
 		if (url == null)
 			return null;
 		try {
-			return new MultiRequestDataSource(c, url, username,
-				password);
+			return new JPEGStreamDataSource(c, url, username,
+				password, jpeg_period);
 		}
 		catch(Exception e) {
 			throw new VideoException(e.getMessage());

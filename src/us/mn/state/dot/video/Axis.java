@@ -90,6 +90,9 @@ public abstract class Axis extends AbstractEncoder {
 	/** Optional value for the showlength request parameter */
 	private String opt_showlength = null;
 
+	/** Optional value for the fetch period to use with AxisJPEG */
+	protected Integer jpeg_period = null;
+
 	/** Constructor for the axis encoder object */
 	public Axis(String host, String user, String pass, Properties props) {
 		super(host, user, pass);
@@ -105,6 +108,7 @@ public abstract class Axis extends AbstractEncoder {
 		opt_squarepixel = p.getProperty("axis.opt.squarepixel");
 		opt_text = p.getProperty("axis.opt.text");
 		opt_showlength = p.getProperty("axis.opt.showlength");
+		jpeg_period = PropertiesContext.getIntProp("axis.jpegperiod");
 	}
 
 	/**
