@@ -33,10 +33,10 @@ import java.util.logging.Logger;
  */
 public class EncoderFactory {
 
-	protected static final String INFINOVA = "Infinova";
+	protected static final String AXIS_JPEG  = "Axis JPEG";
+	protected static final String AXIS_MJPEG = "Axis MJPEG";
+	protected static final String INFINOVA   = "Infinova";
 
-	protected static final String AXIS     = "Axis";
-	
 	protected DatabaseConnection tms = null;
 
 	/** The expiration time of database information, in milliseconds */
@@ -108,17 +108,27 @@ public class EncoderFactory {
 		String mfr = tms.getEncoderType(name);
 		String host = tms.getEncoderHost(name);
 		if(mfr == null || host == null) return null;
-		logger.info("Creating new encoder for camera " + name);
 		Encoder e = null;
-		if(mfr.indexOf(INFINOVA) > -1){
-			String u = properties.getProperty("video.encoder.infinova.user");
-			String p = properties.getProperty("video.encoder.infinova.pwd");
-			e = new Infinova(host,u,p);
-		}else{
+		if (AXIS_MJPEG.equals(mfr)) {
 			String u = properties.getProperty("video.encoder.axis.user");
 			String p = properties.getProperty("video.encoder.axis.pwd");
-			e = new Axis(host,u,p,properties);
+			e = new AxisMJPEG(host, u, p, properties);
 		}
+		else if (AXIS_JPEG.equals(mfr)) {
+			String u = properties.getProperty("video.encoder.axis.user");
+			String p = properties.getProperty("video.encoder.axis.pwd");
+			e = new AxisJPEG(host, u, p, properties);
+		}
+		else if (mfr.indexOf(INFINOVA) > -1) {
+			String u = properties.getProperty("video.encoder.infinova.user");
+			String p = properties.getProperty("video.encoder.infinova.pwd");
+			e = new Infinova(host, u, p);
+		}
+		else {
+			logger.info("Failed to create new encoder for camera "
+				+ name + ": unknown encoder type");
+		}
+		logger.info("Created new encoder for camera " + name);
 		int ch = tms.getEncoderChannel(name);
 		e.setCamera(name, ch);
 		encoders.put(name, e);

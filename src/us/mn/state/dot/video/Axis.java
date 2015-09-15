@@ -31,7 +31,7 @@ import java.util.Properties;
  * @created   July 2, 2003
  */
 
-public final class Axis extends AbstractEncoder {
+public abstract class Axis extends AbstractEncoder {
 
 	/** The base URI for a request for an image */
 	private final String BASE_IMAGE_URI = "/axis-cgi/jpg/image.cgi";
@@ -189,13 +189,4 @@ public final class Axis extends AbstractEncoder {
 		return kv;
 	}
 
-	public DataSource getDataSource(Client c) throws VideoException{
-		URL url = getStreamURL(c);
-		if(url == null) return null;
-		try{
-			return new HttpDataSource(c, url, username, password);
-		}catch(Exception e){
-			throw new VideoException(e.getMessage());
-		}
-	}
 }
